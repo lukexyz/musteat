@@ -30,6 +30,11 @@ and build a Depot and a Kitchen Plant once you have the credits.
 
 ## Test the pyramid by hand
 
+In local mode every invite, voucher and franchise link carries a fresh `&slot=NNNNNNN`. Open it in
+the same browser and it registers a new player who shares this browser's sheet, so the company,
+feed, leaderboard and ledger are shared between all the players you spawn this way. With a backend
+configured the slot is not added.
+
 Local mode fakes the sheet inside the same browser profile:
 
 1. Open `index.html`, register, open a shop, copy the invite. Note the `?ref=CODE`.

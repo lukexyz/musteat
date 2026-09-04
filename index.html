@@ -190,7 +190,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <section><h2>Your runners' businesses</h2><div id="pfRunners"></div></section>
   <section><h2>Trophy cabinet</h2><div id="portfolio"></div></section>
   </div>
-  <footer>MustEat is a game. Please do not start an actual pyramid scheme. · <span id="mode"></span> · <a href="#" id="reset">reset save</a> <span id="localtools"></span></footer>
+  <footer>MustEat is a game. Please do not start an actual pyramid scheme. · <span id="mode"></span> · <a href="ledger.html" target="_blank">ledger</a> · <a href="#" id="reset">reset save</a> <span id="localtools"></span></footer>
 </div>
 <div id="crate" class="crate" title="Unmarked ration crate. Take it." hidden>📦</div>
 <div id="modal" class="modal" hidden><div class="box" id="modalBox"></div></div>
@@ -923,7 +923,9 @@ function burst(x, y, text, kind) {
   }
 }
 const rootLink = () => location.origin + location.pathname;
-function shareLink(extra) { return rootLink() + '?ref=' + encodeURIComponent(state.code || '') + (extra || ''); }
+const devSlot = () => CONFIG.SHEET_API ? '' : '&slot=' + Math.floor(1e6 + Math.random() * 9e6);
+const shownSlot = devSlot(); // one stable slot for the link shown on screen; every copy gets a fresh one
+function shareLink(extra, slot) { return rootLink() + '?ref=' + encodeURIComponent(state.code || '') + (extra || '') + (slot == null ? devSlot() : slot); }
 function share() { copy(SHARE[calc(state).rank].replace('{link}', shareLink())); }
 function voucher() {
   if (state.cash < CONFIG.VOUCHER_COST) return;
@@ -1027,7 +1029,7 @@ function revealLedger() {
 // gear, upgrades and shop name as they stand at that moment, you get Ration Stamps and 25% of everything they ever earn,
 // and your clone starts again with the name, the runners, the buildings and the commendations.
 const stampGain = () => Math.max(0, stampsFor(state.total) - (state.stamps || 0));
-const franchiseLink = () => rootLink() + '?fr=' + encodeURIComponent(state.code || '');
+const franchiseLink = () => rootLink() + '?fr=' + encodeURIComponent(state.code || '') + devSlot();
 function franchiseMsg() { const o = state.offer; return FRANCHISE_MSG.replace('{shop}', o.shopName).replace('{gear}', gearSummary(o.gear)).replace('{income}', fmt(o.income)).replace('{link}', franchiseLink()); }
 function franchise() {
   if (!state.shop || !state.id || gearTotal(state) < 1) return;
@@ -1189,7 +1191,7 @@ function render() {
     setHTML('recruiter', `You run <b>${esc(state.shop ? state.shop.name : 'a franchise')}</b>, a franchise of <b>${esc(state.franchiseName || 'someone')}</b>. They keep 25% of everything you make. The gear was theirs. The debt is yours.`);
   } else if (state.ref && !state.shop) {
     rb.hidden = false;
-    setHTML('recruiter', `You are running for <b>${esc(state.recruiter || 'a stranger with the code ' + state.ref)}</b>. They take 10% of everything you make. Open your own shop to take it back, or <a href="#" data-act="complain">file a complaint</a> where everyone can see it.`);
+    setHTML('recruiter', `You are running for <b>${esc(state.recruiter || 'someone with the code ' + state.ref + ' (not in this company yet)')}</b>. They take 10% of everything you make. Open your own shop to take it back, or <a href="#" data-act="complain">file a complaint</a> where everyone can see it.`);
   } else rb.hidden = true;
   const sb = $('supply'); const perks = [];
   if (c.supply.depot) perks.push('Depot: +25% deliveries');
@@ -1262,7 +1264,7 @@ function render() {
     }).join('');
     sh = `<p><b>${esc(state.shop.name)}</b> · ${downCount()} runners (L1 ${L[0]}, L2 ${L[1]}, L3 ${L[2]}) · earned from runners: <b>₵${fmt(state.down.credited)}</b>${cutMul(state) > 1 ? ' · cuts ×' + cutMul(state) : ''}</p>
       <div class="row"><button data-act="share">Copy invite for Slack</button>${vbtn}<button data-act="refresh">Refresh runners</button></div>
-      <div class="link">${esc(shareLink())}</div>
+      <div class="link">${esc(shareLink('', shownSlot))}</div>
       ${rows ? `<table style="margin-top:8px"><tr><th>Runner</th><th class="r">Lvl</th><th class="r">Earned</th><th class="r">Seen</th></tr>${rows}</table>` : '<p class="muted">No runners yet. Your fryer is cold. Paste the invite somewhere colleagues will see it.</p>'}
       <p class="muted">You get 10% of level 1, 5% of level 2, 2.5% of level 3. Forever. Even after they open their own shops. Idle runners can be nudged. Nudges are copied, not sent. You have to do the awkward part yourself.</p>`;
   }
@@ -1387,7 +1389,7 @@ function render() {
   } else setHTML('board', '<p class="muted">Nobody else is here yet. Or the sheet is loading. Either way: recruit.</p>');
 
   setHTML('log', state.log.map(e => `<div>${e.text}</div>`).join(''));
-  $('mode').textContent = CONFIG.SHEET_API ? 'connected to sheet' : 'local sheet (this browser only)';
+  $('mode').textContent = CONFIG.SHEET_API ? 'connected to sheet' : 'local sheet (this browser only; invite links open as new players here)';
   setHTML('localtools', CONFIG.SHEET_API ? '' : ' · <a href="#" data-act="seed">seed demo company</a> · <a href="#" data-act="wipe">wipe company</a>');
 }
 

@@ -95,6 +95,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p1.waitForSelector('.toast');
   const clip = await p1.evaluate(() => navigator.clipboard.readText());
   ok('share copies message containing link', clip.includes('?ref=' + code), clip);
+  ok('dev link carries a fresh slot so it opens as a new player here', /&slot=\d{7}/.test(clip) && /&slot=\d{7}/.test(link) && clip.match(/&slot=(\d+)/)[1] !== link.match(/&slot=(\d+)/)[1], clip);
   await p1.reload();
   ok('shop survives reload', /Test Kebab/.test(await p1.textContent('#shop')));
   ok('rank now Shop Owner', /Shop Owner/.test(await p1.textContent('#rank')));
