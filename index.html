@@ -137,6 +137,12 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .feat{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
 .feat span{font-size:11px;padding:2px 6px;border:1px solid var(--line);color:var(--blue)}
 .feat span.b{color:var(--gold)}
+.biz td{vertical-align:middle}
+.biz .lv{font-size:10px;padding:1px 5px;border:1px solid var(--line);color:var(--blue);margin-left:4px}
+.biz .lv.f{color:var(--gold);border-color:var(--gold)}
+.biz .sub{font-size:11px;color:var(--dim)}
+.biz .cut{color:var(--acc)}
+.biz .bar{max-width:90px;height:4px;margin:3px 0 0}
 .empty{text-align:center;padding:30px 10px;color:var(--dim)}
 .empty b{display:block;font-size:40px;margin-bottom:8px}
 .crate{position:fixed;z-index:8;width:64px;height:64px;font-size:38px;line-height:64px;text-align:center;cursor:pointer;background:var(--panel);border:2px solid var(--gold);border-radius:8px;box-shadow:0 0 30px rgba(255,209,102,.6);animation:crate .8s infinite alternate;user-select:none}
@@ -181,6 +187,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <section><h2>Log</h2><div id="log" class="log"></div></section>
   </div>
   <div id="tab-portfolio" hidden>
+  <section><h2>Your runners' businesses</h2><div id="pfRunners"></div></section>
   <section><h2>Trophy cabinet</h2><div id="portfolio"></div></section>
   </div>
   <footer>MustEat is a game. Please do not start an actual pyramid scheme. · <span id="mode"></span> · <a href="#" id="reset">reset save</a> <span id="localtools"></span></footer>
@@ -789,6 +796,17 @@ function offline(s) {
 }
 
 // ---------------- Sync ----------------
+// Your share of a downline member's lifetime earnings: 10/5/2.5% by level, +5% on level 1 with a Depot, 25% for a franchisee, times building multipliers.
+function cutRate(m) {
+  const extra = state.buildings.depot ? 0.05 : 0;
+  return cutMul(state) * (m.franchiseOf === state.id ? CONFIG.ROYALTY : (CONFIG.CUTS[m.level - 1] || 0) + (m.level === 1 ? extra : 0));
+}
+// Earnings per second from the last few sync samples; null until there are two different readings.
+function rateFromSamples(s) {
+  if (!s || s.length < 2) return null;
+  const a = s[0], b = s[s.length - 1];
+  return b.t > a.t ? Math.max(0, (b.total - a.total) / ((b.t - a.t) / 1000)) : null;
+}
 function applyDownline(list) {
   // Notice arrivals and betrayals (a runner opening their own shop).
   const known = state.known || {};
@@ -801,10 +819,13 @@ function applyDownline(list) {
   });
   state.known = known;
   state.down.list = list; state.down.at = now();
+  const samples = {};
+  list.forEach(m => { const t = Number(m.total) || 0; const arr = (state.down.samples || {})[m.id] || []; const last = arr[arr.length - 1]; samples[m.id] = !last || last.total !== t ? arr.concat({ t: now(), total: t }).slice(-6) : arr; });
+  state.down.samples = samples;
   const extra = state.buildings.depot ? 0.05 : 0;
   // Each member owes a running percentage of their lifetime total. Whatever is new since last time is credited
   // and written to the ledger as one row per payer, so the sheet can answer "who paid whom, how much".
-  const rate = m => cutMul(state) * (m.franchiseOf === state.id ? CONFIG.ROYALTY : (CONFIG.CUTS[m.level - 1] || 0) + (m.level === 1 ? extra : 0));
+  const rate = cutRate;
   const migrate = !state.down.paid; // saves from before the ledger: start the per-payer books at today's figures, no back-dated rows
   if (migrate) state.down.paid = {};
   let delta = 0; const rows = [];
@@ -1295,6 +1316,23 @@ function render() {
   $('tabRunB').className = tab === 'run' ? 'on' : ''; $('tabPfB').className = tab === 'portfolio' ? 'on' : '';
   $('pfN').textContent = pf.length ? '(' + pf.length + ')' : '';
   if (tab === 'portfolio') {
+    const paid = state.down.paid || {}, smp = state.down.samples || {};
+    const biz = state.down.list.map(m => {
+      const total = Number(m.total) || 0, rps = rateFromSamples(smp[m.id]), r = cutRate(m);
+      return { m, total, rps, r, cut: paid[m.id] || 0, cps: rps == null ? null : rps * r, idle: m.lastSeen && now() - Number(m.lastSeen) > 3 * H };
+    }).sort((a, b) => b.cut - a.cut || b.total - a.total);
+    const cutAll = biz.reduce((a, b) => a + b.cut, 0), cpsAll = biz.reduce((a, b) => a + (b.cps || 0), 0), maxCut = Math.max(1, ...biz.map(b => b.cut));
+    setHTML('pfRunners', biz.length ? `<div class="pfsum">
+        <div class="stat"><div class="k">Runners</div><div class="v">${biz.length}</div></div>
+        <div class="stat"><div class="k">Your cut, all time</div><div class="v">₵${fmt(cutAll)}</div></div>
+        <div class="stat"><div class="k">Your cut / sec</div><div class="v">₵${fmt(cpsAll)}</div></div></div>
+      <div class="card"><table class="biz"><tr><th>Business</th><th class="r">They earn</th><th class="r">You get</th><th class="r">Status</th></tr>` +
+      biz.map(({ m, total, rps, r, cut, cps, idle }) => `<tr><td><b>${esc(m.shopName || m.name)}</b><span class="lv ${m.franchiseOf === state.id ? 'f' : ''}">${m.franchiseOf === state.id ? 'F' : 'L' + m.level}</span><div class="sub">${m.shopName ? esc(m.name) + ' · ' : ''}${m.shopName ? RANKS[Number(m.rank) || 0].name : 'no shop yet, runs for you'}${m.buildings ? ' · ' + esc(bnames(m.buildings)) : ''}</div></td>
+        <td class="r">₵${fmt(total)}<div class="sub">${rps == null ? 'rate pending' : '₵' + fmt(rps) + '/s'}</div></td>
+        <td class="r cut">₵${fmt(cut)}<div class="sub">${cps == null ? Math.round(r * 100) + '% of theirs' : '₵' + fmt(cps) + '/s · ' + Math.round(r * 100) + '%'}</div><div class="bar cool"><i style="width:${Math.round(100 * cut / maxCut)}%"></i></div></td>
+        <td class="r sub">${idle ? 'Idle ' + ago(Number(m.lastSeen)) : m.lastSeen ? 'Open' : ''}</td></tr>`).join('') +
+      `</table><p class="muted">"They earn" is their lifetime total and their rate over the last few syncs. "You get" is what has actually been credited to you from them, and what that is worth per second right now.</p></div>`
+    : '<div class="empty"><b>👥</b>No runners yet.<br>Everyone who joins through your link shows up here with what they earn and what they pay you.</div>');
     const live = pf.map(e => {
       const r = e.toId ? world.byId[e.toId] : null; const total = r ? Number(r.total) || 0 : 0;
       const s = e.samples || []; const a = s[0], b = s[s.length - 1];
