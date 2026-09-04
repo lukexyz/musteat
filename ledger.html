@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MustEat — The Ledger</title>
+<meta name="description" content="Every cut and royalty ever credited in MustEat. Who pays whom, how much, and who is really winning.">
+<style>
+:root{--bg:#07090a;--panel:#0e1416;--line:#1e2a2e;--fg:#d6e0e2;--dim:#7d8b90;--acc:#39ff14;--warn:#ff3b5c;--gold:#ffd166;--blue:#4cc9f0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 ui-monospace,Consolas,"Courier New",monospace}
+a{color:var(--acc)}
+.wrap{max-width:860px;margin:0 auto;padding:12px 12px 40px}
+header{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:12px}
+h1{margin:0;font-size:26px;letter-spacing:3px;color:#fff}
+h1 span{color:var(--acc)}
+.tag{color:var(--dim);font-size:12px}
+h2{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin:18px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.stat{background:var(--panel);border:1px solid var(--line);padding:8px}
+.stat .k{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
+.stat .v{font-size:20px;color:#fff;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card{background:var(--panel);border:1px solid var(--line);padding:10px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{color:var(--dim);font-weight:normal;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:4px 6px;border-bottom:1px solid var(--line)}
+td{padding:5px 6px;border-bottom:1px solid #131b1e;vertical-align:top}
+td.r,th.r{text-align:right;white-space:nowrap}
+.muted{color:var(--dim);font-size:12px}
+.gold{color:var(--gold)}
+.blue{color:var(--blue)}
+.bar{height:6px;background:#111;border:1px solid var(--line);margin-top:3px;max-width:220px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--acc))}
+.pair{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.pair span{font-size:11px;padding:1px 6px;border:1px solid var(--line);color:var(--fg)}
+.pair span.f{border-color:var(--gold);color:var(--gold)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid>div{min-width:0}
+.empty{color:var(--dim);padding:20px;text-align:center}
+footer{margin-top:24px;font-size:12px;color:var(--dim);border-top:1px solid var(--line);padding-top:8px}
+@media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>MUST<span>EAT</span> · THE LEDGER</h1><div class="tag">Every cut and royalty ever credited. Who pays whom, how much, and who is actually winning.</div></div>
+    <div class="muted" id="mode"></div>
+  </header>
+  <section class="stats">
+    <div class="stat"><div class="k">Entries</div><div class="v" id="nRows">0</div></div>
+    <div class="stat"><div class="k">Credited in cuts</div><div class="v" id="sumAll">₵0</div></div>
+    <div class="stat"><div class="k">Of which royalties</div><div class="v" id="sumRoy">₵0</div></div>
+    <div class="stat"><div class="k">Citizens paying up</div><div class="v" id="nPayers">0</div></div>
+  </section>
+  <h2>Top earners from runners</h2>
+  <div class="card" id="top"></div>
+  <div class="grid">
+    <div><h2>Biggest contributors</h2><div class="card" id="payers"></div></div>
+    <div><h2>Who pays whom</h2><div class="card" id="pairs"></div></div>
+  </div>
+  <h2>High scores</h2>
+  <div class="card" id="scores"></div>
+  <h2>Recent entries</h2>
+  <div class="card" id="recent"></div>
+  <footer>Cuts are 10% / 5% / 2.5% of a runner's lifetime earnings by level, royalties 25% of a franchisee's, credited to the owner on sync and recorded here by the receiving client. Self-reported, like everything else in the food economy. <a href="index.html">Back to the game</a></footer>
+</div>
+<script>
+// Reads the same sheet as the game. Local mode: the browser's localStorage sheet. Backend: the same three GET endpoints.
+const CONFIG = { SHEET_API: '', SHEET_KEY: 'musteat_sheet' };
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function fmt(n) {
+  n = Number(n) || 0;
+  if (n < 1000) return (Math.round(n * 10) / 10).toLocaleString();
+  const u = ['K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No'];
+  let i = -1;
+  while (n >= 1000 && i < u.length - 1) { n /= 1000; i++; }
+  const dp = i >= 3 ? (n < 10 ? 3 : n < 100 ? 2 : 1) : (n < 10 ? 2 : 1);
+  return n.toFixed(dp).replace(/\.0+$/, '') + u[i];
+}
+const ago = ts => { const s = Math.max(0, (Date.now() - ts) / 1000); return s < 90 ? 'just now' : s < 3600 ? Math.round(s / 60) + 'm ago' : s < 86400 ? Math.round(s / 3600) + 'h ago' : Math.round(s / 86400) + 'd ago'; };
+const RANKS = ['Runner', 'Shop Owner', 'District Overlord', 'Regional Nutrient Baron', 'Supreme Ministry of Eating'];
+async function read(table) {
+  if (CONFIG.SHEET_API) { try { const r = await fetch(CONFIG.SHEET_API + '/' + table); if (r.ok) return await r.json(); } catch (e) {} return []; }
+  try { return (JSON.parse(localStorage.getItem(CONFIG.SHEET_KEY)) || {})[table] || []; } catch (e) { return []; }
+}
+const sum = (arr, f) => arr.reduce((a, r) => a + (f(r) || 0), 0);
+const groupSum = (arr, key) => { const m = {}; arr.forEach(r => { const k = r[key]; if (!m[k]) m[k] = { id: k, total: 0, n: 0, rows: [] }; m[k].total += Number(r.amount) || 0; m[k].n++; m[k].rows.push(r); }); return Object.values(m).sort((a, b) => b.total - a.total); };
+const nameOf = (players, id, fallback) => { const p = players.find(x => x.id === id); return p ? p.name : fallback || 'someone'; };
+
+async function render() {
+  const [players, ledger] = await Promise.all([read('players'), read('ledger')]);
+  const rows = (ledger || []).map(r => Object.assign({}, r, { amount: Number(r.amount) || 0, ts: Number(r.ts) || 0 }));
+  $('mode').textContent = (CONFIG.SHEET_API ? 'connected to sheet' : 'local sheet (this browser only)') + ' · refreshes every 10s';
+  $('nRows').textContent = rows.length.toLocaleString();
+  $('sumAll').textContent = '₵' + fmt(sum(rows, r => r.amount));
+  $('sumRoy').textContent = '₵' + fmt(sum(rows.filter(r => r.kind === 'royalty'), r => r.amount));
+  $('nPayers').textContent = new Set(rows.map(r => r.from)).size;
+
+  const earners = groupSum(rows, 'to');
+  const max = earners[0] ? earners[0].total : 1;
+  $('top').innerHTML = earners.length ? `<table><tr><th>#</th><th>Citizen</th><th class="r">From runners</th><th class="r">Payers</th><th>Best payer</th></tr>` +
+    earners.slice(0, 15).map((e, i) => {
+      const by = groupSum(e.rows, 'from')[0];
+      return `<tr><td>${i + 1}</td><td><b>${esc(nameOf(players, e.id, e.rows[0].toName))}</b><div class="bar"><i style="width:${Math.round(100 * e.total / max)}%"></i></div></td><td class="r gold">₵${fmt(e.total)}</td><td class="r">${new Set(e.rows.map(r => r.from)).size}</td><td>${by ? esc(nameOf(players, by.id, by.rows[0].fromName)) + ' <span class="muted">₵' + fmt(by.total) + '</span>' : ''}</td></tr>`;
+    }).join('') + `</table>` : '<div class="empty">No cuts credited yet. Recruit someone, wait for them to earn, sync. Then it starts.</div>';
+
+  const payers = groupSum(rows, 'from');
+  $('payers').innerHTML = payers.length ? `<table><tr><th>Citizen</th><th class="r">Paid out</th><th>To</th></tr>` +
+    payers.slice(0, 15).map(p => `<tr><td>${esc(nameOf(players, p.id, p.rows[0].fromName))}<div class="muted">${p.n} entries</div></td><td class="r">₵${fmt(p.total)}</td><td class="muted">${[...new Set(p.rows.map(r => nameOf(players, r.to, r.toName)))].map(esc).join(', ')}</td></tr>`).join('') + `</table>` : '<div class="empty">Nobody has paid anyone.</div>';
+
+  $('pairs').innerHTML = earners.length ? earners.slice(0, 15).map(e => {
+    const from = groupSum(e.rows, 'from');
+    return `<div style="margin-bottom:8px"><b>${esc(nameOf(players, e.id, e.rows[0].toName))}</b> <span class="muted">₵${fmt(e.total)}</span><div class="pair">${from.map(f => `<span class="${f.rows[0].kind === 'royalty' ? 'f' : ''}">${esc(nameOf(players, f.id, f.rows[0].fromName))} ${f.rows[0].kind === 'royalty' ? 'F' : 'L' + f.rows[0].level} ₵${fmt(f.total)}</span>`).join('')}</div></div>`;
+  }).join('') : '<div class="empty">Nothing to show.</div>';
+
+  const fromRunners = {}; earners.forEach(e => { fromRunners[e.id] = e.total; });
+  const scores = players.map(p => ({ p, total: Number(p.total) || 0, fr: fromRunners[p.id] || 0, runners: players.filter(q => q.ref === p.code).length })).sort((a, b) => b.total - a.total);
+  $('scores').innerHTML = scores.length ? `<table><tr><th>#</th><th>Citizen</th><th>Shop</th><th class="r">Earned</th><th class="r">From runners</th><th class="r">Share</th><th class="r">Runners</th><th class="r">Seen</th></tr>` +
+    scores.slice(0, 30).map((s, i) => `<tr><td>${i + 1}</td><td>${esc(s.p.name)}${s.p.stamps ? ' <span class="gold">★' + esc(s.p.stamps) + '</span>' : ''}<div class="muted">${RANKS[Number(s.p.rank) || 0]}${s.p.dept ? ' · ' + esc(s.p.dept) : ''}</div></td><td>${esc(s.p.shopName || '—')}</td><td class="r">₵${fmt(s.total)}</td><td class="r gold">${s.fr ? '₵' + fmt(s.fr) : '—'}</td><td class="r muted">${s.total && s.fr ? Math.round(100 * s.fr / s.total) + '%' : ''}</td><td class="r">${s.runners}</td><td class="r muted">${s.p.lastSeen ? ago(Number(s.p.lastSeen)) : ''}</td></tr>`).join('') + `</table>` : '<div class="empty">No citizens yet.</div>';
+
+  const recent = rows.slice().sort((a, b) => b.ts - a.ts).slice(0, 60);
+  $('recent').innerHTML = recent.length ? `<table><tr><th>When</th><th>From</th><th></th><th>To</th><th class="r">Level</th><th class="r">Amount</th></tr>` +
+    recent.map(r => `<tr><td class="muted">${ago(r.ts)}</td><td>${esc(nameOf(players, r.from, r.fromName))}</td><td class="muted">→</td><td>${esc(nameOf(players, r.to, r.toName))}</td><td class="r ${r.kind === 'royalty' ? 'gold' : 'blue'}">${r.kind === 'royalty' ? 'royalty' : 'L' + esc(r.level)}</td><td class="r">₵${fmt(r.amount)}</td></tr>`).join('') + `</table>` : '<div class="empty">The ledger is empty.</div>';
+}
+render();
+setInterval(render, 10000);
+window.addEventListener('storage', e => { if (e.key === CONFIG.SHEET_KEY) render(); });
+</script>
+</body>
+</html>

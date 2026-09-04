@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MustEat — Year 3019</title>
+<meta name="description" content="Going outside is illegal. Everyone must eat. Run deliveries, open a shop, recruit colleagues and take 10% of everything they earn. Forever.">
+<meta property="og:title" content="MustEat — Year 3019">
+<meta property="og:description" content="Going outside is illegal. Everyone must eat. Run deliveries, open a shop, recruit colleagues and take 10% of everything they earn. Forever.">
+<meta property="og:type" content="website">
+<!-- Slack only unfurls absolute image URLs. Replace with https://<host>/<path>/og.png once the app has a home. -->
+<meta property="og:image" content="https://lukexyz.github.io/musteat/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#07090a">
+<style>
+:root{--bg:#07090a;--panel:#0e1416;--line:#1e2a2e;--fg:#d6e0e2;--dim:#7d8b90;--acc:#39ff14;--warn:#ff3b5c;--gold:#ffd166;--blue:#4cc9f0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 ui-monospace,Consolas,"Courier New",monospace}
+a{color:var(--acc)}
+.wrap{max-width:720px;margin:0 auto;padding:12px 12px 40px}
+header{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--line);padding-bottom:10px}
+h1{margin:0;font-size:30px;letter-spacing:3px;color:#fff}
+h1 span{color:var(--acc)}
+.tag{color:var(--dim);font-size:12px}
+.rankbox{text-align:right;font-size:12px;color:var(--dim)}
+.rankbox b{display:block;font-size:14px;color:var(--gold)}
+.banner{margin:10px 0 0;padding:8px 10px;border:1px dashed var(--warn);color:#ffb3c0;font-size:13px}
+.banner.good{border-color:var(--acc);color:#bfffb0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.stat{background:var(--panel);border:1px solid var(--line);padding:8px}
+.stat .k{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
+.stat .v{font-size:20px;color:#fff;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat .v.small{font-size:13px;white-space:normal}
+.run{text-align:center;margin:8px 0 18px}
+button{font:inherit;cursor:pointer;background:#131c1f;color:var(--fg);border:1px solid var(--line);padding:6px 12px;border-radius:3px}
+button:hover:not(:disabled){border-color:var(--acc);color:#fff}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.big{width:100%;padding:22px;font-size:24px;letter-spacing:3px;font-weight:bold;color:#000;background:var(--acc);border:none;border-radius:6px;box-shadow:0 0 24px rgba(57,255,20,.35);transition:transform .05s}
+button.big:active{transform:scale(.97)}
+button.sm{font-size:11px;padding:2px 8px;min-width:0}
+.order{margin-top:10px;min-height:44px;color:var(--fg);font-size:14px}
+.order .who{color:var(--dim);font-size:12px}
+.order .gain{color:var(--acc)}
+.fx{margin-top:6px;font-size:12px;color:var(--gold);min-height:18px}
+.fx span{border-bottom:1px dotted rgba(255,209,102,.6);cursor:help;margin:0 5px}
+section{margin:14px 0}
+h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin:0 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.item{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);padding:8px 10px;margin-bottom:6px}
+.item.owned{border-color:var(--acc)}
+.item.locked{opacity:.55}
+.item .d{font-size:12px;color:var(--dim)}
+.item .lvl{font-size:11px;color:var(--blue);margin-left:4px}
+.item .need{font-size:11px;color:var(--gold)}
+.item button{min-width:96px;white-space:nowrap}
+.item>div:first-child{flex:1;min-width:0}
+.rev{text-align:right;min-width:92px;font-size:10px;color:var(--dim);white-space:nowrap;letter-spacing:.3px}
+.rev b{display:block;font-size:12px;font-weight:600;color:var(--fg)}
+.rev.off b{color:var(--dim)}
+.rev.val b{color:var(--fg)}
+.rev i{display:block;height:2px;margin-top:4px;background:#141c1e;border-radius:1px;overflow:hidden;position:relative}
+.rev i::after{content:'';position:absolute;left:0;top:0;bottom:0;width:var(--w);background:var(--acc);opacity:.55;transition:width .4s}
+.rev.val i::after{background:var(--gold)}
+.up{position:relative;overflow:hidden}
+.up.ledger{border-color:#2a8a36;box-shadow:inset 0 0 24px rgba(57,255,20,.08)}
+.up.ledger::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.14;background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='120'><text x='27' y='71' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='13' y='58' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='4' y='106' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='23' y='41' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='36' y='18' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='13' y='83' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='31' y='63' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='2' y='113' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='6' y='58' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='10' y='56' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='37' y='40' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='55' y='59' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='30' y='46' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='43' y='48' font-family='monospace' font-size='10' fill='%2339ff14'>0</text></svg>") repeat;animation:rain 9s linear infinite;-webkit-mask-image:linear-gradient(180deg,#000,transparent 85%);mask-image:linear-gradient(180deg,#000,transparent 85%)}
+.up.ledger>*{position:relative}
+#gear{position:relative}
+.rainwipe{position:absolute;inset:0;pointer-events:none;z-index:3;background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='120'><text x='27' y='71' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='13' y='58' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='4' y='106' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='23' y='41' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='36' y='18' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='13' y='83' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='31' y='63' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='2' y='113' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='6' y='58' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='10' y='56' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='37' y='40' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='55' y='59' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='30' y='46' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='43' y='48' font-family='monospace' font-size='10' fill='%2339ff14'>0</text></svg>") repeat;opacity:.85;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 30%,#000 60%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 30%,#000 60%,transparent 100%);-webkit-mask-size:100% 260px;mask-size:100% 260px;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;animation:wipe 2s linear forwards}
+@keyframes wipe{from{-webkit-mask-position:0 -260px;mask-position:0 -260px}to{-webkit-mask-position:0 calc(100% + 260px);mask-position:0 calc(100% + 260px)}}
+.rev.neon>*{animation-delay:var(--d)}
+.rev.neon b{animation:neon 1.3s both}
+.rev.neon span,.rev.neon i{animation:neonIn .5s both}
+@keyframes neon{0%{opacity:0}8%{opacity:1;color:#fff;text-shadow:0 0 8px var(--acc),0 0 22px var(--acc)}16%{opacity:.15}24%{opacity:1;color:#fff;text-shadow:0 0 8px var(--acc),0 0 22px var(--acc)}38%{opacity:.35}50%{opacity:1;color:#fff;text-shadow:0 0 10px var(--acc),0 0 28px var(--acc)}100%{opacity:1;color:var(--fg);text-shadow:none}}
+@keyframes neonIn{from{opacity:0}to{opacity:1}}
+@keyframes rain{from{background-position:0 -120px}to{background-position:0 0}}
+@media(max-width:520px){.item{flex-wrap:wrap}.item>div:first-child{flex:1 1 100%}.rev{flex:1;text-align:left;min-width:0}.rev i{max-width:120px}}
+.card{background:var(--panel);border:1px solid var(--line);padding:10px;overflow-x:auto}
+.card p{margin:6px 0}
+.muted{color:var(--dim);font-size:12px}
+.bar{height:10px;background:#111;border:1px solid var(--line);margin:6px 0}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--gold),var(--warn))}
+.bar.cool i{background:linear-gradient(90deg,var(--blue),var(--acc))}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.ms{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.ms span{font-size:11px;padding:2px 6px;border:1px solid var(--line);color:var(--dim)}
+.ms span.on{border-color:var(--acc);color:var(--acc)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
+th{color:var(--dim);font-weight:normal;font-size:11px;text-transform:uppercase;letter-spacing:1px}
+td.r,th.r{text-align:right}
+.me{color:var(--acc)}
+.log div,.feed div{font-size:12px;color:var(--dim);padding:2px 0;border-bottom:1px dotted #182022}
+.log div b,.feed div b{color:var(--fg);font-weight:normal}
+.feed div i{color:var(--dim);font-style:normal;font-size:11px;margin-left:6px}
+.link{font-size:12px;word-break:break-all;background:#000;border:1px solid var(--line);padding:6px;margin-top:6px;color:var(--blue)}
+footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
+.modal[hidden]{display:none}
+.box{background:var(--panel);border:1px solid var(--acc);padding:18px;max-width:460px;width:100%;box-shadow:0 0 40px rgba(57,255,20,.2)}
+.box h3{margin:0 0 8px;color:#fff;letter-spacing:1px}
+.box textarea{width:100%;font:inherit;font-size:13px;padding:8px;background:#000;color:#fff;border:1px solid var(--line);margin:8px 0;resize:vertical}
+.box input,.box select{width:100%;font:inherit;padding:8px;background:#000;color:#fff;border:1px solid var(--line);margin:8px 0}
+.box .big2{width:100%;padding:12px;font-weight:bold;background:var(--acc);color:#000;border:none;margin-top:6px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--acc);color:#000;padding:8px 14px;border-radius:4px;font-weight:bold;z-index:20;max-width:90vw}
+.pop{position:fixed;pointer-events:none;z-index:6;font-weight:bold;font-size:24px;letter-spacing:1px;color:#fff;white-space:nowrap;text-shadow:0 0 4px #000,0 0 10px #000,0 0 14px var(--acc),0 0 30px var(--acc);animation:pop .9s ease-out forwards;transform:translate(-50%,-50%)}
+.pop.gold{color:var(--gold);font-size:30px;text-shadow:0 0 4px #000,0 0 10px #000,0 0 16px var(--gold),0 0 36px var(--gold)}
+.pop.panic{color:var(--warn);font-size:36px;text-shadow:0 0 4px #000,0 0 10px #000,0 0 18px var(--warn),0 0 40px var(--warn)}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}12%{opacity:1;transform:translate(-50%,-80%) scale(1.2)}30%{transform:translate(-50%,-110%) scale(1)}100%{opacity:0;transform:translate(-50%,-300%) scale(1.05)}}
+.spark{position:fixed;pointer-events:none;z-index:5;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#fff;box-shadow:0 0 6px #fff,0 0 12px var(--acc),0 0 20px var(--acc);animation:spark .75s ease-out forwards}
+.spark.gold{box-shadow:0 0 6px #fff,0 0 12px var(--gold),0 0 20px var(--gold)}
+@keyframes spark{0%{opacity:1;transform:translate(0,0) scale(1.2)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.1)}}
+.ring{position:fixed;pointer-events:none;z-index:4;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:2px solid var(--acc);box-shadow:0 0 12px var(--acc);animation:ring .6s ease-out forwards}
+@keyframes ring{from{opacity:.9;transform:scale(.5)}to{opacity:0;transform:scale(6)}}
+.qty{float:right;font-weight:normal;letter-spacing:0;text-transform:none}
+.qty button{font-size:11px;padding:1px 7px;min-width:0;margin-left:3px}
+.qty button.on{border-color:var(--acc);color:var(--acc)}
+.ups{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.up{background:var(--panel);border:1px solid var(--line);padding:8px;font-size:13px;display:flex;flex-direction:column}
+.up b{color:#fff}
+.up .d{color:var(--dim);font-size:12px;flex:1}
+.up button{margin-top:6px;width:100%}
+.hint{font-size:11px;color:var(--dim);margin:-4px 0 6px}
+.tabs{display:flex;gap:6px;margin:0 0 14px}
+.tabs button{flex:1;padding:9px;letter-spacing:2px;font-weight:bold;font-size:12px}
+.tabs button.on{background:var(--acc);color:#000;border-color:var(--acc)}
+.pfsum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.trophy{background:linear-gradient(180deg,#151a0f,var(--panel));border:1px solid var(--gold);padding:12px;margin-bottom:10px;box-shadow:0 0 18px rgba(255,209,102,.12)}
+.trophy.grey{border-color:var(--line);box-shadow:none;background:var(--panel);opacity:.85}
+.trophy .tname{font-size:18px;color:var(--gold);font-weight:bold;letter-spacing:1px}
+.trophy.grey .tname{color:var(--dim)}
+.tstats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.tstats div{background:#000;border:1px solid var(--line);padding:6px;min-width:0}
+.tstats .k{display:block;font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
+.tstats b{color:#fff;font-size:15px;white-space:nowrap}
+.feat{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+.feat span{font-size:11px;padding:2px 6px;border:1px solid var(--line);color:var(--blue)}
+.feat span.b{color:var(--gold)}
+.empty{text-align:center;padding:30px 10px;color:var(--dim)}
+.empty b{display:block;font-size:40px;margin-bottom:8px}
+.crate{position:fixed;z-index:8;width:64px;height:64px;font-size:38px;line-height:64px;text-align:center;cursor:pointer;background:var(--panel);border:2px solid var(--gold);border-radius:8px;box-shadow:0 0 30px rgba(255,209,102,.6);animation:crate .8s infinite alternate;user-select:none}
+.crate[hidden]{display:none}
+@keyframes crate{from{transform:scale(1)}to{transform:scale(1.15)}}
+.ach span{display:inline-block;margin:2px 4px 2px 0;padding:2px 6px;border:1px solid var(--line);font-size:11px;color:var(--gold)}
+@media(max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:24px}.tstats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>MUST<span>EAT</span></h1><div class="tag">Year 3019. Lockdown day 328,500. Going outside is illegal. Everyone must eat.</div></div>
+    <div class="rankbox" id="rank"></div>
+  </header>
+  <div id="recruiter" class="banner" hidden></div>
+  <div id="supply" class="banner good" hidden></div>
+  <section class="stats">
+    <div class="stat"><div class="k">Credits</div><div class="v" id="cash">0</div></div>
+    <div class="stat"><div class="k">Per second</div><div class="v" id="ips">0</div></div>
+    <div class="stat"><div class="k">Deliveries</div><div class="v" id="deliv">0</div></div>
+    <div class="stat"><div class="k">Zone</div><div class="v small" id="zone"></div></div>
+  </section>
+  <nav class="tabs"><button id="tabRunB" class="on" data-tab="run">RUN</button><button id="tabPfB" data-tab="portfolio">PORTFOLIO <span id="pfN"></span></button></nav>
+  <div id="tab-run">
+  <section class="run">
+    <button id="run" class="big">RUN DELIVERY</button>
+    <div id="order" class="order">Tap to run your first delivery. Mind the acid rain.</div>
+    <div id="fx" class="fx"></div>
+    <div id="ration" class="row" style="justify-content:center"></div>
+  </section>
+  <section><h2>Gear <span class="qty" id="qty"></span></h2><div id="gear"></div></section>
+  <section><h2>Upgrades</h2><div id="upgrades"></div></section>
+  <section><h2>Your shop &amp; runners</h2><div id="shop" class="card"></div></section>
+  <section><h2>Supply chain</h2><div id="buildings"></div></section>
+  <section><h2>The Ministry</h2><div id="ministry" class="card"></div></section>
+  <section><h2>Franchise</h2><div id="franchise" class="card"></div></section>
+  <section><h2>Commendations</h2><div id="ach" class="card"></div></section>
+  <section><h2>The company</h2><div id="company" class="card"></div></section>
+  <section><h2>Sectors by department</h2><div id="sectors" class="card"></div></section>
+  <section><h2>Company leaderboard</h2><div id="board" class="card"></div></section>
+  <section><h2>Log</h2><div id="log" class="log"></div></section>
+  </div>
+  <div id="tab-portfolio" hidden>
+  <section><h2>Trophy cabinet</h2><div id="portfolio"></div></section>
+  </div>
+  <footer>MustEat is a game. Please do not start an actual pyramid scheme. · <span id="mode"></span> · <a href="#" id="reset">reset save</a> <span id="localtools"></span></footer>
+</div>
+<div id="crate" class="crate" title="Unmarked ration crate. Take it." hidden>📦</div>
+<div id="modal" class="modal" hidden><div class="box" id="modalBox"></div></div>
+
+<script>
+// ============================================================
+// CONFIG
+// The backend is imagined as a spreadsheet: two tables, read in
+// full, rows upserted by id. SHEET_API '' = local mock stored in
+// this browser's localStorage (open ?slot=2&ref=CODE in another
+// tab to be a second colleague). Set SHEET_API to the platform
+// base URL and Sheet.read/upsert/append are the only functions
+// that need to change.
+// ============================================================
+const CONFIG = {
+  SHEET_API: '',
+  SAVE_KEY: 'musteat_save',
+  SHEET_KEY: 'musteat_sheet',
+  SHOP_COST: 5000,
+  DRONE_COST: 2500,
+  CONTRACTS_COST: 4000,
+  VOUCHER_COST: 200,
+  VOUCHER_BONUS: 250,
+  RATION_H: 20,               // hours between daily ration claims
+  DECREE_H: 24,               // hours between Ministry decrees
+  DECREE_MIN: 10,             // minutes a decree lasts
+  OFFLINE_FULL_H: 8,
+  OFFLINE_HALF_H: 24,
+  CUTS: [0.10, 0.05, 0.025],  // share of level 1/2/3 downline lifetime earnings
+  RUNNER_TAX: 0.10,           // what a runner without a shop pays their shop owner
+  SYNC_S: 30,
+  CRATE_MIN_S: 300,           // unmarked ration crates: seconds between them, plus up to CRATE_RANGE_S
+  CRATE_RANGE_S: 600,
+  CRATE_SHOW_S: 13,           // seconds a crate stays on screen
+  STAMP_BASE: 1e7,            // Ration Stamps = cbrt(lifetime earnings / STAMP_BASE); income × sqrt(1 + 0.2 × stamps)
+  ROYALTY: 0.25,              // a franchisor's cut of a franchisee's lifetime earnings, forever
+};
+
+(function () {
+'use strict';
+
+const qs = new URLSearchParams(location.search);
+const SLOT = qs.get('slot') || '';
+const KEY = CONFIG.SAVE_KEY + (SLOT ? '_' + SLOT : '');
+const $ = id => document.getElementById(id);
+const now = () => Date.now();
+const rnd = a => a[Math.floor(Math.random() * a.length)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const uid = p => (p || '') + Math.random().toString(36).slice(2, 10);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const H = 3600000;
+
+function fmt(n) {
+  n = Number(n) || 0;
+  if (n < 1000) return (Math.round(n * 10) / 10).toLocaleString();
+  const u = ['K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No'];
+  let i = -1;
+  while (n >= 1000 && i < u.length - 1) { n /= 1000; i++; }
+  // One more decimal from T upwards, so a big balance visibly ticks instead of sitting on the same three digits.
+  const dp = i >= 3 ? (n < 10 ? 3 : n < 100 ? 2 : 1) : (n < 10 ? 2 : 1);
+  return n.toFixed(dp).replace(/\.0+$/, '') + u[i];
+}
+function ago(ts) {
+  const s = Math.max(0, (now() - ts) / 1000);
+  if (s < 90) return 'just now';
+  if (s < 3600) return Math.round(s / 60) + 'm ago';
+  if (s < 86400) return Math.round(s / 3600) + 'h ago';
+  return Math.round(s / 86400) + 'd ago';
+}
+function dur(s) {
+  if (s < 3600) return Math.round(s / 60) + ' minutes';
+  return (s / 3600).toFixed(1) + ' hours';
+}
+function copy(text, msg) {
+  const done = () => toast(msg || 'Copied. Now paste it in Slack. Go on.');
+  const fallback = () => showCopy(text, msg, done);
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+  } catch (e) { fallback(); }
+}
+function showCopy(text, msg, done) {
+  modal(`<h3>Copy this</h3>
+    <p class="muted">${esc(msg || 'Paste it in Slack.')} Your browser would not copy it by itself, so it is selected below.</p>
+    <textarea id="copyBox" rows="5" readonly>${esc(text)}</textarea>
+    <div class="row"><button id="confirm" class="big2">COPY</button><button id="cancel">Close</button></div>`);
+  const ta = $('copyBox');
+  if (ta.select) { ta.focus(); ta.select(); }
+  $('confirm').onclick = () => {
+    let ok = false;
+    try { ta.select(); ok = document.execCommand('copy'); } catch (e) {}
+    closeModal(); if (ok) done(); else toast('Select the text and copy it by hand.');
+  };
+  $('cancel').onclick = closeModal;
+}
+// confirm() is also blocked in iframes. Ask with a modal instead.
+function ask(title, text, yes, fn) {
+  modal(`<h3>${esc(title)}</h3><p>${esc(text)}</p><div class="row"><button id="confirm" class="big2">${esc(yes)}</button><button id="cancel">Cancel</button></div>`);
+  $('confirm').onclick = () => { closeModal(); fn(); };
+  $('cancel').onclick = closeModal;
+}
+
+// ---------------- Data tables ----------------
+const GEAR = [
+  { id: 'trainers', name: 'Hazmat Trainers', desc: 'Run faster. Breathe worse.', cost: 60, dps: 0.1 },
+  { id: 'hover', name: 'Hoverbike', desc: 'Second-hand. Smells of ozone and regret.', cost: 600, dps: 0.6, zone: 1 },
+  { id: 'drones', name: 'Drone Swarm', desc: 'They deliver. They also watch.', cost: 6000, dps: 4, zone: 2 },
+  { id: 'teleport', name: 'Teleport Licence (Expired)', desc: 'Technically still works. Mostly.', cost: 80000, dps: 30, zone: 3 },
+  { id: 'vats', name: 'Vat Farm Franchise', desc: 'Grow the meal inside the customer\'s building. Legally a restaurant.', cost: 1e6, dps: 220 },
+  { id: 'pipeline', name: 'Nutrient Pipeline', desc: 'Paste, at pressure, straight into the bunker. No plate required.', cost: 1.5e7, dps: 1600, zone: 4 },
+  { id: 'cannon', name: 'Orbital Drop Cannon', desc: 'Fires a hot meal at 9 km/s. Customers sign a waiver.', cost: 2.5e8, dps: 12000 },
+  { id: 'clones', name: 'Runner Cloning Vats', desc: 'You, but more of you. HR has been informed. HR is also you.', cost: 4e9, dps: 90000 },
+  { id: 'timeloop', name: 'Time-Loop Kitchen', desc: 'Cook once, deliver forever. The soup remembers.', cost: 7e10, dps: 700000, zone: 5 },
+  { id: 'portal', name: 'Ministry Lunch Portal', desc: 'A door into every canteen at once. Do not look through it.', cost: 1.5e12, dps: 5.5e6 },
+  { id: 'pod', name: 'Thermal Pod', desc: '+10% order value per level. Max 10. Food arrives at "a temperature".', cost: 400, growth: 3, valueMul: 0.10, max: 10 },
+  { id: 'mask', name: 'Filtration Mask', desc: 'Fewer bad things happen to you. Max 3.', cost: 200, growth: 2.2, max: 3 },
+];
+const ZONES = [
+  { name: 'Sector 7 Housing Blocks', mul: 1 },
+  { name: 'The Quarantine Suburbs', mul: 1.25 },
+  { name: 'Orbital Elite Habitat', mul: 1.5 },
+  { name: 'The Ministry District', mul: 2 },
+  { name: 'Off-World Vat Colonies', mul: 2.5 },
+  { name: 'The Before-Times', mul: 3 },
+];
+// Upgrades (Cookie Clicker style): per-gear doublers unlocked by owning enough of it, tap upgrades, global +10%s unlocked by deliveries.
+const UPG_NAMES = {
+  trainers: ['Double-Knotted Laces', 'Carbon Soles', 'Second-Hand Lungs', 'A Third Leg'],
+  hover: ['Stolen Battery', 'Ozone Cologne', 'Anti-Gravity (Mostly)', 'Hoverbike Hoverbike'],
+  drones: ['Fewer Cameras', 'More Cameras', 'Failed Drone Union', 'Swarm Consciousness'],
+  teleport: ['Licence Renewed (Forged)', 'Fewer Limbs Left Behind', 'Arrive Before Leaving', 'Teleport the Customer Instead'],
+  vats: ['Vat With a Window', 'Flavour Vat', 'Vat-to-Mouth Logistics', 'Sentient Broth'],
+  pipeline: ['Wider Pipe', 'Second Pipe', 'Pipe Insulation (Asbestos)', 'Pipe to the Past'],
+  cannon: ['Softer Meals', 'Padded Customers', 'Lock On to Hunger', 'Cluster Lunch'],
+  clones: ['Clones of Clones', 'Trainers for the Clones', 'Clone Benefits (None)', 'Clone Loyalty Programme'],
+  timeloop: ['Loop Within the Loop', 'Reheated Causality', 'Tuesday, Forever', 'Soup Singularity'],
+  portal: ['Portal Etiquette', 'Two-Way Portal', 'Portal Into the Ministry Canteen', 'Portal the Whole City'],
+};
+const UPGRADES = [];
+GEAR.filter(g => g.dps).forEach(g => [1, 5, 25, 50].forEach((at, i) => UPGRADES.push({
+  id: g.id + at, gear: g.id, name: UPG_NAMES[g.id][i], desc: g.name + ' output ×2.', cost: Math.floor(g.cost * [10, 100, 5000, 100000][i]),
+  unlock: s => (s.gear[g.id] || 0) >= at, hint: at + ' ' + g.name,
+})));
+[['Thumb Conditioning', 1000, 10], ['Both Thumbs', 50000, 100], ['Tap Macro (Banned, Still Works)', 5e6, 500], ['Intern With a Stylus', 5e8, 2000], ['Ministry-Grade Finger', 5e10, 5000]]
+  .forEach(([name, cost, taps], i) => UPGRADES.push({ id: 'tap' + i, tap: true, name, cost, desc: 'Each tap also earns 2% of your income per second.', unlock: s => s.taps >= taps, hint: taps + ' taps' }));
+UPGRADES.push({ id: 'ledger', name: 'Advanced Cryptochain Bookkeeping', cost: 10000, desc: 'Every gear line shows what it earns per second and its share of your income, written to a ledger nobody can read.', unlock: s => now() - (s.created || 0) >= 3 * 60000, hint: '3 minutes on the job' });
+[['Lids', 1000, 1e4], ['Napkins', 10000, 2e5], ['Sauce Sachets', 1e5, 4e6], ['Ration-Grade Cutlery', 1e6, 8e7], ['Edible Packaging', 1e7, 1.6e9], ['Ministry Loyalty Stamps', 1e8, 3.2e10], ['A Second Lunch', 1e9, 6.4e11]]
+  .forEach(([name, meals, cost], i) => UPGRADES.push({ id: 'glob' + i, glob: true, name, cost, desc: 'All income +10%.', unlock: s => s.deliveries >= meals, hint: fmt(meals) + ' deliveries' }));
+// Commendations (achievements). Each is +2% income, forever, like kittens but with paperwork.
+const gearTotal = s => Object.values(s.gear || {}).reduce((a, b) => a + b, 0);
+const ACH = [
+  ['meals100', 'Employee of the Minute', '100 deliveries', s => s.deliveries >= 100],
+  ['meals1k', 'Wears the Vest', '1,000 deliveries', s => s.deliveries >= 1000],
+  ['meals10k', 'Knows Every Airlock', '10K deliveries', s => s.deliveries >= 1e4],
+  ['meals100k', 'Feeds a District', '100K deliveries', s => s.deliveries >= 1e5],
+  ['meals1m', 'Feeds a City', '1M deliveries', s => s.deliveries >= 1e6],
+  ['meals10m', 'Feeds the Year', '10M deliveries', s => s.deliveries >= 1e7],
+  ['earn1k', 'First Real Credits', 'earn ₵1K', s => s.total >= 1000],
+  ['earn100k', 'Nutrient Bourgeoisie', 'earn ₵100K', s => s.total >= 1e5],
+  ['earn10m', 'Obscene', 'earn ₵10M', s => s.total >= 1e7],
+  ['earn1b', 'The Ministry Has Questions', 'earn ₵1B', s => s.total >= 1e9],
+  ['earn100b', 'Post-Scarcity (Locally)', 'earn ₵100B', s => s.total >= 1e11],
+  ['taps100', 'Thumb Warm-Up', '100 taps', s => s.taps >= 100],
+  ['taps1k', 'Carpal Tunnel Runner', '1,000 taps', s => s.taps >= 1000],
+  ['taps10k', 'It Was Never About the Money', '10K taps', s => s.taps >= 1e4],
+  ['gear10', 'Kitted Out', 'own 10 pieces of gear', s => gearTotal(s) >= 10],
+  ['gear50', 'Hoarder', 'own 50 pieces of gear', s => gearTotal(s) >= 50],
+  ['gear100', 'Logistics Problem', 'own 100 pieces of gear', s => gearTotal(s) >= 100],
+  ['gear250', 'Where Do You Keep It All', 'own 250 pieces of gear', s => gearTotal(s) >= 250],
+  ['shop', 'Entrepreneur (Under Investigation)', 'open a shop', s => !!s.shop],
+  ['run1', 'Somebody Fell For It', 'recruit one runner', s => s.down.list.length >= 1],
+  ['run5', 'Middle Management', '5 in your downline', s => s.down.list.length >= 5],
+  ['run25', 'Pyramid, Technically', '25 in your downline', s => s.down.list.length >= 25],
+  ['depot', 'Has a Freezer', 'build a Depot', s => !!s.buildings.depot],
+  ['plant', 'Industrial Wok', 'build a Kitchen Plant', s => !!s.buildings.plant],
+  ['factory', 'Paste All the Way Down', 'build a Nutrient Factory', s => !!s.buildings.factory],
+  ['ministry', 'Absolute Power Over Lunch', 'take a Ministry seat', s => !!s.buildings.ministry],
+  ['crate1', 'Finders Keepers', 'open an unmarked crate', s => (s.crates || 0) >= 1],
+  ['crate10', 'Crate Expectations', 'open 10 crates', s => (s.crates || 0) >= 10],
+  ['crate50', 'Suspiciously Lucky', 'open 50 crates', s => (s.crates || 0) >= 50],
+  ['hunted', 'Actively Hunted', 'reach 100% suspicion', s => s.heat >= 100],
+  ['fined5', 'Cost of Doing Business', 'get fined 5 times', s => (s.fines || 0) >= 5],
+  ['stamp1', 'Came Back as a Clone', 'hand over or sell a business', s => (s.retirements || 0) >= 1],
+  ['stamp10', 'Serial Retiree', 'hold 10 Ration Stamps', s => (s.stamps || 0) >= 10],
+  ['fr1', 'Franchisor', 'franchise a business to a colleague', s => (s.portfolio || []).some(e => !e.ministry)],
+  ['fr3', 'Chain Reaction', 'three franchises in the cabinet', s => (s.portfolio || []).filter(e => !e.ministry).length >= 3],
+  ['frEe', 'Instant Empire', 'take over a franchise', s => !!s.franchiseOf],
+].map(([id, name, desc, test]) => ({ id, name, desc, test }));
+const RANKS = [
+  { name: 'Runner', mul: 1, need: -1 },
+  { name: 'Shop Owner', mul: 1.1, need: 0 },
+  { name: 'District Overlord', mul: 1.25, need: 3 },
+  { name: 'Regional Nutrient Baron', mul: 1.5, need: 10 },
+  { name: 'Supreme Ministry of Eating', mul: 2, need: 25 },
+];
+// Buildings are gated on PEOPLE, not credits. Credits can be waited out. Colleagues cannot.
+// Each one helps the people below you (so recruits want to join you) and pays you more (so you want recruits).
+const BUILDINGS = [
+  { id: 'depot', name: 'Local Food Depot', cost: 8000, unlock: 10,
+    desc: 'A garage, a freezer, a sign that says DEPOT in a font the Ministry dislikes.',
+    down: 'Your direct runners deliver +25% faster.', up: '+5% extra on direct runner earnings.',
+    needText: '3 direct runners', need: s => s.down.list.filter(m => m.level === 1).length >= 3 },
+  { id: 'plant', name: 'Kitchen Plant', cost: 25000, unlock: 25, after: 'depot',
+    desc: 'Industrial woks. Conveyor belts. A smell that is legally food.',
+    down: 'Everyone in your downline delivers one zone higher.', up: 'All runner cuts ×1.25.',
+    needText: '10 runners in your downline', need: s => s.down.list.length >= 10 },
+  { id: 'factory', name: 'Nutrient Factory', cost: 100000, unlock: 50, after: 'plant',
+    desc: 'Makes the paste that the plants make into the meals that the runners run.',
+    down: 'Everyone in your downline gets +25% order value.', up: 'All runner cuts ×1.5.',
+    needText: '25 downline and 2 downline Depots', need: s => s.down.list.length >= 25 && s.down.list.filter(m => hasB(m, 'depot')).length >= 2 },
+  { id: 'ministry', name: 'Ministry of Eating seat', cost: 500000, unlock: 100, after: 'factory',
+    desc: 'A chair. A stamp. Absolute power over lunch.',
+    down: 'Your supply chain is exempt from your decrees.', up: 'All runner cuts ×2. Issue one company-wide decree per day.',
+    needText: '3 downline Nutrient Factories', need: s => s.down.list.filter(m => hasB(m, 'factory')).length >= 3 },
+];
+// Global milestones: the whole company recruits towards these. Thresholds are citizen counts.
+const MILESTONES = [
+  { at: 5, text: 'Hoverbike subsidy (half price)' },
+  { at: 10, text: 'Depot blueprints declassified' },
+  { at: 25, text: 'Kitchen Plant blueprints declassified' },
+  { at: 50, text: 'Nutrient Factory blueprints declassified' },
+  { at: 100, text: 'The Ministry of Eating accepts applications' },
+];
+const DECREES = {
+  feast: { name: 'Mandatory Feast', text: 'declared a <b>Mandatory Feast</b>. Every citizen delivers ×2 for 10 minutes.' },
+  audit: { name: 'Company-wide Audit', text: 'ordered a <b>company-wide audit</b>. Suspicion +25 for everyone outside their supply chain.' },
+};
+const DEPTS = ['Engineering', 'Product', 'Design', 'Sales', 'Marketing', 'Finance', 'People', 'Operations', 'Legal', 'Leadership', 'Other'];
+const SHARE = [
+  "I'm running food deliveries in MustEat (it's the year 3019, it's a whole thing). Join as my runner and I get 10% of everything you earn. Forever. {link}",
+  "I've opened a shop in MustEat and I need runners. It's legal. Probably. {link}",
+  "I now control a district in MustEat. I need 10 runners to become Regional Nutrient Baron. Don't ask questions. {link}",
+  "Regional Nutrient Baron here. The Ministry is watching. I need bodies. Warm ones, ideally. {link}",
+  "I am the Supreme Ministry of Eating. You are legally required to open this link. {link}",
+];
+const NUDGES = [
+  '{name}, your family is hungry. Your deliveries stopped {ago}. The Ministry has been informed. {link}',
+  '{name}, the fryer at {shop} is cold and it is specifically your fault. {link}',
+  '{name}. It has been {ago}. The customers in Bunker 12 have started eating the furniture. {link}',
+];
+const COMPLAINTS = [
+  '{owner}: I have run {meals} meals for {shop} and you have taken ₵{cut} from me. I am opening my own shop. Consider this my notice. {link}',
+  'Formal complaint against {owner} of {shop}: 10% is theft with extra steps. Everyone should see what they are doing. {link}',
+];
+const FRANCHISE_MSG = "I'm stepping back from {shop} in MustEat. First colleague to click gets the whole business: {gear}, ₵{income}/s, ready to run. I keep 25%. {link}";
+const VOUCHER_MSG = '{to}, I sent you a ration voucher worth ₵{bonus} in MustEat. Open it before the Ministry does. {link}';
+const ORDERS = [
+  '1x Nutrient Paste (Chicken Flavour). Leave at airlock.',
+  '2x Reconstituted Pizza. Do not make eye contact.',
+  'Family bucket of Synthetic Wings. Family unconfirmed.',
+  '1x Soup. Customer has been waiting since 2987.',
+  'Emergency Kebab. Code Red. Extra chilli.',
+  '1x Salad. Nobody knows why.',
+  'Birthday cake for Unit 4471-B. Candles confiscated.',
+  '6x Energy Bars marked "MOSTLY FOOD".',
+  'Ramen. Customer requests "no broth, no noodles, just vibes".',
+  '1x Coffee (Decaf). The Ministry has been notified.',
+  'Curry for the whole bunker. Post it through the slot.',
+  'Sushi. Customer asks if the fish is "from the before-times".',
+  'Burger. Address is just coordinates and a scream.',
+  'Tofu. Delivery instructions: "knock twice, run".',
+  'Deluxe Bao. Tip conditional on your mask being sealed.',
+  '1x Full English (Ration Grade). Beans are a rumour.',
+  '3x Garlic Bread. Vampire outbreak in Sector 9 unrelated.',
+  'Chips. Just chips. Customer is crying on the intercom.',
+];
+const CUSTOMERS = ['Unit 4471-B', 'Citizen 90210', 'someone called "Dave"', 'The Ministry (unofficially)', 'a hungry drone', 'Flat 9, The Dome', 'Bunker 12', 'the night shift at Vat Farm 3', 'your old manager', 'a suspiciously large child'];
+const SHOP_NAMES = ['Kebabsolute Zero', 'Sushi Containment Unit 7', 'Pizza Quarantine', 'The Nutrient Hut', 'Wok of Ages', 'Curry Bunker', 'Burger Dome (Sealed)', 'Noodle Perimeter', 'Fry Sector', 'Soup Ration Station', 'Taco Isolation Ward', 'Biryani Airlock', 'Chip Shop 3019', 'Falafel Fortress', 'Gyros Exclusion Zone', 'Bao Bunker', 'Doner Decontamination', 'Pho Shelter Nine', 'Ramen Redoubt', 'Wing Command', 'Pasta La Vista (Closed 2099, Reopened)', 'The Hungry Variant'];
+const FAKE_NAMES = ['Priya', 'Dave', 'Tomasz', 'Aisha', 'Marco', 'Ingrid', 'Kwame', 'Sofia', 'Liam', 'Yuki', 'Fatima', 'Ben', 'Chloe', 'Rafael', 'Nadia', 'Olu', 'Hannah', 'Sven', 'Mei', 'Jorge', 'Zara', 'Pat', 'Anika', 'Diego', 'Lena', 'Ravi', 'Greta', 'Sam', 'Noor', 'Felix', 'Ida', 'Kofi', 'Elena', 'Tariq', 'Maja'];
+
+// ---------------- State ----------------
+function fresh() {
+  return {
+    v: 3, id: null, code: null, name: null, dept: null, ref: qs.get('ref') || qs.get('fr') || null, recruiter: null,
+    cash: 0, total: 0, deliveries: 0, taps: 0,
+    gear: {}, upg: {}, ach: {}, qty: 1, shop: null, buildings: {}, drone: false, contracts: false,
+    stamps: 0, retirements: 0, crates: 0, crateAt: 0, fines: 0,
+    portfolio: [], offer: null, franchiseOf: null, franchiseName: null, tab: 'run', msSeen: 0,
+    heat: 0, fx: {}, nextEvent: now() + 45000,
+    down: { list: [], credited: 0, at: 0, paid: {} }, up: [], known: {},
+    ration: 0, lastDecree: 0, decreesSeen: [], rankSeen: 0,
+    log: [], lastSeen: now(), created: now(), lastOrder: null,
+  };
+}
+function load() {
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY));
+    if (!s || ![1, 2, 3].includes(s.v)) return null;
+    if (qs.get('ref') && !s.ref && !s.shop) s.ref = qs.get('ref');
+    // v2 stamps came from a runaway economy (₵100K base, +10% each, linear). Recompute under the current rule and cap.
+    if (s.v < 3) s.stamps = Math.min(s.stamps || 0, Math.floor(Math.cbrt(Math.max(0, s.total || 0) / CONFIG.STAMP_BASE)));
+    const m = Object.assign(fresh(), s); m.v = 3;
+    return m;
+  } catch (e) { return null; }
+}
+function save() {
+  state.lastSeen = now();
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+}
+let state = load() || fresh();
+let world = emptyWorld();
+let feed = [];
+let sheetNoted = false;
+
+function log(text) {
+  state.log.unshift({ t: now(), text });
+  state.log = state.log.slice(0, 10);
+}
+
+// ---------------- Sheet adapter ----------------
+// players: id, code, name, ref, dept, total, meals, rank, shopName, buildings, lastSeen
+// events:  id, ts, pid, who, kind, text, effect
+// ledger:  id, ts, from, fromName, to, toName, level, kind, amount   (one row per credited cut or royalty)
+const Sheet = {
+  local() { try { return Object.assign({ players: [], events: [], ledger: [] }, JSON.parse(localStorage.getItem(CONFIG.SHEET_KEY)) || {}); } catch (e) { return { players: [], events: [], ledger: [] }; } },
+  putLocal(db) { try { localStorage.setItem(CONFIG.SHEET_KEY, JSON.stringify(db)); } catch (e) {} },
+  async remote(method, table, body) {
+    const r = await fetch(CONFIG.SHEET_API + '/' + table, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  },
+  async guarded(fn, fallback) {
+    if (!CONFIG.SHEET_API) return fallback();
+    try { return await fn(); }
+    catch (e) { if (!sheetNoted) { sheetNoted = true; log('Sheet unreachable. Running in local mode.'); } return fallback(); }
+  },
+  read(table) {
+    return this.guarded(() => this.remote('GET', table), () => this.local()[table] || []);
+  },
+  upsert(table, row) {
+    return this.guarded(() => this.remote('POST', table, { upsert: row }), () => {
+      const db = this.local(); const t = db[table]; const i = t.findIndex(r => r.id === row.id);
+      if (i >= 0) t[i] = Object.assign(t[i], row); else t.push(row);
+      this.putLocal(db); return row;
+    });
+  },
+  append(table, row) {
+    return this.guarded(() => this.remote('POST', table, { append: row }), () => {
+      const db = this.local(); (db[table] = db[table] || []).push(row); db[table] = db[table].slice(-(table === 'ledger' ? 3000 : 300)); this.putLocal(db); return row;
+    });
+  },
+};
+
+// ---------------- World (all computed client-side from the players table) ----------------
+function emptyWorld() { return { rows: [], byId: {}, dl: {}, citizens: 0, meals: 0, board: [], sectors: [], fromRunners: {} }; }
+const hasB = (row, b) => String((row && row.buildings) || '').split(',').includes(b);
+const bstr = s => Object.keys(s.buildings || {}).filter(k => s.buildings[k]).join(',');
+const bnames = str => String(str || '').split(',').map(x => (BUILDINGS.find(b => b.id === x) || {}).name).filter(Boolean).join(', ');
+
+function downlineOf(rows, me) {
+  let codes = [me.code]; const out = [];
+  for (let level = 1; level <= 3 && codes.length; level++) {
+    const m = rows.filter(p => p.ref && codes.includes(p.ref) && p.id !== me.id);
+    m.forEach(p => out.push(Object.assign({ level }, p)));
+    codes = m.map(p => p.code);
+  }
+  return out;
+}
+function uplineOf(rows, me) {
+  const out = []; let ref = me.ref;
+  for (let level = 1; level <= 3 && ref; level++) {
+    const p = rows.find(r => r.code === ref); if (!p || p.id === me.id) break;
+    out.push(Object.assign({ level }, p)); ref = p.ref;
+  }
+  return out;
+}
+function buildWorld(rows) {
+  const w = emptyWorld(); w.rows = rows;
+  rows.forEach(r => { w.byId[r.id] = r; w.dl[r.id] = downlineOf(rows, r); });
+  w.citizens = rows.length;
+  w.meals = rows.reduce((a, r) => a + (Number(r.meals) || 0), 0);
+  w.board = rows.map(p => ({ id: p.id, name: p.name, total: Number(p.total) || 0, shopName: p.shopName || null, rank: Number(p.rank) || 0, dept: p.dept, buildings: p.buildings, runners: rows.filter(q => q.ref === p.code).length }))
+    .sort((a, b) => b.total - a.total).slice(0, 20);
+  const depts = [...new Set(rows.map(r => r.dept || 'Unassigned'))];
+  const shops = rows.filter(r => r.shopName);
+  w.sectors = depts.map(d => {
+    const members = rows.filter(r => (r.dept || 'Unassigned') === d);
+    let best = null, bestN = 0;
+    shops.forEach(sh => { const n = w.dl[sh.id].filter(m => (m.dept || 'Unassigned') === d).length; if (n > bestN) { bestN = n; best = sh; } });
+    return { dept: d, citizens: members.length, total: members.reduce((a, r) => a + (Number(r.total) || 0), 0), shop: best, n: bestN };
+  }).sort((a, b) => b.total - a.total);
+  return w;
+}
+function rowOf(s) {
+  return { id: s.id, code: s.code, name: s.name, ref: s.ref, dept: s.dept, total: Math.floor(s.total), meals: Math.floor(s.deliveries), rank: rankOf(s), shopName: s.shop ? s.shop.name : null, buildings: bstr(s), stamps: s.stamps || 0, lastSeen: now(),
+    offer: s.offer ? JSON.stringify(s.offer) : '', franchiseOf: s.franchiseOf || '', franchiseName: s.franchiseName || '' };
+  // claimedBy / claimedName / claimedAt / claimedOffer are written onto this row by the colleague who takes a franchise; never by its owner.
+}
+// Events carry a kind and one plain-text argument. The feed renders them from templates, so nothing
+// anyone writes to the shared table is ever shown as HTML. text is a plain-text copy for other readers of the sheet.
+function feedText(e) {
+  if (e.kind === 'decree') return DECREES[e.effect] ? DECREES[e.effect].text : '';
+  if (e.arg == null) return esc(String(e.text || '').replace(/<[^>]*>/g, '')); // rows from before events were structured
+  const a = esc(e.arg);
+  switch (e.kind) {
+    case 'join': return e.arg ? 'was recruited by <b>' + a + '</b>' : 'joined. Nobody recruited them. Suspicious.';
+    case 'shop': return 'opened <b>' + a + '</b>';
+    case 'build': return 'built a <b>' + a + '</b>';
+    case 'fine': return 'was fined <b>₵' + a + '</b> for unlicensed nutrient distribution';
+    case 'rank': return 'was promoted to <b>' + a + '</b>';
+    case 'retire': return 'sold their business to the Ministry for <b>' + a + ' Ration Stamps</b>';
+    case 'handover': return 'handed a franchise to <b>' + a + '</b> and started again from nothing';
+    case 'franchise': return 'took over <b>' + a + '</b>\'s business as a franchisee. Instant empire.';
+    case 'milestone': return 'took <b>' + a + '</b> past <b>₵' + esc(e.amount || '') + '</b>. ' + esc(e.of || 'The franchisor') + ' gets 25%.';
+    default: return a;
+  }
+}
+const unesc = s => String(s).replace(/&(amp|lt|gt|quot|#39);/g, (m, c) => ({ amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'" }[c]));
+function post(kind, arg, extra) {
+  const row = Object.assign({ id: uid('e'), ts: now(), pid: state.id, who: state.name, kind, arg: arg == null ? '' : String(arg) }, extra || {});
+  row.text = unesc(feedText(row).replace(/<[^>]*>/g, ''));
+  return Sheet.append('events', row);
+}
+
+// ---------------- Economy ----------------
+const lvl = id => state.gear[id] || 0;
+// Cost of the next n levels of g when you already own l (geometric series).
+function gearCost(g, l, n) {
+  n = n || 1; if (g.max) n = Math.min(n, g.max - l); if (n <= 0) return 0;
+  const r = g.growth || 1.15;
+  let c = g.cost * Math.pow(r, l) * (Math.pow(r, n) - 1) / (r - 1);
+  if (g.id === 'hover' && world.citizens >= 5) c *= 0.5;
+  return Math.floor(c);
+}
+const stampsFor = total => Math.floor(Math.cbrt(Math.max(0, total) / CONFIG.STAMP_BASE));
+const stampMult = n => Math.sqrt(1 + 0.2 * (n || 0));
+const parseOffer = row => { try { const o = row && row.offer ? JSON.parse(row.offer) : null; return o && o.id ? o : null; } catch (e) { return null; } };
+const gearSummary = gear => GEAR.filter(g => g.dps && gear[g.id]).slice(-3).reverse().map(g => gear[g.id] + '× ' + g.name).join(', ') || 'no gear';
+const dateStr = ts => new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+const upgCount = (s, f) => UPGRADES.reduce((a, u) => a + (f(u) && (s.upg || {})[u.id] ? 1 : 0), 0);
+function downCount() { return state.down.list.length; }
+function rankOf(s) {
+  if (!s.shop) return 0;
+  const n = s.down.list.length;
+  let r = 1;
+  RANKS.forEach((rk, i) => { if (rk.need >= 0 && n >= rk.need) r = i; });
+  return r;
+}
+function cutMul(s) {
+  let m = 1; const b = s.buildings || {};
+  if (b.plant) m *= 1.25; if (b.factory) m *= 1.5; if (b.ministry) m *= 2;
+  return m;
+}
+function calc(s) {
+  const t = now();
+  const g = id => s.gear[id] || 0;
+  const up = s.up || [];
+  let dps = 0, zone = 0;
+  GEAR.forEach(x => {
+    if (x.dps) dps += x.dps * g(x.id) * Math.pow(2, upgCount(s, u => u.gear === x.id));
+    if (x.zone != null && g(x.id) > 0) zone = Math.max(zone, x.zone);
+  });
+  const supply = { depot: !!(up[0] && hasB(up[0], 'depot')), plant: up.some(u => hasB(u, 'plant')), factory: up.some(u => hasB(u, 'factory')) };
+  if (supply.depot) dps *= 1.25;
+  if (supply.plant) zone = Math.min(ZONES.length - 1, zone + 1);
+  const outbreak = (s.fx.outbreak || 0) > t;
+  if (outbreak) zone = Math.max(0, zone - 1);
+  const rank = rankOf(s);
+  let value = 4 * ZONES[zone].mul * (1 + 0.10 * g('pod')) * RANKS[rank].mul;
+  if (supply.factory) value *= 1.25;
+  // Cookie Clicker layer: global upgrades, commendations, Ration Stamps.
+  value *= Math.pow(1.1, upgCount(s, u => u.glob)) * (1 + 0.02 * Object.keys(s.ach || {}).length) * stampMult(s.stamps);
+  let dpsMul = 1, valMul = 1;
+  if ((s.fx.rain || 0) > t) { valMul *= 2; dpsMul *= 0.5; }
+  if ((s.fx.viral || 0) > t) { dpsMul *= 2; }
+  if ((s.fx.feast || 0) > t) { dpsMul *= 2; }
+  if ((s.fx.rush || 0) > t) { dpsMul *= 7; }
+  const panic = (s.fx.panic || 0) > t;
+  if ((s.fx.rival || 0) > t && !s.contracts) { valMul *= 0.7; }
+  const tax = (s.ref && !s.shop) ? CONFIG.RUNNER_TAX : 0;
+  return {
+    dps: dps * dpsMul, value: value * valMul, zone, rank, tax, outbreak, supply, panic,
+    income: dps * dpsMul * value * valMul * (1 - tax),
+    tapBonus: dps * dpsMul * value * valMul * 0.02 * upgCount(s, u => u.tap),
+    baseIncome: dps * value * (1 - tax), baseDps: dps,
+  };
+}
+function earn(amount, meals) {
+  state.cash += amount; state.total += amount; state.deliveries += meals || 0;
+}
+
+// ---------------- Tick ----------------
+let last = now();
+function frame() {
+  const t = now();
+  const dt = (t - last) / 1000;
+  last = t;
+  if (dt <= 0) return;
+  const c = calc(state);
+  earn(c.income * dt, c.dps * dt);
+  state.heat = clamp(state.heat + dt * (0.03 + 0.01 * downCount() + 0.01 * Math.log10(1 + c.baseIncome)), 0, 100);
+  crateTick(t);
+  if (t - achAt > 1000) { achAt = t; checkAch(); checkMilestone(); }
+  if (t >= state.nextEvent) {
+    fireEvent();
+    state.nextEvent = t + 60000 + Math.random() * 30000;
+  }
+  if (c.rank > state.rankSeen) {
+    state.rankSeen = c.rank;
+    if (c.rank >= 2) { log('<b>Promoted to ' + RANKS[c.rank].name + '.</b> Income ×' + RANKS[c.rank].mul + '.'); post('rank', RANKS[c.rank].name); }
+  }
+  render();
+}
+
+// ---------------- Unmarked ration crates (golden cookies) ----------------
+let crateShown = 0;
+function scheduleCrate(t) { state.crateAt = t + (CONFIG.CRATE_MIN_S + Math.random() * CONFIG.CRATE_RANGE_S) * 1000; }
+function crateTick(t) {
+  if (!state.id) return;
+  const el = $('crate');
+  if (crateShown) {
+    if (t - crateShown > CONFIG.CRATE_SHOW_S * 1000) { crateShown = 0; el.hidden = true; scheduleCrate(t); }
+    return;
+  }
+  if (!state.crateAt || state.crateAt < t - 60000) { state.crateAt = t + 20000 + Math.random() * 40000; return; } // missed while away: soon
+  if (t >= state.crateAt) {
+    crateShown = t; el.hidden = false;
+    el.style.left = (5 + Math.random() * 70) + 'vw'; el.style.top = (15 + Math.random() * 60) + 'vh';
+  }
+}
+function collectCrate() {
+  if (!crateShown) return;
+  const t = now(); crateShown = 0; $('crate').hidden = true; scheduleCrate(t);
+  state.crates = (state.crates || 0) + 1;
+  const c = calc(state), r = Math.random();
+  if (r < 0.45) { state.fx.rush = t + 77000; log('<b>Unmarked ration crate:</b> LUNCH RUSH. Income ×7 for 77 seconds.'); toast('LUNCH RUSH: income ×7 for 77s'); }
+  else if (r < 0.6) { state.fx.panic = t + 13000; log('<b>Unmarked ration crate:</b> PANIC BUYING. Taps ×777 for 13 seconds. Tap. TAP.'); toast('PANIC BUYING: taps ×777 for 13s. TAP.'); }
+  else { const bonus = Math.floor(Math.min(state.cash * 0.15, c.income * 900) + 13); earn(bonus, 0); log('<b>Unmarked ration crate:</b> contained ₵' + fmt(bonus) + ' and a note that said "eat".'); toast('Crate: +₵' + fmt(bonus)); }
+  render();
+}
+
+// ---------------- Commendations ----------------
+let achAt = 0;
+const FR_MILESTONES = [1e5, 1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12, 1e13, 1e14];
+function checkMilestone() {
+  if (!state.franchiseOf || !state.shop) return;
+  let i = state.msSeen || 0;
+  while (i < FR_MILESTONES.length && state.total >= FR_MILESTONES[i]) i++;
+  if (i === (state.msSeen || 0)) return;
+  const amount = fmt(FR_MILESTONES[i - 1]);
+  state.msSeen = i;
+  log('<b>' + esc(state.shop.name) + '</b> passed ₵' + amount + ' under your management. ' + esc(state.franchiseName || 'The franchisor') + ' has been told. They get 25%.');
+  post('milestone', state.shop.name, { amount, of: state.franchiseName || '' });
+}
+function checkAch() {
+  const got = ACH.filter(a => !state.ach[a.id] && a.test(state));
+  if (!got.length) return;
+  got.forEach(a => { state.ach[a.id] = now(); });
+  if (got.length === 1) log('<b>Commendation: ' + got[0].name + '.</b> ' + got[0].desc + '. Income +2%.');
+  else log('<b>' + got.length + ' commendations:</b> ' + got.map(a => a.name).join(', ') + '. Income +' + got.length * 2 + '%.');
+  toast(got.length === 1 ? 'Commendation: ' + got[0].name : got.length + ' commendations. Income +' + got.length * 2 + '%');
+}
+
+// ---------------- Events (Dope Wars heat) ----------------
+const EVENTS = [
+  { id: 'inspect', bad: true, w: s => 1 + s.heat / 15, run(s, t) {
+      if (s.drone) {
+        s.heat = clamp(s.heat - 50, 0, 100);
+        log('Ministry inspection. Your Compliance Drone filed 400 pages of paperwork. They left, confused.');
+      } else {
+        const fine = Math.floor(s.cash * 0.3 * (0.3 + 0.7 * s.heat / 100));
+        s.cash -= fine; s.heat = clamp(s.heat - 30, 0, 100); s.fines = (s.fines || 0) + 1;
+        log('<b>Ministry inspection.</b> "Unlicensed nutrient distribution." Fined ₵' + fmt(fine) + '.');
+        if (fine >= 100) post('fine', fmt(fine));
+      }
+  }},
+  { id: 'rain', bad: true, w: 2, run(s, t) { s.fx.rain = t + 30000; log('<b>Acid rain.</b> Orders double, runners halve. 30s.'); } },
+  { id: 'outbreak', bad: true, w: 2, run(s, t) {
+      const c = calc(s);
+      if (c.zone === 0) { s.fx.viral = t + 15000; log('Variant outbreak in a zone you can\'t reach anyway. Everyone orders in. Deliveries ×2 for 15s.'); return; }
+      s.fx.outbreak = t + 30000; log('<b>Variant outbreak</b> in ' + ZONES[c.zone].name + '. Zone sealed for 30s.');
+  }},
+  { id: 'rival', bad: true, w: 1.5, run(s, t) {
+      if (s.contracts) { log('Rival app "JustBreathe" tried to enter your sector. Your Exclusive Contracts made them cry.'); return; }
+      s.fx.rival = t + 60000; log('<b>Rival app "JustBreathe"</b> is undercutting you. −30% value for 60s. Exclusive Contracts would stop this.');
+  }},
+  { id: 'viral', bad: false, w: 2, run(s, t) { s.fx.viral = t + 30000; log('<b>Your Slack post about MustEat went viral.</b> Deliveries ×2 for 30s.'); } },
+  { id: 'jackpot', bad: false, w: 1, run(s, t) {
+      const c = calc(s); const bonus = Math.max(25, Math.floor(c.baseIncome * 30 + c.value * 5));
+      earn(bonus, 1); log('A Ministry official tipped you ₵' + fmt(bonus) + ' "for discretion".');
+  }},
+];
+function fireEvent() {
+  const mask = lvl('mask');
+  const pool = EVENTS.map(e => ({ e, w: (typeof e.w === 'function' ? e.w(state) : e.w) * (e.bad ? (1 - 0.25 * mask) : 1) }));
+  let r = Math.random() * pool.reduce((a, p) => a + p.w, 0);
+  for (const p of pool) { r -= p.w; if (r <= 0) { p.e.run(state, now()); return; } }
+  pool[pool.length - 1].e.run(state, now());
+}
+
+// ---------------- Offline ----------------
+function offline(s) {
+  const el = (now() - s.lastSeen) / 1000;
+  if (el < 60) return null;
+  const full = Math.min(el, CONFIG.OFFLINE_FULL_H * 3600);
+  const half = Math.max(0, Math.min(el, CONFIG.OFFLINE_HALF_H * 3600) - CONFIG.OFFLINE_FULL_H * 3600);
+  const c = calc(s);
+  const eff = full + 0.5 * half;
+  const gain = c.baseIncome * eff, meals = c.baseDps * eff;
+  earn(gain, meals);
+  s.nextEvent = now() + 20000;
+  return { el, gain, meals };
+}
+
+// ---------------- Sync ----------------
+function applyDownline(list) {
+  // Notice arrivals and betrayals (a runner opening their own shop).
+  const known = state.known || {};
+  const first = !state.down.at; // first ever sync: don't announce everyone who was already there
+  list.forEach(m => {
+    const prev = known[m.id];
+    if (prev === undefined) { if (!first && m.level === 1) log('<b>' + esc(m.name) + '</b> joined as your runner. 10% of everything they make is yours.'); }
+    else if (!prev && m.shopName) log('<b>' + esc(m.name) + '</b> opened ' + esc(m.shopName) + '. Betrayal. You still get your cut.');
+    known[m.id] = m.shopName || '';
+  });
+  state.known = known;
+  state.down.list = list; state.down.at = now();
+  const extra = state.buildings.depot ? 0.05 : 0;
+  // Each member owes a running percentage of their lifetime total. Whatever is new since last time is credited
+  // and written to the ledger as one row per payer, so the sheet can answer "who paid whom, how much".
+  const rate = m => cutMul(state) * (m.franchiseOf === state.id ? CONFIG.ROYALTY : (CONFIG.CUTS[m.level - 1] || 0) + (m.level === 1 ? extra : 0));
+  const migrate = !state.down.paid; // saves from before the ledger: start the per-payer books at today's figures, no back-dated rows
+  if (migrate) state.down.paid = {};
+  let delta = 0; const rows = [];
+  list.forEach(m => {
+    const owed = rate(m) * (Number(m.total) || 0);
+    const before = migrate ? owed : (state.down.paid[m.id] || 0);
+    const d = owed - before;
+    if (d > 0.5) {
+      delta += d;
+      rows.push({ id: uid('l'), ts: now(), from: m.id, fromName: m.name, to: state.id, toName: state.name, level: m.franchiseOf === state.id ? 'F' : m.level, kind: m.franchiseOf === state.id ? 'royalty' : 'cut', amount: Math.round(d * 100) / 100 });
+    }
+    state.down.paid[m.id] = Math.max(before, owed);
+  });
+  if (delta > 0.5) {
+    earn(delta, 0); state.down.credited = (state.down.credited || 0) + delta;
+    rows.forEach(r => Sheet.append('ledger', r));
+    world.fromRunners[state.id] = (world.fromRunners[state.id] || 0) + delta; // the board shows it now, not after the next sync
+    log('Your runners earned you <b>₵' + fmt(delta) + '</b>. You did nothing. This is the dream.');
+  }
+}
+function applyDecrees(events) {
+  const t = now();
+  events.filter(e => e.kind === 'decree' && e.ts > t - CONFIG.DECREE_MIN * 60000 && !state.decreesSeen.includes(e.id)).forEach(e => {
+    state.decreesSeen = state.decreesSeen.concat(e.id).slice(-20);
+    const mine = e.pid === state.id, exempt = mine || state.up.some(u => u.id === e.pid);
+    if (e.effect === 'feast') { state.fx.feast = e.ts + CONFIG.DECREE_MIN * 60000; log('<b>Decree:</b> ' + esc(e.who) + ' declared a Mandatory Feast. Deliveries ×2.'); }
+    if (e.effect === 'audit') {
+      if (exempt) log('<b>Decree:</b> ' + (mine ? 'Your' : esc(e.who) + '\'s') + ' audit swept the company. Your supply chain was exempt.');
+      else { state.heat = clamp(state.heat + 25, 0, 100); log('<b>Decree:</b> ' + esc(e.who) + ' ordered a company-wide audit. Suspicion +25.'); }
+    }
+  });
+}
+let syncing = false;
+async function sync() {
+  if (!state.id || syncing) return;
+  syncing = true;
+  try {
+    if (state.offer) { const c = calc(state); Object.assign(state.offer, { gear: Object.assign({}, state.gear), upg: Object.assign({}, state.upg), income: c.income }); }
+    await Sheet.upsert('players', rowOf(state));
+    const rows = await Sheet.read('players');
+    const events = await Sheet.read('events');
+    const ledger = await Sheet.read('ledger');
+    world = buildWorld(rows);
+    (ledger || []).forEach(r => { world.fromRunners[r.to] = (world.fromRunners[r.to] || 0) + (Number(r.amount) || 0); });
+    feed = events.slice().sort((a, b) => b.ts - a.ts).slice(0, 12);
+    const me = world.byId[state.id] || rowOf(state);
+    state.up = uplineOf(rows, me);
+    if (state.up[0]) state.recruiter = state.up[0].name;
+    if (state.franchiseOf && world.byId[state.franchiseOf]) state.franchiseName = world.byId[state.franchiseOf].name;
+    (state.portfolio || []).forEach(e => { const r = e.toId && world.byId[e.toId]; if (r && r.name) e.to = r.name; });
+    applyDownline(world.dl[state.id] || downlineOf(rows, me));
+    applyDecrees(events);
+    if (state.offer && me.claimedOffer === state.offer.id) handover(me);
+    (state.portfolio || []).forEach(e => { const r = world.byId[e.toId]; if (!r) return; const t = Number(r.total) || 0; const last = e.samples[e.samples.length - 1]; if (!last || last.total !== t) e.samples = e.samples.concat({ t: now(), total: t }).slice(-6); });
+  } finally { syncing = false; }
+  render(); save();
+}
+let syncTimer = null;
+window.addEventListener('storage', e => {
+  if (e.key !== CONFIG.SHEET_KEY) return;
+  clearTimeout(syncTimer); syncTimer = setTimeout(sync, 400);
+});
+
+// ---------------- Actions ----------------
+function buy(id) {
+  const g = GEAR.find(x => x.id === id); if (!g) return;
+  const l = lvl(id); if (g.max && l >= g.max) return;
+  const n = g.max ? Math.min(state.qty || 1, g.max - l) : (state.qty || 1);
+  const cost = gearCost(g, l, n); if (state.cash < cost) return;
+  state.cash -= cost; state.gear[id] = l + n;
+  if (l === 0 && g.zone != null) log('Bought <b>' + g.name + '</b>. Unlocked ' + ZONES[g.zone].name + '.');
+  else if (l === 0) log('Bought <b>' + g.name + '</b>.');
+  render();
+}
+function runDelivery(ev) {
+  const c = calc(state);
+  const tip = Math.random() * 0.6;
+  const gain = (c.value * (1 + tip) + c.tapBonus) * (1 - c.tax) * (c.panic ? 777 : 1);
+  earn(gain, 1); state.taps++;
+  if (navigator.vibrate) { try { navigator.vibrate(8); } catch (e) {} }
+  const via = c.supply.plant ? (state.up.find(u => hasB(u, 'plant')) || {}).name : null;
+  state.lastOrder = { text: rnd(ORDERS), who: rnd(CUSTOMERS), gain, tip, via };
+  if (ev && ev.clientX) burst(ev.clientX, ev.clientY, '+₵' + fmt(gain), c.panic ? 'panic' : tip > 0.4 ? 'gold' : '');
+  render();
+}
+// Tap feedback: a glowing number that lifts off, a ring, and a handful of sparks. White on black glow, so it reads on the green button too.
+function burst(x, y, text, kind) {
+  const add = (cls, ms, fn) => { const el = document.createElement('i'); el.className = cls; el.style.left = x + 'px'; el.style.top = y + 'px'; if (fn) fn(el); document.body.appendChild(el); setTimeout(() => el.remove(), ms); };
+  add('pop ' + (kind || ''), 900, el => { el.textContent = text; });
+  add('ring', 600);
+  const count = kind === 'panic' ? 14 : kind === 'gold' ? 10 : 6;
+  for (let i = 0; i < count; i++) {
+    const a = Math.random() * Math.PI * 2, d = 30 + Math.random() * (kind ? 80 : 50);
+    add('spark ' + (kind === 'gold' ? 'gold' : ''), 750, el => { el.style.setProperty('--dx', Math.cos(a) * d + 'px'); el.style.setProperty('--dy', (Math.sin(a) * d - 30) + 'px'); el.style.animationDelay = (Math.random() * 60) + 'ms'; });
+  }
+}
+const rootLink = () => location.origin + location.pathname;
+function shareLink(extra) { return rootLink() + '?ref=' + encodeURIComponent(state.code || '') + (extra || ''); }
+function share() { copy(SHARE[calc(state).rank].replace('{link}', shareLink())); }
+function voucher() {
+  if (state.cash < CONFIG.VOUCHER_COST) return;
+  modal(`<h3>Ration voucher</h3>
+    <p class="muted">₵${CONFIG.VOUCHER_COST} buys a named colleague ₵${CONFIG.VOUCHER_BONUS} to start with. A voucher with their name on it gets opened.</p>
+    <input id="vTo" placeholder="Their first name, as Slack knows them" maxlength="24">
+    <div class="row"><button id="confirm" class="big2">ISSUE VOUCHER</button><button id="cancel">Cancel</button></div>`);
+  const go = () => { const to = $('vTo').value.trim().slice(0, 24); if (!to) return; closeModal(); issueVoucher(to); };
+  $('confirm').onclick = go; $('cancel').onclick = closeModal;
+  $('vTo').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+  if ($('vTo').focus) $('vTo').focus();
+}
+function issueVoucher(to) {
+  if (state.cash < CONFIG.VOUCHER_COST) return;
+  state.cash -= CONFIG.VOUCHER_COST;
+  log('Issued a ration voucher for <b>' + esc(to) + '</b>. ₵' + CONFIG.VOUCHER_COST + ' well spent, if they open it.');
+  copy(VOUCHER_MSG.replace('{to}', to).replace('{bonus}', CONFIG.VOUCHER_BONUS).replace('{link}', shareLink('&v=' + encodeURIComponent(to))), 'Voucher copied. DM it to ' + to + '.');
+  render();
+}
+function nudge(id) {
+  const m = state.down.list.find(x => x.id === id); if (!m) return;
+  copy(rnd(NUDGES).replace('{name}', m.name).replace('{ago}', m.lastSeen ? ago(m.lastSeen) : 'a while ago').replace('{shop}', state.shop ? state.shop.name : 'the shop').replace('{link}', rootLink()), 'Nudge copied. Paste it where ' + m.name + ' will see it.');
+}
+function complain() {
+  const owner = state.recruiter || 'my shop owner';
+  const cut = Math.floor(state.total * CONFIG.RUNNER_TAX / (1 - CONFIG.RUNNER_TAX));
+  const shop = (state.up[0] && state.up[0].shopName) || 'their shop';
+  copy(rnd(COMPLAINTS).replace('{owner}', owner).replace('{meals}', fmt(Math.floor(state.deliveries))).replace('{shop}', shop).replace('{cut}', fmt(cut)).replace('{link}', rootLink()), 'Complaint copied. Post it somewhere public.');
+}
+function claimRation() {
+  if (now() - state.ration < CONFIG.RATION_H * H) return;
+  const c = calc(state); const gain = Math.max(50, Math.floor(c.baseIncome * 600));
+  earn(gain, 0); state.ration = now();
+  log('Collected your <b>daily ration</b>: ₵' + fmt(gain) + '. Nutrient Paste, Ration Grade, do not question the colour.');
+  render();
+}
+function openShopDialog() {
+  if (state.cash < CONFIG.SHOP_COST) return;
+  let name = rnd(SHOP_NAMES);
+  modal(`<h3>Open your shop</h3>
+    <p class="muted">₵${fmt(CONFIG.SHOP_COST)} buys a licence, a hatch, and a very old fryer. Pick a name.</p>
+    <input id="shopName" value="${esc(name)}" maxlength="40">
+    <div class="row"><button id="reroll">Reroll name</button><button id="cancel">Not yet</button></div>
+    <button id="confirm" class="big2">OPEN SHOP (₵${fmt(CONFIG.SHOP_COST)})</button>`);
+  $('reroll').onclick = () => { $('shopName').value = rnd(SHOP_NAMES); };
+  $('cancel').onclick = closeModal;
+  $('confirm').onclick = () => {
+    if (state.cash < CONFIG.SHOP_COST) return closeModal();
+    state.cash -= CONFIG.SHOP_COST;
+    state.shop = { name: ($('shopName').value.trim() || name).slice(0, 40), at: now() };
+    log('<b>You opened ' + esc(state.shop.name) + '.</b> You no longer pay anyone. Now you need runners.');
+    post('shop', state.shop.name);
+    closeModal(); save(); sync(); render();
+  };
+}
+function buildStatus(b) {
+  const owned = !!state.buildings[b.id];
+  const declassified = world.citizens >= b.unlock;
+  const chain = !b.after || !!state.buildings[b.after];
+  const people = b.need(state);
+  return { owned, declassified, chain, people, can: !owned && declassified && chain && people && !!state.shop && state.cash >= b.cost };
+}
+function build(id) {
+  const b = BUILDINGS.find(x => x.id === id); if (!b || !buildStatus(b).can) return;
+  state.cash -= b.cost; state.buildings[id] = true;
+  log('<b>Built ' + b.name + '.</b> ' + b.down + ' ' + b.up);
+  post('build', b.name);
+  save(); sync(); render();
+}
+function decree(effect) {
+  if (!state.buildings.ministry || now() - state.lastDecree < CONFIG.DECREE_H * H || !DECREES[effect]) return;
+  state.lastDecree = now();
+  log('You ' + DECREES[effect].text);
+  post('decree', '', { effect });
+  save(); sync();
+}
+function bribe() {
+  const cost = Math.max(10, Math.floor(state.cash * 0.1)); if (state.cash < cost) return;
+  state.cash -= cost; state.heat = clamp(state.heat - 40, 0, 100);
+  log('Bribed a Ministry official with ₵' + fmt(cost) + '. They called it a "donation to the Eating Fund".'); render();
+}
+function buyUpgrade(id) {
+  const u = UPGRADES.find(x => x.id === id);
+  if (!u || state.upg[u.id] || !u.unlock(state) || state.cash < u.cost) return;
+  state.cash -= u.cost; state.upg[u.id] = true;
+  log('Bought <b>' + u.name + '</b>. ' + u.desc);
+  if (u.id === 'ledger') revealLedger(); else render();
+}
+// The bookkeeping reveal: scroll to the gear list, run the digit rain down it, and let each readout blink on as the front passes.
+let revealAt = 0;
+function revealLedger() {
+  revealAt = now(); render();
+  const gear = $('gear');
+  if (gear.scrollIntoView) gear.closest('section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const wipe = document.createElement('div'); wipe.className = 'rainwipe';
+  if (gear.appendChild) { gear.appendChild(wipe); setTimeout(() => wipe.remove(), 2100); }
+  toast('Ledger online. Every line now reports to you.');
+}
+// ---------------- Franchising (prestige that recruits) ----------------
+// You put the business up for grabs; you keep playing until a colleague claims it through the link. Then they get your
+// gear, upgrades and shop name as they stand at that moment, you get Ration Stamps and 25% of everything they ever earn,
+// and your clone starts again with the name, the runners, the buildings and the commendations.
+const stampGain = () => Math.max(0, stampsFor(state.total) - (state.stamps || 0));
+const franchiseLink = () => rootLink() + '?fr=' + encodeURIComponent(state.code || '');
+function franchiseMsg() { const o = state.offer; return FRANCHISE_MSG.replace('{shop}', o.shopName).replace('{gear}', gearSummary(o.gear)).replace('{income}', fmt(o.income)).replace('{link}', franchiseLink()); }
+function franchise() {
+  if (!state.shop || !state.id || gearTotal(state) < 1) return;
+  if (!state.offer) {
+    const c = calc(state);
+    state.offer = { id: uid('f'), at: now(), shopName: state.shop.name + ' №' + ((state.portfolio || []).filter(e => !e.ministry).length + 2), gear: Object.assign({}, state.gear), upg: Object.assign({}, state.upg), income: c.income };
+    log('<b>' + esc(state.offer.shopName) + '</b> is up for franchise. The first colleague to click takes it. Keep running until they do.');
+  }
+  copy(franchiseMsg(), 'Franchise offer copied. First colleague to click takes the business.');
+  save(); sync(); render();
+}
+function withdrawOffer() { if (!state.offer) return; log('Franchise offer for <b>' + esc(state.offer.shopName) + '</b> withdrawn. Cold feet. The Ministry noticed.'); state.offer = null; save(); sync(); render(); }
+function resetForClone() {
+  state.gear = {}; state.upg = {}; state.drone = false; state.contracts = false; state.heat = 0; state.fx = {}; state.lastOrder = null; state.offer = null;
+  state.retirements = (state.retirements || 0) + 1;
+}
+function handover(row) {
+  const c = calc(state), gain = stampGain();
+  const entry = { id: state.offer.id, name: state.offer.shopName, to: String(row.claimedName || 'someone'), toId: row.claimedBy, at: Number(row.claimedAt) || now(),
+    gear: Object.assign({}, state.gear), upg: Object.keys(state.upg).length, buildings: bstr(state), income: c.income, stamps: gain, ministry: false, samples: [] };
+  state.portfolio = [entry].concat(state.portfolio || []);
+  state.stamps = (state.stamps || 0) + gain;
+  resetForClone();
+  log('<b>' + esc(entry.to) + ' took over ' + esc(entry.name) + '.</b> ' + gain + ' Ration Stamps banked, income ×' + stampMult(state.stamps).toFixed(2) + '. 25% of everything they make is yours. Your clone starts with the name and nothing else.');
+  post('handover', entry.to);
+  showHandover(entry);
+}
+function showHandover(e) {
+  modal(`<h3>🏆 ${esc(e.to)} took over ${esc(e.name)}</h3>
+    <p>Handed over at <b>₵${fmt(e.income)}/s</b> with ${gearSummary(e.gear)} and ${e.upg} upgrades.</p>
+    <p>You banked <b>${e.stamps} Ration Stamp${e.stamps === 1 ? '' : 's'}</b> (income ×${stampMult(state.stamps).toFixed(2)}) and you get <b>25% of everything ${esc(e.to)} ever earns</b>. It is in your Portfolio, forever.</p>
+    <p class="muted">Your clone keeps your name, runners, buildings and commendations, and starts with no gear. Again.</p>
+    <div class="row"><button id="ok" class="big2">SEE THE CABINET</button><button id="cancel">Back to work</button></div>`);
+  $('ok').onclick = () => { closeModal(); state.tab = 'portfolio'; render(); };
+  $('cancel').onclick = closeModal;
+}
+function ministryDialog() {
+  const half = Math.floor(stampGain() / 2); if (half < 1 || stampMult((state.stamps || 0) + half) / stampMult(state.stamps) < 1.25) return;
+  modal(`<h3>Sell to the Ministry?</h3>
+    <p>The Ministry pays <b>${half} Ration Stamps</b> (income ×${stampMult((state.stamps || 0) + half).toFixed(2)}) for ${gearSummary(state.gear)}. No royalty. No colleague. No trophy worth having.</p>
+    <p class="muted">Franchising it to a colleague would pay ${stampGain()} stamps and 25% of their earnings forever. Just saying.</p>
+    <div class="row"><button id="confirm" class="big2">SELL</button><button id="cancel">Not yet</button></div>`);
+  $('confirm').onclick = () => { closeModal(); sellToMinistry(); };
+  $('cancel').onclick = closeModal;
+}
+function sellToMinistry() {
+  const half = Math.floor(stampGain() / 2); if (half < 1) return;
+  const c = calc(state);
+  const entry = { id: uid('m'), name: state.shop ? state.shop.name : 'Your gear', to: 'The Ministry', toId: null, at: now(), gear: Object.assign({}, state.gear), upg: Object.keys(state.upg).length, buildings: bstr(state), income: c.income, stamps: half, ministry: true, samples: [] };
+  state.portfolio = [entry].concat(state.portfolio || []);
+  state.stamps = (state.stamps || 0) + half;
+  resetForClone();
+  log('<b>Sold to the Ministry</b> for ' + half + ' Ration Stamps. Income ×' + stampMult(state.stamps).toFixed(2) + '. They will run it into the ground.');
+  post('retire', half);
+  save(); sync(); render();
+}
+function renameDialog() {
+  if (!state.id) return;
+  modal(`<h3>Rename</h3>
+    <p class="muted">Your code <b>${esc(state.code)}</b>, your runners, your cuts and your buildings stay exactly where they are. Only the name on the door changes. Colleagues see it on their next sync.</p>
+    <input id="rnName" maxlength="40" value="${esc(state.name)}" placeholder="Your name">
+    ${state.shop ? `<input id="rnShop" maxlength="40" value="${esc(state.shop.name)}" placeholder="Shop name">` : ''}
+    <div class="row"><button id="confirm" class="big2">SAVE</button><button id="cancel">Cancel</button></div>`);
+  $('confirm').onclick = () => {
+    const nm = $('rnName').value.trim().slice(0, 40); if (!nm) return;
+    const old = state.name; state.name = nm;
+    if (state.shop) { const sn = $('rnShop').value.trim().slice(0, 40); if (sn) state.shop.name = sn; }
+    closeModal();
+    log('<b>' + esc(old) + '</b> is now <b>' + esc(nm) + '</b>' + (state.shop ? ' of ' + esc(state.shop.name) : '') + '. Same code, same runners, same debts.');
+    save(); sync(); render();
+  };
+  $('cancel').onclick = closeModal;
+  if ($('rnName').select) $('rnName').select();
+}
+function buyDrone() { if (state.drone || state.cash < CONFIG.DRONE_COST) return; state.cash -= CONFIG.DRONE_COST; state.drone = true; log('Bought a <b>Compliance Drone</b>. It hovers. It judges. It files.'); render(); }
+function buyContracts() { if (state.contracts || state.cash < CONFIG.CONTRACTS_COST) return; state.cash -= CONFIG.CONTRACTS_COST; state.contracts = true; log('Signed <b>Exclusive Contracts</b>. Every kitchen in the sector is yours. Legally-ish.'); render(); }
+
+// ---------------- Demo seed (local mode only) ----------------
+// Fakes a 30-person company around you so the pyramid, sectors, feed and milestones can be seen without 30 colleagues.
+function seedDemo() {
+  if (CONFIG.SHEET_API || !state.id) return;
+  const db = Sheet.local(); const t = now(); const names = FAKE_NAMES.slice().sort(() => Math.random() - 0.5);
+  const mk = (ref, o) => {
+    const name = names.pop() || ('Citizen ' + uid()); o = o || {};
+    const parent = ref ? (db.players.find(p => p.code === ref) || {}).name || state.name : '';
+    const row = { id: uid('p'), code: name.slice(0, 4).toUpperCase() + uid().slice(0, 3).toUpperCase(), name, ref, dept: o.dept || rnd(DEPTS.slice(0, 9)),
+      total: Math.floor(o.total || 200 + Math.random() * 6000), meals: Math.floor(50 + Math.random() * 900), rank: o.shop ? 1 : 0,
+      shopName: o.shop ? rnd(SHOP_NAMES) : null, buildings: o.b || '', lastSeen: t - Math.random() * (o.idle ? 4 : 1) * 86400000 };
+    db.players.push(row); db.events.push({ id: uid('e'), ts: t - Math.random() * 3 * 86400000, pid: row.id, who: name, kind: 'join', arg: parent, text: parent ? 'was recruited by ' + parent : 'joined. Nobody recruited them. Suspicious.' });
+    if (row.shopName) db.events.push({ id: uid('e'), ts: t - Math.random() * 2 * 86400000, pid: row.id, who: name, kind: 'shop', arg: row.shopName, text: 'opened ' + row.shopName });
+    return row;
+  };
+  const myDept = state.dept || 'Engineering';
+  // Your tree: 4 direct runners (2 with shops), their runners, and one L3.
+  const a = mk(state.code, { shop: true, b: 'depot', total: 12000, dept: myDept });
+  const b = mk(state.code, { shop: true, total: 7000 });
+  mk(state.code, { dept: myDept, idle: true }); mk(state.code, { dept: myDept });
+  const a1 = mk(a.code, { shop: true, total: 3000 }); mk(a.code, { dept: myDept }); mk(a.code, {});
+  mk(b.code, {}); mk(b.code, { idle: true });
+  mk(a1.code, {}); mk(a1.code, {});
+  // A rival empire: an overlord with a factory, plants, depots and a big downline.
+  const boss = mk(null, { shop: true, b: 'depot,plant,factory', total: 180000, dept: 'Sales' });
+  for (let i = 0; i < 4; i++) {
+    const sh = mk(boss.code, { shop: true, b: i < 2 ? 'depot' : '', total: 15000 + Math.random() * 20000, dept: 'Sales' });
+    for (let j = 0; j < 3; j++) mk(sh.code, { dept: j === 0 ? 'Sales' : undefined });
+  }
+  // Strays who never opened a shop despite the money.
+  mk(null, { total: 4000, dept: 'Finance' }); mk(null, { total: 2500, dept: 'Finance', idle: true });
+  db.events.push({ id: uid('e'), ts: t - 3600000, pid: boss.id, who: boss.name, kind: 'fine', arg: '14.2K', text: 'was fined ₵14.2K for unlicensed nutrient distribution' });
+  // A franchise you handed over yesterday, so the Portfolio tab has something in it.
+  const frName = (state.shop ? state.shop.name : state.name + '\'s Kebab Hut') + ' №' + ((state.portfolio || []).filter(e => !e.ministry).length + 2);
+  const fr = mk(state.code, { shop: true, b: 'depot', total: 640000, dept: rnd(DEPTS.slice(0, 9)) });
+  fr.shopName = frName; fr.franchiseOf = state.id; fr.franchiseName = state.name; fr.lastSeen = t - 20 * 60000;
+  const frGear = { trainers: 34, hover: 21, drones: 12, teleport: 3, pod: 4, mask: 2 };
+  state.portfolio = [{ id: uid('f'), name: frName, to: fr.name, toId: fr.id, at: t - 86400000, gear: frGear, upg: 9, buildings: 'depot', income: 3100, stamps: 2, ministry: false,
+    samples: [{ t: t - 30 * 60000, total: 610000 }, { t: t - 60000, total: 640000 }] }].concat(state.portfolio || []);
+  db.events.push({ id: uid('e'), ts: t - 86400000, pid: fr.id, who: fr.name, kind: 'franchise', arg: state.name, text: 'took over ' + state.name + '\'s business as a franchisee' });
+  db.events.push({ id: uid('e'), ts: t - 5 * 3600000, pid: fr.id, who: fr.name, kind: 'milestone', arg: frName, amount: '100K', of: state.name, text: 'took ' + frName + ' past ₵100K' });
+  Sheet.putLocal(db);
+  log('Seeded a demo company of ' + db.players.length + ' citizens and a franchise in your Portfolio. None of them are real. Most of them owe you money.');
+  sync();
+}
+function wipeCompany() {
+  if (CONFIG.SHEET_API) return;
+  ask('Wipe the company?', 'This clears the local sheet: every player in this browser, and your save.', 'WIPE', () => {
+    localStorage.removeItem(CONFIG.SHEET_KEY); localStorage.removeItem(KEY); location.href = location.pathname;
+  });
+}
+
+// ---------------- UI ----------------
+const lastHTML = {};
+function setHTML(id, html) { if (lastHTML[id] !== html) { lastHTML[id] = html; $(id).innerHTML = html; } }
+function modal(html) { $('modalBox').innerHTML = html; $('modal').hidden = false; }
+function closeModal() { $('modal').hidden = true; }
+function toast(text) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = text; document.body.appendChild(t); setTimeout(() => t.remove(), 2600); }
+
+// Credits tween towards the real value at 60fps; render() only sets it directly where there is no animation frame.
+let shownCash = null, tweening = false;
+function tween() {
+  if (shownCash == null) shownCash = state.cash;
+  const d = state.cash - shownCash;
+  shownCash = Math.abs(d) < Math.max(0.5, state.cash * 0.0005) ? state.cash : shownCash + d * 0.18;
+  $('cash').textContent = '₵' + fmt(shownCash);
+  requestAnimationFrame(tween);
+}
+function render() {
+  const c = calc(state), t = now();
+  if (!tweening) $('cash').textContent = '₵' + fmt(state.cash);
+  $('ips').textContent = '₵' + fmt(c.income) + (c.tax ? ' (−10%)' : '');
+  $('deliv').textContent = fmt(Math.floor(state.deliveries));
+  $('zone').textContent = ZONES[c.zone].name + (c.outbreak ? ' (fallback)' : c.supply.plant ? ' (via plant)' : '');
+  const r = RANKS[c.rank]; const next = RANKS[c.rank + 1];
+  setHTML('rank', `<b>${esc(state.name || 'Unknown Citizen')} <a href="#" data-act="rename" title="Rename yourself or your shop. Your code and runners stay.">✎</a></b>${r.name}${state.dept ? ' · ' + esc(state.dept) : ''} · ×${r.mul} income` +
+    (next ? `<br>${state.shop ? downCount() + '/' + next.need + ' runners to ' + next.name : 'Open a shop to rank up'}` : '<br>There is nothing above you.'));
+
+  const rb = $('recruiter');
+  if (state.franchiseOf) {
+    rb.hidden = false;
+    setHTML('recruiter', `You run <b>${esc(state.shop ? state.shop.name : 'a franchise')}</b>, a franchise of <b>${esc(state.franchiseName || 'someone')}</b>. They keep 25% of everything you make. The gear was theirs. The debt is yours.`);
+  } else if (state.ref && !state.shop) {
+    rb.hidden = false;
+    setHTML('recruiter', `You are running for <b>${esc(state.recruiter || 'a stranger with the code ' + state.ref)}</b>. They take 10% of everything you make. Open your own shop to take it back, or <a href="#" data-act="complain">file a complaint</a> where everyone can see it.`);
+  } else rb.hidden = true;
+  const sb = $('supply'); const perks = [];
+  if (c.supply.depot) perks.push('Depot: +25% deliveries');
+  if (c.supply.plant) perks.push('Kitchen Plant: +1 zone');
+  if (c.supply.factory) perks.push('Nutrient Factory: +25% value');
+  if (perks.length) { sb.hidden = false; setHTML('supply', 'Your supply chain feeds you: ' + perks.join(' · ') + '. This is why people join a shop with buildings.'); } else sb.hidden = true;
+
+  if (state.lastOrder) {
+    const o = state.lastOrder;
+    setHTML('order', `${esc(o.text)}<br><span class="who">for ${esc(o.who)}${o.via ? ' · cooked at ' + esc(o.via) + '\'s Kitchen Plant' : ''}</span> · <span class="gain">+₵${fmt(o.gain)}${o.tip > 0.4 ? ' (big tip)' : ''}</span>`);
+  }
+  // Active effects as chips. Hover for the tooltip, tap for the same text as a toast.
+  const fx = [];
+  const chip = (label, until, unit, tip) => fx.push(`<span data-tip="${esc(tip)}" title="${esc(tip)}">${label} ${Math.ceil((until - t) / (unit === 'm' ? 60000 : 1000))}${unit}</span>`);
+  if ((state.fx.rain || 0) > t) chip('☔ Acid rain', state.fx.rain, 's', 'Acid rain: every order pays double, but runners deliver at half speed. Net effect: nothing, plus mild chemical burns.');
+  if ((state.fx.viral || 0) > t) chip('📈 Viral', state.fx.viral, 's', 'Your Slack post about MustEat went viral. Everyone is ordering. Deliveries ×2 while it lasts.');
+  if ((state.fx.feast || 0) > t) chip('🍽 Mandatory Feast', state.fx.feast, 'm', 'A Ministry seat holder declared a Mandatory Feast. Every citizen delivers ×2 for ten minutes.');
+  if ((state.fx.outbreak || 0) > t) chip('☣ Zone sealed', state.fx.outbreak, 's', 'Variant outbreak: your best delivery zone is sealed. You fall back one zone, and orders pay what that zone pays.');
+  if ((state.fx.rival || 0) > t && !state.contracts) chip('🏴 JustBreathe undercutting', state.fx.rival, 's', 'Rival app JustBreathe is undercutting you: order value −30%. Exclusive Contracts (in The Ministry) make this stop happening.');
+  if ((state.fx.rush || 0) > t) chip('🍜 Lunch Rush ×7', state.fx.rush, 's', 'From an unmarked ration crate: all income ×7 for 77 seconds. Buy things now.');
+  if ((state.fx.panic || 0) > t) chip('🛒 Panic buying ×777', state.fx.panic, 's', 'From an unmarked ration crate: every tap on RUN DELIVERY pays ×777 for 13 seconds. Tap. TAP.');
+  setHTML('fx', fx.join(' · '));
+  const rationReady = now() - state.ration >= CONFIG.RATION_H * H;
+  setHTML('ration', rationReady ? `<button data-act="ration">Claim daily ration (₵${fmt(Math.max(50, Math.floor(c.baseIncome * 600)))})</button>` : `<span class="muted">Next ration in ${dur((state.ration + CONFIG.RATION_H * H - now()) / 1000)}</span>`);
+
+  const qty = state.qty || 1;
+  setHTML('qty', [1, 10, 100].map(n => `<button class="${qty === n ? 'on' : ''}" data-qty="${n}">×${n}</button>`).join(''));
+  // Like Cookie Clicker: show what you own, the next tier, and one classified tier after that. The rest stays hidden.
+  const chain = GEAR.filter(g => g.dps);
+  const topOwned = chain.reduce((a, g, i) => lvl(g.id) > 0 ? i : a, -1);
+  setHTML('gear', GEAR.filter(g => !g.dps || chain.indexOf(g) <= topOwned + 2).map((g, gi) => {
+    const l = lvl(g.id), n = g.max ? Math.min(qty, g.max - l) : qty, cost = gearCost(g, l, n), maxed = g.max && l >= g.max;
+    const secret = g.dps && l === 0 && chain.indexOf(g) === topOwned + 2;
+    const mult = g.dps ? Math.pow(2, upgCount(state, u => u.gear === g.id)) : 1;
+    // What this line is making right now, and its share of everything you make.
+    let rev = '';
+    const ledger = !!state.upg.ledger;
+    const neon = now() - revealAt < 3500 ? ` neon" style="--d:${(0.35 + gi * 0.14).toFixed(2)}s"` : '"';
+    if (secret || !ledger) rev = '';
+    else if (g.dps) {
+      const share = c.baseDps > 0 ? (g.dps * l * mult) / c.baseDps : 0, inc = c.income * share, pct = share * 100;
+      const pctText = pct >= 10 ? Math.round(pct) + '%' : pct >= 0.1 ? pct.toFixed(1) + '%' : pct > 0 ? '<0.1%' : '0%';
+      rev = `<div class="rev ${l ? '' : 'off'}${neon}><b>₵${fmt(inc)}/s</b><span>${l ? pctText + ' of income' : 'not yet'}</span><i style="--w:${Math.round(pct)}%"></i></div>`;
+    } else if (g.valueMul) rev = `<div class="rev val ${l ? '' : 'off'}${neon}><b>×${(1 + g.valueMul * l).toFixed(1)} value</b><span>on every order</span><i style="--w:${Math.round(100 * l / g.max)}%"></i></div>`;
+    else if (g.id === 'mask') rev = `<div class="rev val ${l ? '' : 'off'}${neon}><b>−${25 * l}% trouble</b><span>inspections, rain, rivals</span><i style="--w:${Math.round(100 * l / g.max)}%"></i></div>`;
+    const desc = secret ? 'Classified. Buy the thing above it first.' : g.desc + (g.dps ? ' +' + fmt(g.dps * mult) + '/s each.' : '') + (g.zone != null && l === 0 ? ' Unlocks ' + ZONES[g.zone].name + '.' : '') + (g.id === 'hover' && world.citizens >= 5 ? ' <span class="need">Subsidised.</span>' : '');
+    return `<div class="item ${secret ? 'locked' : ''}"><div><b>${secret ? '???' : g.name}</b><span class="lvl">Lv ${l}</span><div class="d">${desc}</div></div>${rev}
+      <button data-buy="${g.id}" ${maxed || state.cash < cost ? 'disabled' : ''}>${maxed ? 'MAX' : '₵' + fmt(cost) + (n > 1 ? ' ×' + n : '')}</button></div>`;
+  }).join(''));
+
+  const avail = UPGRADES.filter(u => !state.upg[u.id] && u.unlock(state)).sort((a, b) => a.cost - b.cost).slice(0, 9);
+  const bought = Object.keys(state.upg).length;
+  const nextUp = UPGRADES.filter(u => !state.upg[u.id] && !u.unlock(state)).sort((a, b) => a.cost - b.cost)[0];
+  setHTML('upgrades', (avail.length ? `<div class="ups">${avail.map(u => `<div class="up ${u.id === 'ledger' ? 'ledger' : ''}"><b>${u.name}</b><div class="d">${u.desc}</div><button data-upg="${u.id}" ${state.cash < u.cost ? 'disabled' : ''}>₵${fmt(u.cost)}</button></div>`).join('')}</div>` : '') +
+    `<p class="muted">${bought} of ${UPGRADES.length} upgrades bought.${nextUp ? ' Next unlock: ' + nextUp.name + ' at ' + nextUp.hint + '.' : ''}${avail.length ? '' : ' Buy gear, tap, deliver: upgrades unlock from all three.'}</p>`);
+
+  let sh;
+  const vbtn = `<button data-act="voucher" ${state.cash < CONFIG.VOUCHER_COST ? 'disabled' : ''}>Ration voucher for a colleague (₵${CONFIG.VOUCHER_COST})</button>`;
+  if (!state.shop) {
+    sh = `<p>You are a runner. ${state.ref ? 'Runners pay 10% to their shop owner.' : 'Nobody sent you here. Impressive. Or sad.'} Open your own shop to keep everything and recruit runners of your own.</p>
+      <div class="row"><button data-act="shop" ${state.cash < CONFIG.SHOP_COST ? 'disabled' : ''}>Open a shop (₵${fmt(CONFIG.SHOP_COST)})</button>
+      <button data-act="share">Copy invite for Slack</button>${vbtn}</div>
+      <p class="muted">You can recruit before you have a shop. Anyone who joins through your link pays you 10% of their earnings. A voucher gives a named colleague ₵${CONFIG.VOUCHER_BONUS} to start with, which makes them feel special, which makes them click.</p>`;
+  } else {
+    const L = [1, 2, 3].map(n => state.down.list.filter(m => m.level === n).length);
+    const rows = state.down.list.slice().sort((a, b) => a.level - b.level || b.total - a.total).slice(0, 15).map(m => {
+      const idle = m.lastSeen && now() - m.lastSeen > 3 * H;
+      const bl = bnames(m.buildings);
+      return `<tr><td>${esc(m.name)}${m.shopName ? ' <span class="muted">(' + esc(m.shopName) + ')</span>' : ''}${bl ? '<div class="muted">' + esc(bl) + '</div>' : ''}</td><td class="r">L${m.level}</td><td class="r">₵${fmt(m.total)}</td><td class="r muted">${m.lastSeen ? ago(m.lastSeen) : ''}${idle && m.level === 1 ? ' <button class="sm" data-nudge="' + esc(m.id) + '">nudge</button>' : ''}</td></tr>`;
+    }).join('');
+    sh = `<p><b>${esc(state.shop.name)}</b> · ${downCount()} runners (L1 ${L[0]}, L2 ${L[1]}, L3 ${L[2]}) · earned from runners: <b>₵${fmt(state.down.credited)}</b>${cutMul(state) > 1 ? ' · cuts ×' + cutMul(state) : ''}</p>
+      <div class="row"><button data-act="share">Copy invite for Slack</button>${vbtn}<button data-act="refresh">Refresh runners</button></div>
+      <div class="link">${esc(shareLink())}</div>
+      ${rows ? `<table style="margin-top:8px"><tr><th>Runner</th><th class="r">Lvl</th><th class="r">Earned</th><th class="r">Seen</th></tr>${rows}</table>` : '<p class="muted">No runners yet. Your fryer is cold. Paste the invite somewhere colleagues will see it.</p>'}
+      <p class="muted">You get 10% of level 1, 5% of level 2, 2.5% of level 3. Forever. Even after they open their own shops. Idle runners can be nudged. Nudges are copied, not sent. You have to do the awkward part yourself.</p>`;
+  }
+  setHTML('shop', sh);
+
+  setHTML('buildings', BUILDINGS.map(b => {
+    const st = buildStatus(b);
+    let why = '';
+    if (st.owned) why = '<span class="need">Built.</span> ' + b.down + ' ' + b.up;
+    else if (!st.declassified) why = `<span class="need">Classified until the company has ${b.unlock} citizens (${world.citizens} now). Recruit anyone. Even Finance.</span>`;
+    else if (!state.shop) why = '<span class="need">Needs a shop first.</span>';
+    else if (!st.chain) why = `<span class="need">Needs a ${(BUILDINGS.find(x => x.id === b.after) || {}).name} first.</span>`;
+    else if (!st.people) why = `<span class="need">Needs ${b.needText}. Credits cannot buy colleagues. Only links can.</span>`;
+    else why = '<span class="need">Ready.</span> ' + b.down + ' ' + b.up;
+    const cooling = now() - state.lastDecree < CONFIG.DECREE_H * H;
+    const decrees = st.owned && b.id === 'ministry' ? `<div class="row">${Object.keys(DECREES).map(k => `<button class="sm" data-decree="${k}" ${cooling ? 'disabled' : ''}>Decree: ${DECREES[k].name}</button>`).join('')}${cooling ? '<span class="muted">Next decree in ' + dur((state.lastDecree + CONFIG.DECREE_H * H - now()) / 1000) + '</span>' : ''}</div>` : '';
+    return `<div class="item ${st.owned ? 'owned' : ''} ${!st.declassified ? 'locked' : ''}"><div><b>${b.name}</b><div class="d">${b.desc}</div><div class="d">${why}</div>${decrees}</div>
+      <button data-build="${b.id}" ${st.can ? '' : 'disabled'}>${st.owned ? 'BUILT' : '₵' + fmt(b.cost)}</button></div>`;
+  }).join(''));
+
+  const heatWord = state.heat < 25 ? 'Unnoticed' : state.heat < 50 ? 'Noted' : state.heat < 75 ? 'Under review' : 'Actively hunted';
+  setHTML('ministry', `<p>Ministry suspicion: <b><span id="heatV"></span>%</b> · <span id="heatW"></span></p>
+    <div class="bar"><i id="heatBar"></i></div>
+    <p class="muted">Suspicion rises with your income and your runner count. High suspicion means inspections and fines (never more than 30% of your cash, they are not monsters).</p>
+    <div class="row">
+      <button data-act="bribe" ${state.cash < 10 ? 'disabled' : ''}>Bribe official (₵<span id="bribeV"></span>) −40</button>
+      <button data-act="drone" ${state.drone ? 'disabled' : state.cash < CONFIG.DRONE_COST ? 'disabled' : ''}>${state.drone ? 'Compliance Drone ✓' : 'Compliance Drone (₵' + fmt(CONFIG.DRONE_COST) + ')'}</button>
+      <button data-act="contracts" ${state.contracts ? 'disabled' : state.cash < CONFIG.CONTRACTS_COST ? 'disabled' : ''}>${state.contracts ? 'Exclusive Contracts ✓' : 'Exclusive Contracts (₵' + fmt(CONFIG.CONTRACTS_COST) + ')'}</button>
+    </div>`);
+  $('heatV').textContent = Math.floor(state.heat); $('heatW').textContent = heatWord; $('heatBar').style.width = state.heat + '%';
+  $('bribeV').textContent = fmt(Math.max(10, Math.floor(state.cash * 0.1)));
+
+  const st = stampsFor(state.total), gain = stampGain(), half = Math.floor(gain / 2), stamps = state.stamps || 0;
+  const stampLo = CONFIG.STAMP_BASE * Math.pow(st, 3), stampHi = CONFIG.STAMP_BASE * Math.pow(st + 1, 3);
+  const worth = half >= 1 && stampMult(stamps + half) / stampMult(stamps) >= 1.25;
+  const canFr = !!state.shop && gearTotal(state) >= 1;
+  setHTML('franchise', `<p>Ration Stamps: <b>${stamps}</b> · income ×${stampMult(stamps).toFixed(2)}${gain > 0 ? ` · <b class="need">${gain} on offer</b>` : ''}</p>
+    <div class="bar cool"><i id="stampBar"></i></div>
+    <p class="muted">Lifetime earnings ₵<span id="totalV"></span>. Next stamp at ₵${fmt(stampHi)}. Every stamp is income forever (square root, so the first ones matter most).</p>
+    ${state.offer ? `<p class="need">Offer out since ${ago(state.offer.at)}: the first colleague to click takes <b>${esc(state.offer.shopName)}</b> with ${gearSummary(state.offer.gear)}. You keep running until they do.</p>
+      <div class="row"><button data-act="franchise">Copy the offer again</button><button data-act="withdraw">Withdraw</button></div>`
+    : `<div class="row"><button data-act="franchise" ${canFr ? '' : 'disabled'}>Franchise to a colleague (${gain > 0 ? "+" + gain + " stamp" + (gain === 1 ? "" : "s") + ", " : ""}25% royalty forever)</button>
+      <button data-act="ministry" ${worth ? '' : 'disabled'}>Sell to the Ministry (+${half} stamp${half === 1 ? '' : 's'}, no royalty)${worth ? '' : ' · not worth it yet'}</button></div>
+      <p class="muted">${canFr ? 'Franchising posts a first-come link in Slack. Whoever clicks gets your gear, upgrades and shop name as they stand when they click. You get the stamps, a trophy in your Portfolio and 25% of everything they ever earn. Your clone keeps your name, runners, buildings and commendations.' : 'Open a shop and buy some gear first. Nobody franchises an empty garage.'}</p>`}`);
+  $('stampBar').style.width = clamp(100 * (state.total - stampLo) / (stampHi - stampLo), 0, 100) + '%';
+  $('totalV').textContent = fmt(state.total);
+
+  const pf = state.portfolio || [];
+  const tab = state.tab === 'portfolio' ? 'portfolio' : 'run';
+  $('tab-run').hidden = tab !== 'run'; $('tab-portfolio').hidden = tab !== 'portfolio';
+  $('tabRunB').className = tab === 'run' ? 'on' : ''; $('tabPfB').className = tab === 'portfolio' ? 'on' : '';
+  $('pfN').textContent = pf.length ? '(' + pf.length + ')' : '';
+  if (tab === 'portfolio') {
+    const live = pf.map(e => {
+      const r = e.toId ? world.byId[e.toId] : null; const total = r ? Number(r.total) || 0 : 0;
+      const s = e.samples || []; const a = s[0], b = s[s.length - 1];
+      const rpm = a && b && b.t > a.t ? (b.total - a.total) / ((b.t - a.t) / 60000) : total / Math.max(1, (now() - e.at) / 60000);
+      const status = e.ministry ? 'Nationalised' : !r ? 'Unknown' : now() - (Number(r.lastSeen) || 0) < 3 * H ? 'Open' : 'Idle ' + ago(Number(r.lastSeen));
+      return { e, r, total, rpm, status };
+    });
+    const royalties = live.reduce((a, l) => a + (l.e.ministry ? 0 : l.total * CONFIG.ROYALTY), 0);
+    const rpmAll = live.reduce((a, l) => a + (l.e.ministry ? 0 : l.rpm), 0);
+    setHTML('portfolio', pf.length ? `<div class="pfsum">
+        <div class="stat"><div class="k">Franchises</div><div class="v">${pf.filter(e => !e.ministry).length}</div></div>
+        <div class="stat"><div class="k">Royalties, all time</div><div class="v">₵${fmt(royalties)}</div></div>
+        <div class="stat"><div class="k">Chain rev / min</div><div class="v">₵${fmt(rpmAll)}</div></div></div>` +
+      live.map(({ e, r, total, rpm, status }) => `<div class="trophy ${e.ministry ? 'grey' : ''}">
+        <div class="tname">${e.ministry ? '🏛' : '🏆'} ${esc(e.name)}</div>
+        <div class="muted">Est. ${dateStr(e.at)} · ${e.ministry ? 'Sold to the Ministry' : 'Franchised to <b>' + esc(e.to) + '</b>'}${r && r.rank != null ? ' · now ' + RANKS[Number(r.rank) || 0].name : ''} · +${e.stamps} stamp${e.stamps === 1 ? '' : 's'}</div>
+        <div class="tstats">
+          <div><span class="k">Total earned</span><b>₵${fmt(e.ministry ? 0 : total)}</b></div>
+          <div><span class="k">Rev / min</span><b>₵${fmt(e.ministry ? 0 : rpm)}</b></div>
+          <div><span class="k">Royalty to you</span><b>₵${fmt(e.ministry ? 0 : total * CONFIG.ROYALTY)}</b></div>
+          <div><span class="k">Status</span><b>${status}</b></div></div>
+        <div class="feat">${GEAR.filter(g => e.gear[g.id]).map(g => '<span>' + esc(g.name) + ' ×' + e.gear[g.id] + '</span>').join('')}${bnames(r ? r.buildings : e.buildings).split(', ').filter(Boolean).map(b => '<span class="b">' + esc(b) + '</span>').join('')}</div>
+        <div class="muted">Handed over at ₵${fmt(e.income)}/s with ${e.upg} upgrades.${e.ministry ? ' The Ministry has since lost the paperwork.' : ''}</div>
+      </div>`).join('')
+    : '<div class="empty"><b>🏆</b>Nothing in the cabinet yet.<br>Franchise a business to a colleague and it lives here forever: what it had, what it earns, what they owe you.</div>');
+  }
+
+  const got = ACH.filter(a => state.ach[a.id]), todo = ACH.filter(a => !state.ach[a.id]).slice(0, 3);
+  setHTML('ach', `<p><b>${got.length}</b> of ${ACH.length} commendations · income +${got.length * 2}%</p>
+    <div class="ach">${got.map(a => `<span title="${esc(a.desc)}">${esc(a.name)}</span>`).join('')}</div>
+    ${todo.length ? '<p class="muted">Next: ' + todo.map(a => a.desc).join(' · ') + '.</p>' : '<p class="muted">Every commendation earned. The Ministry has run out of stamps.</p>'}`);
+
+  const nextMs = MILESTONES.find(m => world.citizens < m.at);
+  setHTML('company', `<p><b>${world.citizens}</b> citizens · <b>${fmt(world.meals)}</b> meals delivered company-wide</p>
+    ${nextMs ? `<div class="bar cool"><i style="width:${clamp(100 * world.citizens / nextMs.at, 0, 100)}%"></i></div><p class="muted">${nextMs.at - world.citizens} more citizens until: ${nextMs.text}. Everyone benefits. Recruit outside your own tree if you have to.</p>` : '<p class="muted">Every blueprint is declassified. The company is fed. The Ministry is furious.</p>'}
+    <div class="ms">${MILESTONES.map(m => `<span class="${world.citizens >= m.at ? 'on' : ''}">${m.at}: ${m.text}</span>`).join('')}</div>
+    <div class="feed" style="margin-top:8px">${feed.length ? feed.map(e => `<div><b>${esc(e.who)}</b> ${feedText(e)}<i>${ago(e.ts)}</i></div>`).join('') : '<div>Nothing has happened yet. Historically, this is when someone opens a shop.</div>'}</div>`);
+
+  setHTML('sectors', world.sectors.length ? `<table><tr><th>Department</th><th class="r">Citizens</th><th class="r">Earned</th><th>Sector controlled by</th></tr>` +
+    world.sectors.map(s => `<tr class="${s.dept === state.dept ? 'me' : ''}"><td>${esc(s.dept)}</td><td class="r">${s.citizens}</td><td class="r">₵${fmt(s.total)}</td><td>${s.shop ? esc(s.shop.shopName) + ' <span class="muted">(' + esc(s.shop.name) + ', ' + s.n + ' runners there)</span>' : '<span class="muted">Unclaimed. Nobody has recruited here.</span>'}</td></tr>`).join('') +
+    `</table><p class="muted">A sector belongs to the shop with the most runners from that department. Your own department is the easy one. Other departments are the funny one.</p>` : '<p class="muted">No departments yet.</p>');
+
+  const board = world.board;
+  if (board.length) {
+    const shame = board.filter(p => !p.shopName && p.total > 500).slice(0, 3).map(p => esc(p.name));
+    const TOP = 15, meAt = board.findIndex(p => p.id === state.id);
+    const shown = board.slice(0, TOP).map((p, i) => [p, i]);
+    if (meAt >= TOP) shown.unshift([board[meAt], meAt]); // you are always on the board, even from the cheap seats
+    setHTML('board', `<table><tr><th>#</th><th>Citizen</th><th>Shop</th><th class="r">Earned</th><th class="r" title="Credited from runners and franchisees, from the ledger">From runners</th><th class="r">Runners</th></tr>` +
+      shown.map(([p, i]) => `<tr class="${p.id === state.id ? 'me' : ''}"><td>${i + 1}</td><td>${esc(p.name)}${p.stamps ? ' <span class="need" title="Ration Stamps">★' + p.stamps + '</span>' : ''}<div class="muted">${RANKS[p.rank || 0].name}${p.dept ? ' · ' + esc(p.dept) : ''}</div></td><td>${esc(p.shopName || '—')}${p.buildings ? '<div class="muted">' + esc(bnames(p.buildings)) + '</div>' : ''}</td><td class="r">₵${fmt(p.total)}</td><td class="r">${world.fromRunners[p.id] ? '₵' + fmt(world.fromRunners[p.id]) : '—'}</td><td class="r">${p.runners || 0}</td></tr>`).join('') +
+      `</table><p class="muted"><a href="ledger.html" target="_blank">Open the ledger</a>: every cut and royalty ever credited, who paid whom, and the top earners from runners.</p>` + (board.length > TOP ? `<p class="muted">${board.length - TOP} more citizens below the fold.</p>` : '') + (shame.length ? `<p class="muted">Still running for someone else despite the money: ${shame.join(', ')}. Open a shop. Have some dignity.</p>` : ''));
+  } else setHTML('board', '<p class="muted">Nobody else is here yet. Or the sheet is loading. Either way: recruit.</p>');
+
+  setHTML('log', state.log.map(e => `<div>${e.text}</div>`).join(''));
+  $('mode').textContent = CONFIG.SHEET_API ? 'connected to sheet' : 'local sheet (this browser only)';
+  setHTML('localtools', CONFIG.SHEET_API ? '' : ' · <a href="#" data-act="seed">seed demo company</a> · <a href="#" data-act="wipe">wipe company</a>');
+}
+
+// ---------------- Wiring ----------------
+$('run').addEventListener('click', runDelivery);
+$('crate').addEventListener('click', collectCrate);
+document.addEventListener('click', e => {
+  const buyB = e.target.closest('[data-buy]'); if (buyB) return buy(buyB.dataset.buy);
+  const bl = e.target.closest('[data-build]'); if (bl) return build(bl.dataset.build);
+  const ug = e.target.closest('[data-upg]'); if (ug) return buyUpgrade(ug.dataset.upg);
+  const q = e.target.closest('[data-qty]'); if (q) { state.qty = +q.dataset.qty; return render(); }
+  const tb = e.target.closest('[data-tab]'); if (tb) { state.tab = tb.dataset.tab; return render(); }
+  const tip = e.target.closest('[data-tip]'); if (tip) return toast(tip.dataset.tip);
+  const nd = e.target.closest('[data-nudge]'); if (nd) return nudge(nd.dataset.nudge);
+  const dc = e.target.closest('[data-decree]'); if (dc) return decree(dc.dataset.decree);
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  e.preventDefault();
+  const act = { shop: openShopDialog, share, voucher, complain, ration: claimRation, refresh: sync, bribe, drone: buyDrone, contracts: buyContracts, seed: seedDemo, wipe: wipeCompany, franchise, withdraw: withdrawOffer, ministry: ministryDialog, rename: renameDialog }[b.dataset.act];
+  if (act) act();
+});
+$('reset').addEventListener('click', e => { e.preventDefault(); ask('Delete your save?', 'The Ministry will not remember you.', 'DELETE', () => { localStorage.removeItem(KEY); location.href = location.pathname; }); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) save(); });
+if (qs.has('dev')) window.MUSTEAT = { get state() { return state; }, calc, GEAR, UPGRADES, ACH, gearCost, buy, buyUpgrade, runDelivery, collectCrate, frame, save, sync, franchise, render };
+window.addEventListener('beforeunload', save);
+
+function showOffline(o) {
+  modal(`<h3>Welcome back, citizen</h3>
+    <p>You were sheltering for <b>${dur(o.el)}</b>.</p>
+    <p>${o.meals >= 1 ? 'Your gear delivered <b>' + fmt(Math.floor(o.meals)) + ' meals</b> and earned <b>₵' + fmt(o.gain) + '</b>.' : 'Nothing was delivered. You have no gear. The town went hungry.'}</p>
+    <p class="muted">Full rate for the first ${CONFIG.OFFLINE_FULL_H}h away, half rate up to ${CONFIG.OFFLINE_HALF_H}h. After that the drones get bored.</p>
+    <button id="ok" class="big2">BACK TO WORK</button>`);
+  $('ok').onclick = closeModal;
+}
+async function showIntro() {
+  const ref = state.ref, v = qs.get('v');
+  let fr = null;
+  if (qs.get('fr')) { const rows = await Sheet.read('players'); const owner = rows.find(r => r.code === qs.get('fr')); const o = parseOffer(owner); if (owner) fr = { owner, offer: o, open: !!o && owner.claimedOffer !== o.id }; }
+  modal(`<h3>MUSTEAT — Citizen registration</h3>
+    <p class="muted">Year 3019. Lockdown has lasted 900 years. Going outside is illegal, unless you are carrying food. Congratulations: you are now carrying food.</p>
+    ${v ? '<p><b>' + esc(v) + '</b>, someone bought you a ration voucher worth <b>₵' + CONFIG.VOUCHER_BONUS + '</b>. They want something. They want you to run.</p>' : ''}
+    ${fr && fr.open ? '<p>🏆 <b>' + esc(fr.owner.name) + '</b> is handing you <b>' + esc(fr.offer.shopName) + '</b>: ' + esc(gearSummary(fr.offer.gear)) + ', ₵' + fmt(fr.offer.income) + '/s, ready to run. They keep 25% of everything you make. Sign here before someone else does.</p>'
+      : fr ? '<p><b>' + esc(fr.owner.name) + '</b> offered their business, but ' + (fr.owner.claimedName ? '<b>' + esc(fr.owner.claimedName) + '</b> got there first' : 'the offer is gone') + '. You can still run for them.</p>'
+      : ref ? '<p>You were recruited with code <b>' + esc(ref) + '</b>. Your shop owner takes 10% of what you earn. You will resent this. Good.</p>' : '<p>Nobody recruited you. You found this yourself. The Ministry finds that suspicious.</p>'}
+    <input id="nm" placeholder="Your name (as colleagues would know it)" maxlength="40" value="${esc(v || '')}" autofocus>
+    <select id="dept">${DEPTS.map(d => '<option>' + d + '</option>').join('')}</select>
+    <input id="refIn" placeholder="Who sent you? Their code, if the link lost it (optional)" maxlength="12" value="${esc(ref || '')}" style="text-transform:uppercase">
+    <div class="hint">The code is at the end of the invite link, after ?ref=. Without it your recruiter gets nothing, which they will mention.</div>
+    <button id="go" class="big2">${fr && fr.open ? 'TAKE THE BUSINESS' : 'START RUNNING'}</button>`);
+  const go = () => {
+    const n = $('nm').value.trim().slice(0, 40); if (!n) return;
+    state.name = n; state.dept = $('dept').value;
+    state.ref = String($('refIn').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12) || state.ref || null;
+    log('Registered citizen <b>' + esc(n) + '</b> of ' + esc(state.dept) + '. Welcome to the food economy.');
+    closeModal(); start(false);
+  };
+  $('go').onclick = go;
+  $('nm').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+}
+async function register() {
+  const rows = await Sheet.read('players');
+  const rec = rows.find(r => r.code === state.ref);
+  state.id = uid('p');
+  state.code = (state.name.replace(/[^a-z0-9]/gi, '').slice(0, 4).toUpperCase() || 'RUN') + uid().slice(0, 3).toUpperCase();
+  state.recruiter = rec ? rec.name : null;
+  if (qs.get('v')) { earn(CONFIG.VOUCHER_BONUS, 0); log('Ration voucher redeemed: <b>₵' + CONFIG.VOUCHER_BONUS + '</b>. Do not tell the Ministry.'); }
+  let claimed = null;
+  if (qs.get('fr')) {
+    const owner = rows.find(r => r.code === qs.get('fr')), o = parseOffer(owner);
+    if (owner && o && owner.claimedOffer !== o.id) {
+      state.gear = Object.assign({}, o.gear); state.upg = Object.assign({}, o.upg); state.shop = { name: String(o.shopName).slice(0, 48), at: now() };
+      state.ref = owner.code; state.recruiter = owner.name; state.franchiseOf = owner.id; state.franchiseName = owner.name; claimed = owner;
+      await Sheet.upsert('players', { id: owner.id, claimedBy: state.id, claimedName: state.name, claimedAt: now(), claimedOffer: o.id });
+      log('<b>You took over ' + esc(o.shopName) + ' from ' + esc(owner.name) + '.</b> ' + esc(gearSummary(o.gear)) + ', ₵' + fmt(o.income) + '/s. They keep 25%. Do not let them down. Or do.');
+    } else if (owner) log('<b>' + esc(owner.name) + '</b>\'s business was already taken' + (owner.claimedName ? ' by <b>' + esc(owner.claimedName) + '</b>' : '') + '. You run for them instead.');
+  }
+  await Sheet.upsert('players', rowOf(state));
+  if (claimed) post('franchise', claimed.name); else post('join', rec ? rec.name : '');
+  if (state.ref && !rec) log('Nobody in the company has the code <b>' + esc(state.ref) + '</b> yet. You run for a stranger until they register.');
+}
+async function start(returning) {
+  const off = returning ? offline(state) : null;
+  if (!state.id) await register();
+  save();
+  if (off) showOffline(off);
+  last = now();
+  setInterval(frame, 250);
+  if (typeof requestAnimationFrame === 'function' && !tweening) { tweening = true; requestAnimationFrame(tween); }
+  setInterval(save, 5000);
+  setInterval(sync, CONFIG.SYNC_S * 1000);
+  sync();
+  render();
+}
+render();
+if (!state.name) showIntro(); else start(true);
+})();
+</script>
+</body>
+</html>
