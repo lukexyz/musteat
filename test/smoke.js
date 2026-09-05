@@ -252,6 +252,16 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok('typed code resolves to the owner', /running for.*Ada/s.test(await p3.textContent('#recruiter')), await p3.textContent('#recruiter'));
   await p3.close();
 
+  const p6 = await ctx.newPage();
+  await p6.goto(url + '?slot=6&ref=' + code);
+  await p6.waitForSelector('#refIn');
+  await p6.click('#refIn'); await p6.keyboard.press('End'); await p6.keyboard.type('ZZ');
+  ok('code box accepts typing on top of the link code', (await p6.inputValue('#refIn')) === code + 'ZZ', await p6.inputValue('#refIn'));
+  await p6.fill('#refIn', ''); await p6.fill('#nm', 'Solo'); await p6.click('#go');
+  await p6.waitForFunction(() => /Solo/.test(document.getElementById('rank').textContent));
+  ok('clearing the code box registers with no recruiter', (await p6.evaluate(() => document.getElementById('recruiter').hidden)) && (await save(p6, '6')).ref === null, JSON.stringify((await save(p6, '6')).ref));
+  await p6.close();
+
   console.log('no clipboard (iframe-like): copy box fallback, voucher without prompt()');
   const ctx2 = await browser.newContext({ viewport: { width: 1000, height: 900 } });
   const p4 = await ctx2.newPage();
