@@ -59,6 +59,8 @@ cd test && npm install && node smoke.js          # add --headed to watch it
 
 ## Balance play-test
 
+`test/exportlog.js` exports the current Claude Code session for this project into `.logs/` (gitignored) as a readable transcript plus the raw jsonl.
+
 `test/balance.js` runs the page with a bot on a fresh save and simulated time: it taps, buys whatever pays back fastest, collects half the crates and buys the Compliance Drone. Prints when each tier was first bought, the longest waits with nothing affordable, and income samples. `node balance.js 480 2` is eight hours of an active tapper; `node balance.js 1440 0` is a day of someone who only checks in every ten minutes. `?dev` on the page URL exposes the economy as `window.MUSTEAT` for this.
 
 ## Slack unfurl
