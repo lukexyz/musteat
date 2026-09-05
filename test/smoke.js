@@ -73,12 +73,12 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p1.mouse.down(); await p1.waitForTimeout(400); await p1.mouse.up();
   await p1.waitForTimeout(300);
   const gearLvl = async () => (await p1.textContent('[data-buy="trainers"]')) && (await p1.evaluate(() => document.querySelector('[data-buy="trainers"]').closest('.item').querySelector('.lvl').textContent));
-  ok('slow click (held 400ms) on gear button registers', (await gearLvl()) === 'Lv 1', await gearLvl());
+  ok('slow click (held 400ms) on gear button registers', (await gearLvl()) === '×1', await gearLvl());
   await patchSave(p1, '', 's.cash = 200');
   ok('no modal after reload (still registered)', !(await p1.isVisible('#modal')));
   await p1.click('[data-buy="trainers"]');
   await p1.waitForTimeout(100);
-  ok('fast click on gear button registers', (await gearLvl()) === 'Lv 2', await gearLvl());
+  ok('fast click on gear button registers', (await gearLvl()) === '×2', await gearLvl());
 
   console.log('shop');
   await patchSave(p1, '', 's.cash = 6000');
@@ -106,7 +106,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok('bulk buy button shows x10 price', /×10/.test(await p1.textContent('[data-buy="trainers"]')), await p1.textContent('[data-buy="trainers"]'));
   await p1.click('[data-buy="trainers"]');
   await p1.waitForTimeout(100);
-  ok('x10 buys ten levels', (await gearLvl()) === 'Lv 12', await gearLvl());
+  ok('x10 buys ten levels', (await gearLvl()) === '×12', await gearLvl());
   ok('next gear tier visible, one classified', /Hoverbike/.test(await p1.textContent('#gear')) && /\?\?\?/.test(await p1.textContent('#gear')) && !/Teleport/.test(await p1.textContent('#gear')));
   ok('upgrade unlocked by owning trainers', await p1.isVisible('[data-upg="trainers1"]'));
   const ipsBefore = parseFloat((await p1.textContent('#ips')).replace(/[^0-9.]/g, ''));
@@ -157,7 +157,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p5.fill('#nm', 'Kim'); await p5.click('#go');
   await p5.waitForFunction(() => !document.getElementById('recruiter').hidden);
   ok('franchisee banner names the franchisor', /franchise of.*Ada/s.test(await p5.textContent('#recruiter')), await p5.textContent('#recruiter'));
-  ok('franchisee got the gear and the shop', /Lv 12/.test(await p5.textContent('#gear')) && /Test Kebab №2/.test(await p5.textContent('#shop')));
+  ok('franchisee got the gear and the shop', /×12/.test(await p5.textContent('#gear')) && /Test Kebab №2/.test(await p5.textContent('#shop')));
   for (let i = 0; i < 3; i++) await p5.click('#run');
   await p1.bringToFront();
   await p1.click('[data-act="refresh"]');
@@ -166,7 +166,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p1.click('#ok');
   ok('portfolio tab opened with the trophy', !(await p1.evaluate(() => document.getElementById('tab-portfolio').hidden)) && /Test Kebab №2/.test(await p1.textContent('#portfolio')) && /Franchised to.*Kim/s.test(await p1.textContent('#portfolio')));
   ok('trophy lists the gear it had and live status', /Hazmat Trainers ×12/.test(await p1.textContent('#portfolio')) && /Open/.test(await p1.textContent('#portfolio')), await p1.textContent('#portfolio'));
-  ok('franchisor reset: 4 stamps, gear gone, shop and cash kept', /Ration Stamps: 4/.test(await p1.textContent('#franchise')) && (await gearLvl()) === 'Lv 0' && /Test Kebab/.test(await p1.textContent('#shop')));
+  ok('franchisor reset: 4 stamps, gear gone, shop and cash kept', /Ration Stamps: 4/.test(await p1.textContent('#franchise')) && (await gearLvl()) === '×0' && /Test Kebab/.test(await p1.textContent('#shop')));
   ok('franchisee counted as a runner with royalty', /Kim/.test(await p1.textContent('#shop')));
   await p1.click('[data-tab="run"]');
   ok('run tab back', !(await p1.evaluate(() => document.getElementById('tab-run').hidden)));

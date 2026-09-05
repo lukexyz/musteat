@@ -55,7 +55,11 @@ h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);m
 .item .lvl{font-size:11px;color:var(--blue);margin-left:4px}
 .item .need{font-size:11px;color:var(--gold)}
 .item button{min-width:96px;white-space:nowrap}
-.item>div:first-child{flex:1;min-width:0}
+.item .body{flex:1;min-width:0}
+/* Icon slot on every technology line. Empty on purpose: drop an image at media/icons/<id>.png and add
+   .ico[data-ico="trainers"]{background-image:url(media/icons/trainers.png)} for each one. */
+.item .ico{flex:0 0 40px;width:40px;height:40px;border:1px dashed #2c3b40;border-radius:4px;background:#000 center/contain no-repeat;align-self:center}
+.item.locked .ico{border-style:dotted}
 .rev{text-align:right;min-width:92px;font-size:10px;color:var(--dim);white-space:nowrap;letter-spacing:.3px}
 .rev b{display:block;font-size:12px;font-weight:600;color:var(--fg)}
 .rev.off b{color:var(--dim)}
@@ -76,7 +80,7 @@ h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);m
 @keyframes neon{0%{opacity:0}8%{opacity:1;color:#fff;text-shadow:0 0 8px var(--acc),0 0 22px var(--acc)}16%{opacity:.15}24%{opacity:1;color:#fff;text-shadow:0 0 8px var(--acc),0 0 22px var(--acc)}38%{opacity:.35}50%{opacity:1;color:#fff;text-shadow:0 0 10px var(--acc),0 0 28px var(--acc)}100%{opacity:1;color:var(--fg);text-shadow:none}}
 @keyframes neonIn{from{opacity:0}to{opacity:1}}
 @keyframes rain{from{background-position:0 -120px}to{background-position:0 0}}
-@media(max-width:520px){.item{flex-wrap:wrap}.item>div:first-child{flex:1 1 100%}.rev{flex:1;text-align:left;min-width:0}.rev i{max-width:120px}}
+@media(max-width:520px){.item{flex-wrap:wrap}.item .body{flex:1 1 60%}.rev{flex:1;text-align:left;min-width:0}.rev i{max-width:120px}}
 .card{background:var(--panel);border:1px solid var(--line);padding:10px;overflow-x:auto}
 .card p{margin:6px 0}
 .muted{color:var(--dim);font-size:12px}
@@ -175,7 +179,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
     <div id="fx" class="fx"></div>
     <div id="ration" class="row" style="justify-content:center"></div>
   </section>
-  <section><h2>Gear <span class="qty" id="qty"></span></h2><div id="gear"></div></section>
+  <section><h2>Technology <span class="qty" id="qty"></span></h2><div id="gear"></div></section>
   <section><h2>Upgrades</h2><div id="upgrades"></div></section>
   <section><h2>Your shop &amp; runners</h2><div id="shop" class="card"></div></section>
   <section><h2>Supply chain</h2><div class="hint">Buildings. Credits buy them, but only people unlock them: each one needs runners under you. A building makes your runners earn more and makes your cut of it bigger. That is the whole trick.</div><div id="buildings"></div></section>
@@ -184,14 +188,14 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <section><h2>Commendations</h2><div id="ach" class="card"></div></section>
   <section><h2>The company</h2><div id="company" class="card"></div></section>
   <section><h2>Sectors by department</h2><div id="sectors" class="card"></div></section>
-  <section><h2>Company leaderboard</h2><div id="board" class="card"></div></section>
+  <section><h2>High scores</h2><div id="board" class="card"></div></section>
   <section><h2>Log</h2><div id="log" class="log"></div></section>
   </div>
   <div id="tab-portfolio" hidden>
   <section><h2>Your runners' businesses</h2><div id="pfRunners"></div></section>
   <section><h2>Trophy cabinet</h2><div id="portfolio"></div></section>
   </div>
-  <footer>MustEat is a game. Please do not start an actual pyramid scheme. · <span id="mode"></span> · <a href="ledger.html" target="_blank">ledger</a> · <a href="#" id="reset">reset save</a> <span id="localtools"></span></footer>
+  <footer>MustEat is a game. Please do not start an actual pyramid scheme. · <span id="mode"></span> · <a href="ledger.html" target="_blank">high scores</a> · <a href="#" id="reset">reset save</a> <span id="localtools"></span></footer>
 </div>
 <div id="crate" class="crate" title="Unmarked ration crate. Take it." hidden>📦</div>
 <div id="modal" class="modal" hidden><div class="box" id="modalBox"></div></div>
@@ -348,7 +352,7 @@ GEAR.filter(g => g.dps).forEach(g => [1, 5, 25, 50].forEach((at, i) => UPGRADES.
 })));
 [['Thumb Conditioning', 1000, 10], ['Both Thumbs', 50000, 100], ['Tap Macro (Banned, Still Works)', 5e6, 500], ['Intern With a Stylus', 5e8, 2000], ['Ministry-Grade Finger', 5e10, 5000]]
   .forEach(([name, cost, taps], i) => UPGRADES.push({ id: 'tap' + i, tap: true, name, cost, desc: 'Each tap also earns 2% of your income per second.', unlock: s => s.taps >= taps, hint: taps + ' taps' }));
-UPGRADES.push({ id: 'ledger', name: 'Advanced Cryptochain Bookkeeping', cost: 10000, desc: 'Every gear line shows what it earns per second and its share of your income, written to a ledger nobody can read.', unlock: s => now() - (s.created || 0) >= 3 * 60000, hint: '3 minutes on the job' });
+UPGRADES.push({ id: 'ledger', name: 'Advanced Cryptochain Bookkeeping', cost: 10000, desc: 'Every technology line shows what it earns per second and its share of your income, written to a ledger nobody can read.', unlock: s => now() - (s.created || 0) >= 3 * 60000, hint: '3 minutes on the job' });
 [['Lids', 1000, 1e4], ['Napkins', 10000, 2e5], ['Sauce Sachets', 1e5, 4e6], ['Ration-Grade Cutlery', 1e6, 8e7], ['Edible Packaging', 1e7, 1.6e9], ['Ministry Loyalty Stamps', 1e8, 3.2e10], ['A Second Lunch', 1e9, 6.4e11]]
   .forEach(([name, meals, cost], i) => UPGRADES.push({ id: 'glob' + i, glob: true, name, cost, desc: 'All income +10%.', unlock: s => s.deliveries >= meals, hint: fmt(meals) + ' deliveries' }));
 // Commendations (achievements). Each is +2% income, forever, like kittens but with paperwork.
@@ -368,10 +372,10 @@ const ACH = [
   ['taps100', 'Thumb Warm-Up', '100 taps', s => s.taps >= 100],
   ['taps1k', 'Carpal Tunnel Runner', '1,000 taps', s => s.taps >= 1000],
   ['taps10k', 'It Was Never About the Money', '10K taps', s => s.taps >= 1e4],
-  ['gear10', 'Kitted Out', 'own 10 pieces of gear', s => gearTotal(s) >= 10],
-  ['gear50', 'Hoarder', 'own 50 pieces of gear', s => gearTotal(s) >= 50],
-  ['gear100', 'Logistics Problem', 'own 100 pieces of gear', s => gearTotal(s) >= 100],
-  ['gear250', 'Where Do You Keep It All', 'own 250 pieces of gear', s => gearTotal(s) >= 250],
+  ['gear10', 'Kitted Out', 'own 10 pieces of tech', s => gearTotal(s) >= 10],
+  ['gear50', 'Hoarder', 'own 50 pieces of tech', s => gearTotal(s) >= 50],
+  ['gear100', 'Logistics Problem', 'own 100 pieces of tech', s => gearTotal(s) >= 100],
+  ['gear250', 'Where Do You Keep It All', 'own 250 pieces of tech', s => gearTotal(s) >= 250],
   ['shop', 'Entrepreneur (Under Investigation)', 'open a shop', s => !!s.shop],
   ['run1', 'Somebody Fell For It', 'recruit one runner', s => s.down.list.length >= 1],
   ['run5', 'Middle Management', '3 in your downline', s => s.down.list.length >= 3],
@@ -632,7 +636,7 @@ function gearCost(g, l, n) {
 const stampsFor = total => Math.floor(Math.cbrt(Math.max(0, total) / CONFIG.STAMP_BASE));
 const stampMult = n => Math.sqrt(1 + 0.2 * (n || 0));
 const parseOffer = row => { try { const o = row && row.offer ? JSON.parse(row.offer) : null; return o && o.id ? o : null; } catch (e) { return null; } };
-const gearSummary = gear => GEAR.filter(g => g.dps && gear[g.id]).slice(-3).reverse().map(g => gear[g.id] + '× ' + g.name).join(', ') || 'no gear';
+const gearSummary = gear => GEAR.filter(g => g.dps && gear[g.id]).slice(-3).reverse().map(g => gear[g.id] + '× ' + g.name).join(', ') || 'no tech';
 const dateStr = ts => new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 const upgCount = (s, f) => UPGRADES.reduce((a, u) => a + (f(u) && (s.upg || {})[u.id] ? 1 : 0), 0);
 function downCount() { return state.down.list.length; }
@@ -1075,7 +1079,7 @@ function showHandover(e) {
   modal(`<h3>🏆 ${esc(e.to)} took over ${esc(e.name)}</h3>
     <p>Handed over at <b>₵${fmt(e.income)}/s</b> with ${gearSummary(e.gear)} and ${e.upg} upgrades.</p>
     <p>You banked <b>${e.stamps} Ration Stamp${e.stamps === 1 ? '' : 's'}</b> (income ×${stampMult(state.stamps).toFixed(2)}) and you get <b>25% of everything ${esc(e.to)} ever earns</b>. It is in your Portfolio, forever.</p>
-    <p class="muted">Your clone keeps your name, runners, buildings and commendations, and starts with no gear. Again.</p>
+    <p class="muted">Your clone keeps your name, runners, buildings and commendations, and starts with no tech. Again.</p>
     <div class="row"><button id="ok" class="big2">SEE THE CABINET</button><button id="cancel">Back to work</button></div>`);
   $('ok').onclick = () => { closeModal(); state.tab = 'portfolio'; render(); };
   $('cancel').onclick = closeModal;
@@ -1092,7 +1096,7 @@ function ministryDialog() {
 function sellToMinistry() {
   const half = Math.floor(stampGain() / 2); if (half < 1) return;
   const c = calc(state);
-  const entry = { id: uid('m'), name: state.shop ? state.shop.name : 'Your gear', to: 'The Ministry', toId: null, at: now(), gear: Object.assign({}, state.gear), upg: Object.keys(state.upg).length, buildings: bstr(state), income: c.income, stamps: half, ministry: true, samples: [] };
+  const entry = { id: uid('m'), name: state.shop ? state.shop.name : 'Your tech', to: 'The Ministry', toId: null, at: now(), gear: Object.assign({}, state.gear), upg: Object.keys(state.upg).length, buildings: bstr(state), income: c.income, stamps: half, ministry: true, samples: [] };
   state.portfolio = [entry].concat(state.portfolio || []);
   state.stamps = (state.stamps || 0) + half;
   resetForClone();
@@ -1203,7 +1207,7 @@ function render() {
   const rb = $('recruiter');
   if (state.franchiseOf) {
     rb.hidden = false;
-    setHTML('recruiter', `You run <b>${esc(state.shop ? state.shop.name : 'a franchise')}</b>, a franchise of <b>${esc(state.franchiseName || 'someone')}</b>. They keep 25% of everything you make. The gear was theirs. The debt is yours.`);
+    setHTML('recruiter', `You run <b>${esc(state.shop ? state.shop.name : 'a franchise')}</b>, a franchise of <b>${esc(state.franchiseName || 'someone')}</b>. They keep 25% of everything you make. The tech was theirs. The debt is yours.`);
   } else if (state.ref && !state.shop) {
     rb.hidden = false;
     setHTML('recruiter', `You are running for <b>${esc(state.recruiter || 'someone with the code ' + state.ref + ' (not in this company yet)')}</b>. They take 10% of everything you make. Open your own shop to take it back, or <a href="#" data-act="complain">file a complaint</a> where everyone can see it.`);
@@ -1253,7 +1257,7 @@ function render() {
     } else if (g.valueMul) rev = `<div class="rev val ${l ? '' : 'off'}${neon}><b>×${(1 + g.valueMul * l).toFixed(1)} value</b><span>on every order</span><i style="--w:${Math.round(100 * l / g.max)}%"></i></div>`;
     else if (g.id === 'mask') rev = `<div class="rev val ${l ? '' : 'off'}${neon}><b>−${25 * l}% trouble</b><span>inspections, rain, rivals</span><i style="--w:${Math.round(100 * l / g.max)}%"></i></div>`;
     const desc = secret ? 'Classified. Buy the thing above it first.' : g.desc + (g.dps ? ' +' + fmt(g.dps * mult) + '/s each.' : '') + (g.zone != null && l === 0 ? ' Unlocks ' + ZONES[g.zone].name + '.' : '') + (g.id === 'hover' && world.citizens >= HOVER_SUBSIDY_AT ? ' <span class="need">Subsidised.</span>' : '');
-    return `<div class="item ${secret ? 'locked' : ''}"><div><b>${secret ? '???' : g.name}</b><span class="lvl">Lv ${l}</span><div class="d">${desc}</div></div>${rev}
+    return `<div class="item ${secret ? 'locked' : ''}"><div class="ico" data-ico="${g.id}"></div><div class="body"><b>${secret ? '???' : g.name}</b><span class="lvl">×${l}</span><div class="d">${desc}</div></div>${rev}
       <button data-buy="${g.id}" ${maxed || state.cash < cost ? 'disabled' : ''}>${maxed ? 'MAX' : '₵' + fmt(cost) + (n > 1 ? ' ×' + n : '')}</button></div>`;
   }).join(''));
 
@@ -1261,7 +1265,7 @@ function render() {
   const bought = Object.keys(state.upg).length;
   const nextUp = UPGRADES.filter(u => !state.upg[u.id] && !u.unlock(state)).sort((a, b) => a.cost - b.cost)[0];
   setHTML('upgrades', (avail.length ? `<div class="ups">${avail.map(u => `<div class="up ${u.id === 'ledger' ? 'ledger' : ''}"><b>${u.name}</b><div class="d">${u.desc}</div><button data-upg="${u.id}" ${state.cash < u.cost ? 'disabled' : ''}>₵${fmt(u.cost)}</button></div>`).join('')}</div>` : '') +
-    `<p class="muted">${bought} of ${UPGRADES.length} upgrades bought.${nextUp ? ' Next unlock: ' + nextUp.name + ' at ' + nextUp.hint + '.' : ''}${avail.length ? '' : ' Buy gear, tap, deliver: upgrades unlock from all three.'}</p>`);
+    `<p class="muted">${bought} of ${UPGRADES.length} upgrades bought.${nextUp ? ' Next unlock: ' + nextUp.name + ' at ' + nextUp.hint + '.' : ''}${avail.length ? '' : ' Buy tech, tap, deliver: upgrades unlock from all three.'}</p>`);
 
   let sh;
   const vbtn = `<button data-act="voucher" ${state.cash < CONFIG.VOUCHER_COST ? 'disabled' : ''}>Ration voucher for a colleague (₵${CONFIG.VOUCHER_COST})</button>`;
@@ -1296,7 +1300,7 @@ function render() {
     else why = '<span class="need">Ready.</span> ' + b.down + ' ' + b.up;
     const cooling = now() - state.lastDecree < CONFIG.DECREE_H * H;
     const decrees = st.owned && b.id === 'ministry' ? `<div class="row">${Object.keys(DECREES).map(k => `<button class="sm" data-decree="${k}" ${cooling ? 'disabled' : ''}>Decree: ${DECREES[k].name}</button>`).join('')}${cooling ? '<span class="muted">Next decree in ' + dur((state.lastDecree + CONFIG.DECREE_H * H - now()) / 1000) + '</span>' : ''}</div>` : '';
-    return `<div class="item ${st.owned ? 'owned' : ''} ${!st.declassified ? 'locked' : ''}"><div><b>${b.name}</b><div class="d">${b.desc}</div><div class="d">${why}</div>${decrees}</div>
+    return `<div class="item ${st.owned ? 'owned' : ''} ${!st.declassified ? 'locked' : ''}"><div class="body"><b>${b.name}</b><div class="d">${b.desc}</div><div class="d">${why}</div>${decrees}</div>
       <button data-build="${b.id}" ${st.can ? '' : 'disabled'}>${st.owned ? 'BUILT' : '₵' + fmt(b.cost)}</button></div>`;
   }).join(''));
 
@@ -1323,7 +1327,7 @@ function render() {
       <div class="row"><button data-act="franchise">Copy the offer again</button><button data-act="withdraw">Withdraw</button></div>`
     : `<div class="row"><button data-act="franchise" ${canFr ? '' : 'disabled'}>Franchise to a colleague (${gain > 0 ? "+" + gain + " stamp" + (gain === 1 ? "" : "s") + ", " : ""}25% royalty forever)</button>
       <button data-act="ministry" ${worth ? '' : 'disabled'}>Sell to the Ministry (+${half} stamp${half === 1 ? '' : 's'}, no royalty)${worth ? '' : ' · not worth it yet'}</button></div>
-      <p class="muted">${canFr ? 'Franchising posts a first-come link in Slack. Whoever clicks gets your gear, upgrades and shop name as they stand when they click. You get the stamps, a trophy in your Portfolio and 25% of everything they ever earn. Your clone keeps your name, runners, buildings and commendations.' : 'Open a shop and buy some gear first. Nobody franchises an empty garage.'}</p>`}`);
+      <p class="muted">${canFr ? 'Franchising posts a first-come link in Slack. Whoever clicks gets your tech, upgrades and shop name as they stand when they click. You get the stamps, a trophy in your Portfolio and 25% of everything they ever earn. Your clone keeps your name, runners, buildings and commendations.' : 'Open a shop and buy some tech first. Nobody franchises an empty garage.'}</p>`}`);
   $('stampBar').style.width = clamp(100 * (state.total - stampLo) / (stampHi - stampLo), 0, 100) + '%';
   $('totalV').textContent = fmt(state.total);
 
@@ -1400,7 +1404,7 @@ function render() {
     if (meAt >= TOP) shown.unshift([board[meAt], meAt]); // you are always on the board, even from the cheap seats
     setHTML('board', `<table><tr><th>#</th><th>Citizen</th><th>Shop</th><th class="r">Earned</th><th class="r" title="Credited from runners and franchisees, from the ledger">From runners</th><th class="r">Runners</th></tr>` +
       shown.map(([p, i]) => `<tr class="${p.id === state.id ? 'me' : ''}"><td>${i + 1}</td><td>${esc(p.name)}${p.stamps ? ' <span class="need" title="Ration Stamps">★' + p.stamps + '</span>' : ''}<div class="muted">${RANKS[p.rank || 0].name}${p.dept ? ' · ' + esc(p.dept) : ''}</div></td><td>${esc(p.shopName || '—')}${p.buildings ? '<div class="muted">' + esc(bnames(p.buildings)) + '</div>' : ''}</td><td class="r">₵${fmt(p.total)}</td><td class="r">${world.fromRunners[p.id] ? '₵' + fmt(world.fromRunners[p.id]) : '—'}</td><td class="r">${p.runners || 0}</td></tr>`).join('') +
-      `</table><p class="muted"><a href="ledger.html" target="_blank">Open the ledger</a>: every cut and royalty ever credited, who paid whom, and the top earners from runners.</p>` + (board.length > TOP ? `<p class="muted">${board.length - TOP} more citizens below the fold.</p>` : '') + (shame.length ? `<p class="muted">Still running for someone else despite the money: ${shame.join(', ')}. Open a shop. Have some dignity.</p>` : ''));
+      `</table><p class="muted">Everyone who has ever registered, company-wide. <a href="ledger.html" target="_blank">Full high scores and the ledger</a>: every cut and royalty ever credited, who paid whom.</p>` + (board.length > TOP ? `<p class="muted">${board.length - TOP} more citizens below the fold.</p>` : '') + (shame.length ? `<p class="muted">Still running for someone else despite the money: ${shame.join(', ')}. Open a shop. Have some dignity.</p>` : ''));
   } else setHTML('board', '<p class="muted">Nobody else is here yet. Or the sheet is loading. Either way: recruit.</p>');
 
   setHTML('log', state.log.map(e => `<div>${e.text}</div>`).join(''));
@@ -1433,7 +1437,7 @@ window.addEventListener('beforeunload', save);
 function showOffline(o) {
   modal(`<h3>Welcome back, citizen</h3>
     <p>You were sheltering for <b>${dur(o.el)}</b>.</p>
-    <p>${o.meals >= 1 ? 'Your gear delivered <b>' + fmt(Math.floor(o.meals)) + ' meals</b> and earned <b>₵' + fmt(o.gain) + '</b>.' : 'Nothing was delivered. You have no gear. The town went hungry.'}</p>
+    <p>${o.meals >= 1 ? 'Your tech delivered <b>' + fmt(Math.floor(o.meals)) + ' meals</b> and earned <b>₵' + fmt(o.gain) + '</b>.' : 'Nothing was delivered. You have no tech. The town went hungry.'}</p>
     <p class="muted">Full rate for the first ${CONFIG.OFFLINE_FULL_H}h away, half rate up to ${CONFIG.OFFLINE_HALF_H}h. After that the drones get bored.</p>
     <button id="ok" class="big2">BACK TO WORK</button>`);
   $('ok').onclick = closeModal;

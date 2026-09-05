@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MustEat — The Ledger</title>
-<meta name="description" content="Every cut and royalty ever credited in MustEat. Who pays whom, how much, and who is really winning.">
+<title>MustEat — High Scores</title>
+<meta name="description" content="MustEat high scores, and the ledger underneath them: every cut and royalty ever credited, who pays whom, how much.">
 <style>
 :root{--bg:#07090a;--panel:#0e1416;--line:#1e2a2e;--fg:#d6e0e2;--dim:#7d8b90;--acc:#39ff14;--warn:#ff3b5c;--gold:#ffd166;--blue:#4cc9f0}
 *{box-sizing:border-box}
@@ -44,7 +44,7 @@ footer{margin-top:24px;font-size:12px;color:var(--dim);border-top:1px solid var(
 <body>
 <div class="wrap">
   <header>
-    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"><span style="color:#fff">· THE LEDGER</span></h1><div class="tag">Every cut and royalty ever credited. Who pays whom, how much, and who is actually winning.</div></div>
+    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"><span style="color:#fff">· HIGH SCORES</span></h1><div class="tag">Everyone who has ever registered, ranked. Underneath: the ledger, every cut and royalty ever credited.</div></div>
     <div class="muted" id="mode"></div>
   </header>
   <section class="stats">
@@ -53,16 +53,16 @@ footer{margin-top:24px;font-size:12px;color:var(--dim);border-top:1px solid var(
     <div class="stat"><div class="k">Of which royalties</div><div class="v" id="sumRoy">₵0</div></div>
     <div class="stat"><div class="k">Citizens paying up</div><div class="v" id="nPayers">0</div></div>
   </section>
-  <h2>Top earners from runners</h2>
+  <h2>High scores</h2>
+  <div class="card" id="scores"></div>
+  <h2>Latest 10 transactions</h2>
+  <div class="card" id="recent"></div>
+  <h2>The ledger: top earners from runners</h2>
   <div class="card" id="top"></div>
   <div class="grid">
     <div><h2>Biggest contributors</h2><div class="card" id="payers"></div></div>
     <div><h2>Who pays whom</h2><div class="card" id="pairs"></div></div>
   </div>
-  <h2>High scores</h2>
-  <div class="card" id="scores"></div>
-  <h2>Recent entries</h2>
-  <div class="card" id="recent"></div>
   <footer>Cuts are 10% / 5% / 2.5% of a runner's lifetime earnings by level, royalties 25% of a franchisee's, credited to the owner on sync and recorded here by the receiving client. Self-reported, like everything else in the food economy. <a href="index.html">Back to the game</a></footer>
 </div>
 <script>
@@ -120,7 +120,7 @@ async function render() {
   $('scores').innerHTML = scores.length ? `<table><tr><th>#</th><th>Citizen</th><th>Shop</th><th class="r">Earned</th><th class="r">From runners</th><th class="r">Share</th><th class="r">Runners</th><th class="r">Seen</th></tr>` +
     scores.slice(0, 30).map((s, i) => `<tr><td>${i + 1}</td><td>${esc(s.p.name)}${s.p.stamps ? ' <span class="gold">★' + esc(s.p.stamps) + '</span>' : ''}<div class="muted">${RANKS[Number(s.p.rank) || 0]}${s.p.dept ? ' · ' + esc(s.p.dept) : ''}</div></td><td>${esc(s.p.shopName || '—')}</td><td class="r">₵${fmt(s.total)}</td><td class="r gold">${s.fr ? '₵' + fmt(s.fr) : '—'}</td><td class="r muted">${s.total && s.fr ? Math.round(100 * s.fr / s.total) + '%' : ''}</td><td class="r">${s.runners}</td><td class="r muted">${s.p.lastSeen ? ago(Number(s.p.lastSeen)) : ''}</td></tr>`).join('') + `</table>` : '<div class="empty">No citizens yet.</div>';
 
-  const recent = rows.slice().sort((a, b) => b.ts - a.ts).slice(0, 60);
+  const recent = rows.slice().sort((a, b) => b.ts - a.ts).slice(0, 10);
   $('recent').innerHTML = recent.length ? `<table><tr><th>When</th><th>From</th><th></th><th>To</th><th class="r">Level</th><th class="r">Amount</th></tr>` +
     recent.map(r => `<tr><td class="muted">${ago(r.ts)}</td><td>${esc(nameOf(players, r.from, r.fromName))}</td><td class="muted">→</td><td>${esc(nameOf(players, r.to, r.toName))}</td><td class="r ${r.kind === 'royalty' ? 'gold' : 'blue'}">${r.kind === 'royalty' ? 'royalty' : 'L' + esc(r.level)}</td><td class="r">₵${fmt(r.amount)}</td></tr>`).join('') + `</table>` : '<div class="empty">The ledger is empty.</div>';
 }
