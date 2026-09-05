@@ -14,7 +14,7 @@ The whole thing came out of one prompt, more or less:
 
 Everything after that was arguing about the numbers.
 
-Single HTML file, no build, saves in your browser. `ledger.html` is the high-score table, with the ledger of who is paying whom underneath. Technical notes in `NOTES.md`.
+Single HTML file, no build, saves in your browser. `ledger.html` is the high-score table, with the ledger of who is paying whom underneath. Technical notes in `NOTES.md`. Storage contract for moving it onto another database in `PORTING.md`.
 
 ```
 cd test && npm install && node smoke.js
