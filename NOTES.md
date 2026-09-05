@@ -92,6 +92,7 @@ on the client from the full `players` table, so the backend stores rows and noth
 | shopName | null until they open a shop |
 | buildings | comma list: `depot,plant,factory,ministry` |
 | stamps | Ration Stamps held, shown as ★ on the leaderboard |
+| sprint, played | sprint is lifetime credits at 30 minutes of open-tab play (until then, the current total); played is seconds with the tab open. The high-score table can rank by either |
 | offer | JSON of a franchise offer while one is out: id, shop name, gear, upgrades, income |
 | franchiseOf, franchiseName | for a franchisee: the id and name of the player whose business they took |
 | claimedBy, claimedName, claimedAt, claimedOffer | written onto the franchisor's row by the colleague who claims the offer, never by the owner. The owner's client only ever upserts its own columns, so a merge-by-id upsert must leave unknown columns alone |
@@ -163,6 +164,7 @@ If the platform API has a different shape, change `Sheet.read`, `Sheet.upsert` a
   clipboard is blocked (iframes, app shells) the text opens in a selectable box instead. No prompt() or confirm() anywhere.
 - The intro has a "who sent you" box for the referral code, for links that lost their query string. When the link carried a code the box is sealed (read-only): affiliate codes cannot be removed from invites. The copy suggests recruiting your own runner instead.
 - Daily ration pays 10 minutes of income once per 20h, only if you open the page.
+- Sprint score: the clock runs only while the tab is visible (capped at one second per frame, so a sleeping tab does not count). At 30 minutes the lifetime total is frozen as `sprint` and shown on both high-score tables next to lifetime. The rank box shows the clock until then.
 - Ministry seat holders issue one decree per day: Mandatory Feast (everyone ×2 for
   10 minutes) or Company-wide Audit (+25 suspicion for everyone outside their chain).
 - Ministry suspicion, inspections, acid rain, outbreaks, JustBreathe, bribes, Compliance

@@ -275,6 +275,7 @@ const CONFIG = {
   RUNNER_TAX: 0.10,           // what a runner without a shop pays their shop owner
   GANG_TAX: 0.15,             // the local gang's cut of everyone with no runners. Recruit one and they move on to them
   SYNC_S: 30,
+  SPRINT_S: 1800,             // seconds of open-tab play after which the sprint score locks
   INTRO_S: 5,                 // seconds the first-visit splash stays before it moves on by itself
   CRATE_MIN_S: 300,           // unmarked ration crates: seconds between them, plus up to CRATE_RANGE_S
   CRATE_RANGE_S: 600,
@@ -542,6 +543,7 @@ function fresh() {
     down: { list: [], credited: 0, at: 0, paid: {} }, up: [], known: {},
     ration: 0, lastDecree: 0, decreesSeen: [], rankSeen: 0,
     log: [], lastSeen: now(), created: now(), lastOrder: null,
+    played: 0, sprint: null,   // seconds with the tab open; lifetime credits when that hit SPRINT_S
   };
 }
 function load() {
@@ -570,8 +572,12 @@ function log(text) {
 }
 
 // ---------------- Sheet adapter ----------------
-// players: id, code, name, ref, dept, total, meals, rank, shopName, buildings, lastSeen
-// events:  id, ts, pid, who, kind, text, effect
+// PORT BOUNDARY. Everything the game needs from a database is read / upsert / append on three
+// tables, and this object is the only place that talks to storage. To move to another backend
+// (Toqan, a REST sheet, anything) replace the bodies of read, upsert and append and set
+// CONFIG.SHEET_API to anything non-empty. PORTING.md has the contract; NOTES.md has the columns.
+// players: id, code, name, ref, dept, total, meals, rank, shopName, buildings, stamps, sprint, played, lastSeen (+ claimed* written by a claimer)
+// events:  id, ts, pid, who, kind, arg, text, effect, amount, of
 // ledger:  id, ts, from, fromName, to, toName, level, kind, amount   (one row per credited cut or royalty)
 const Sheet = {
   local() { try { return Object.assign({ players: [], events: [], ledger: [] }, JSON.parse(localStorage.getItem(CONFIG.SHEET_KEY)) || {}); } catch (e) { return { players: [], events: [], ledger: [] }; } },
@@ -631,7 +637,7 @@ function buildWorld(rows) {
   rows.forEach(r => { w.byId[r.id] = r; w.dl[r.id] = downlineOf(rows, r); });
   w.citizens = rows.length;
   w.meals = rows.reduce((a, r) => a + (Number(r.meals) || 0), 0);
-  w.board = rows.map(p => ({ id: p.id, name: p.name, total: Number(p.total) || 0, shopName: p.shopName || null, rank: Number(p.rank) || 0, dept: p.dept, buildings: p.buildings, runners: rows.filter(q => q.ref === p.code).length }))
+  w.board = rows.map(p => ({ id: p.id, name: p.name, total: Number(p.total) || 0, sprint: Number(p.sprint) || 0, played: Number(p.played) || 0, stamps: Number(p.stamps) || 0, shopName: p.shopName || null, rank: Number(p.rank) || 0, dept: p.dept, buildings: p.buildings, runners: rows.filter(q => q.ref === p.code).length }))
     .sort((a, b) => b.total - a.total).slice(0, 20);
   const depts = [...new Set(rows.map(r => r.dept || 'Unassigned'))];
   const shops = rows.filter(r => r.shopName);
@@ -645,6 +651,7 @@ function buildWorld(rows) {
 }
 function rowOf(s) {
   return { id: s.id, code: s.code, name: s.name, ref: s.ref, dept: s.dept, total: Math.floor(s.total), meals: Math.floor(s.deliveries), rank: rankOf(s), shopName: s.shop ? s.shop.name : null, buildings: bstr(s), stamps: s.stamps || 0, lastSeen: now(),
+    sprint: s.sprint != null ? s.sprint : Math.floor(s.total), played: Math.floor(s.played || 0),
     offer: s.offer ? JSON.stringify(s.offer) : '', franchiseOf: s.franchiseOf || '', franchiseName: s.franchiseName || '' };
   // claimedBy / claimedName / claimedAt / claimedOffer are written onto this row by the colleague who takes a franchise; never by its owner.
 }
@@ -752,6 +759,14 @@ function frame() {
   if (dt <= 0) return;
   const c = calc(state);
   earn(c.income * dt, c.dps * dt);
+  if (!document.hidden) { // the sprint clock only runs while you are actually here
+    state.played = (state.played || 0) + Math.min(dt, 1);
+    if (state.sprint == null && state.played >= CONFIG.SPRINT_S) {
+      state.sprint = Math.floor(state.total);
+      log('<b>Thirty minutes on the clock.</b> Sprint score ₵' + fmt(state.sprint) + ', on the record. Lifetime keeps counting.');
+      toast('Sprint score locked: ₵' + fmt(state.sprint));
+    }
+  }
   state.heat = clamp(state.heat + dt * (0.03 + 0.01 * downCount() + 0.01 * Math.log10(1 + c.baseIncome)), 0, 100);
   crateTick(t);
   if (t - achAt > 1000) { achAt = t; checkAch(); checkMilestone(); }
@@ -951,9 +966,10 @@ function applyDecrees(events) {
     }
   });
 }
-let syncing = false;
+let syncing = false, syncAgain = false;
 async function sync() {
-  if (!state.id || syncing) return;
+  if (!state.id) return;
+  if (syncing) { syncAgain = true; return; }
   syncing = true;
   try {
     if (state.offer) { const c = calc(state); Object.assign(state.offer, { gear: Object.assign({}, state.gear), upg: Object.assign({}, state.upg), income: c.income }); }
@@ -975,6 +991,7 @@ async function sync() {
     (state.portfolio || []).forEach(e => { const r = world.byId[e.toId]; if (!r) return; const t = Number(r.total) || 0; const last = e.samples[e.samples.length - 1]; if (!last || last.total !== t) e.samples = e.samples.concat({ t: now(), total: t }).slice(-6); });
   } finally { syncing = false; }
   render(); save();
+  if (syncAgain) { syncAgain = false; sync(); }
 }
 let syncTimer = null;
 window.addEventListener('storage', e => {
@@ -1277,7 +1294,8 @@ function render() {
   $('zone').textContent = ZONES[c.zone].name + (c.outbreak ? ' (fallback)' : c.supply.plant ? ' (via plant)' : '');
   const r = RANKS[c.rank]; const next = RANKS[c.rank + 1];
   setHTML('rank', `<b>${esc(state.name || 'Unknown Citizen')} <a href="#" data-act="rename" title="Rename yourself or your shop. Your code and runners stay.">✎</a></b>${r.name}${state.dept ? ' · ' + esc(state.dept) : ''} · ×${r.mul} income` +
-    (next ? `<br>${state.shop ? downCount() + '/' + next.need + ' runners to ' + next.name : 'Open a shop to rank up'}` : '<br>There is nothing above you.'));
+    (next ? `<br>${state.shop ? downCount() + '/' + next.need + ' runners to ' + next.name : 'Open a shop to rank up'}` : '<br>There is nothing above you.') +
+    (state.sprint != null ? `<br><span title="Lifetime credits at thirty minutes of play">Sprint score ₵${fmt(state.sprint)}</span>` : `<br><span title="Your lifetime credits when this hits zero become your sprint score, the fair one on the high-score table">Sprint clock ${Math.max(0, Math.ceil((CONFIG.SPRINT_S - (state.played || 0)) / 60))} min</span>`));
 
   const rb = $('recruiter');
   if (state.franchiseOf) {
@@ -1495,9 +1513,9 @@ function render() {
     const TOP = 15, meAt = board.findIndex(p => p.id === state.id);
     const shown = board.slice(0, TOP).map((p, i) => [p, i]);
     if (meAt >= TOP) shown.unshift([board[meAt], meAt]); // you are always on the board, even from the cheap seats
-    setHTML('board', `<table><tr><th>#</th><th>Citizen</th><th>Shop</th><th class="r">Earned</th><th class="r" title="Credited from runners and franchisees, from the ledger">From runners</th><th class="r">Runners</th></tr>` +
-      shown.map(([p, i]) => `<tr class="${p.id === state.id ? 'me' : ''}"><td>${i + 1}</td><td>${esc(p.name)}${p.stamps ? ' <span class="need" title="Ration Stamps">★' + p.stamps + '</span>' : ''}<div class="muted">${RANKS[p.rank || 0].name}${p.dept ? ' · ' + esc(p.dept) : ''}</div></td><td>${esc(p.shopName || '—')}${p.buildings ? '<div class="muted">' + esc(bnames(p.buildings)) + '</div>' : ''}</td><td class="r">₵${fmt(p.total)}</td><td class="r">${world.fromRunners[p.id] ? '₵' + fmt(world.fromRunners[p.id]) : '—'}</td><td class="r">${p.runners || 0}</td></tr>`).join('') +
-      `</table><p class="muted">Everyone who has ever registered, company-wide. <a href="ledger.html" target="_blank">Full high scores and the ledger</a>: every cut and royalty ever credited, who paid whom.</p>` + (board.length > TOP ? `<p class="muted">${board.length - TOP} more citizens below the fold.</p>` : '') + (shame.length ? `<p class="muted">Still running for someone else despite the money: ${shame.join(', ')}. Open a shop. Have some dignity.</p>` : ''));
+    setHTML('board', `<table><tr><th>#</th><th>Citizen</th><th>Shop</th><th class="r">Earned</th><th class="r" title="Lifetime credits at thirty minutes of play. Same clock for everyone.">Sprint</th><th class="r" title="Credited from runners and franchisees, from the ledger">From runners</th><th class="r">Runners</th></tr>` +
+      shown.map(([p, i]) => `<tr class="${p.id === state.id ? 'me' : ''}"><td>${i + 1}</td><td>${esc(p.name)}${p.stamps ? ' <span class="need" title="Ration Stamps">★' + p.stamps + '</span>' : ''}<div class="muted">${RANKS[p.rank || 0].name}${p.dept ? ' · ' + esc(p.dept) : ''}</div></td><td>${esc(p.shopName || '—')}${p.buildings ? '<div class="muted">' + esc(bnames(p.buildings)) + '</div>' : ''}</td><td class="r">₵${fmt(p.total)}</td><td class="r">₵${fmt(p.sprint)}${p.played < CONFIG.SPRINT_S ? '<div class="muted">' + Math.floor(p.played / 60) + ' min in</div>' : ''}</td><td class="r">${world.fromRunners[p.id] ? '₵' + fmt(world.fromRunners[p.id]) : '—'}</td><td class="r">${p.runners || 0}</td></tr>`).join('') +
+      `</table><p class="muted">Everyone who has ever registered, company-wide. Sprint is lifetime credits at thirty minutes with the tab open, the same clock for everyone. <a href="ledger.html" target="_blank">Full high scores and the ledger</a>: every cut and royalty ever credited, who paid whom.</p>` + (board.length > TOP ? `<p class="muted">${board.length - TOP} more citizens below the fold.</p>` : '') + (shame.length ? `<p class="muted">Still running for someone else despite the money: ${shame.join(', ')}. Open a shop. Have some dignity.</p>` : ''));
   } else setHTML('board', '<p class="muted">Nobody else is here yet. Or the sheet is loading. Either way: recruit.</p>');
 
   setHTML('log', state.log.map(e => `<div>${e.text}</div>`).join(''));

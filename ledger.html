@@ -27,6 +27,9 @@ th{color:var(--dim);font-weight:normal;text-align:left;font-size:11px;text-trans
 td{padding:5px 6px;border-bottom:1px solid #131b1e;vertical-align:top}
 td.r,th.r{text-align:right;white-space:nowrap}
 .muted{color:var(--dim);font-size:12px}
+.order{float:right;letter-spacing:0;text-transform:none}
+.order button{font:inherit;font-size:11px;cursor:pointer;background:#131c1f;color:var(--fg);border:1px solid var(--line);padding:2px 8px;margin-left:4px}
+.order button.on{border-color:var(--acc);color:var(--acc)}
 .gold{color:var(--gold)}
 .blue{color:var(--blue)}
 .bar{height:6px;background:#111;border:1px solid var(--line);margin-top:3px;max-width:220px}
@@ -53,7 +56,7 @@ footer{margin-top:24px;font-size:12px;color:var(--dim);border-top:1px solid var(
     <div class="stat"><div class="k">Of which royalties</div><div class="v" id="sumRoy">₵0</div></div>
     <div class="stat"><div class="k">Citizens paying up</div><div class="v" id="nPayers">0</div></div>
   </section>
-  <h2>High scores</h2>
+  <h2>High scores <span class="order" id="order"><button data-order="total" class="on">Lifetime</button><button data-order="sprint">Sprint (30 min)</button></span></h2>
   <div class="card" id="scores"></div>
   <h2>Latest 10 transactions</h2>
   <div class="card" id="recent"></div>
@@ -67,6 +70,7 @@ footer{margin-top:24px;font-size:12px;color:var(--dim);border-top:1px solid var(
 </div>
 <script>
 // Reads the same sheet as the game. Local mode: the browser's localStorage sheet. Backend: the same three GET endpoints.
+// PORT BOUNDARY: read(table) is the only storage call on this page. See PORTING.md.
 const CONFIG = { SHEET_API: '', SHEET_KEY: 'musteat_sheet' };
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -81,6 +85,9 @@ function fmt(n) {
 }
 const ago = ts => { const s = Math.max(0, (Date.now() - ts) / 1000); return s < 90 ? 'just now' : s < 3600 ? Math.round(s / 60) + 'm ago' : s < 86400 ? Math.round(s / 3600) + 'h ago' : Math.round(s / 86400) + 'd ago'; };
 const RANKS = ['Runner', 'Shop Owner', 'District Overlord', 'Regional Nutrient Baron', 'Supreme Ministry of Eating'];
+const SPRINT_S = 1800;
+let order = 'total'; // or 'sprint': lifetime credits at thirty minutes of play, the same clock for everyone
+document.getElementById('order').addEventListener('click', e => { const b = e.target.closest('[data-order]'); if (!b) return; order = b.dataset.order; [...document.querySelectorAll('[data-order]')].forEach(x => x.classList.toggle('on', x === b)); render(); });
 async function read(table) {
   if (CONFIG.SHEET_API) { try { const r = await fetch(CONFIG.SHEET_API + '/' + table); if (r.ok) return await r.json(); } catch (e) {} return []; }
   try { return (JSON.parse(localStorage.getItem(CONFIG.SHEET_KEY)) || {})[table] || []; } catch (e) { return []; }
@@ -116,9 +123,9 @@ async function render() {
   }).join('') : '<div class="empty">Nothing to show.</div>';
 
   const fromRunners = {}; earners.forEach(e => { fromRunners[e.id] = e.total; });
-  const scores = players.map(p => ({ p, total: Number(p.total) || 0, fr: fromRunners[p.id] || 0, runners: players.filter(q => q.ref === p.code).length })).sort((a, b) => b.total - a.total);
-  $('scores').innerHTML = scores.length ? `<table><tr><th>#</th><th>Citizen</th><th>Shop</th><th class="r">Earned</th><th class="r">From runners</th><th class="r">Share</th><th class="r">Runners</th><th class="r">Seen</th></tr>` +
-    scores.slice(0, 30).map((s, i) => `<tr><td>${i + 1}</td><td>${esc(s.p.name)}${s.p.stamps ? ' <span class="gold">★' + esc(s.p.stamps) + '</span>' : ''}<div class="muted">${RANKS[Number(s.p.rank) || 0]}${s.p.dept ? ' · ' + esc(s.p.dept) : ''}</div></td><td>${esc(s.p.shopName || '—')}</td><td class="r">₵${fmt(s.total)}</td><td class="r gold">${s.fr ? '₵' + fmt(s.fr) : '—'}</td><td class="r muted">${s.total && s.fr ? Math.round(100 * s.fr / s.total) + '%' : ''}</td><td class="r">${s.runners}</td><td class="r muted">${s.p.lastSeen ? ago(Number(s.p.lastSeen)) : ''}</td></tr>`).join('') + `</table>` : '<div class="empty">No citizens yet.</div>';
+  const scores = players.map(p => ({ p, total: Number(p.total) || 0, sprint: Number(p.sprint) || 0, played: Number(p.played) || 0, fr: fromRunners[p.id] || 0, runners: players.filter(q => q.ref === p.code).length })).sort((a, b) => b[order] - a[order] || b.total - a.total);
+  $('scores').innerHTML = scores.length ? `<table><tr><th>#</th><th>Citizen</th><th>Shop</th><th class="r ${order === 'total' ? 'gold' : ''}">Earned</th><th class="r ${order === 'sprint' ? 'gold' : ''}" title="Lifetime credits at thirty minutes of play. Same clock for everyone.">Sprint</th><th class="r">From runners</th><th class="r">Share</th><th class="r">Runners</th><th class="r">Seen</th></tr>` +
+    scores.slice(0, 30).map((s, i) => `<tr><td>${i + 1}</td><td>${esc(s.p.name)}${s.p.stamps ? ' <span class="gold">★' + esc(s.p.stamps) + '</span>' : ''}<div class="muted">${RANKS[Number(s.p.rank) || 0]}${s.p.dept ? ' · ' + esc(s.p.dept) : ''}</div></td><td>${esc(s.p.shopName || '—')}</td><td class="r">₵${fmt(s.total)}</td><td class="r">₵${fmt(s.sprint)}${s.played < SPRINT_S ? '<div class="muted">' + Math.floor(s.played / 60) + ' min in</div>' : ''}</td><td class="r gold">${s.fr ? '₵' + fmt(s.fr) : '—'}</td><td class="r muted">${s.total && s.fr ? Math.round(100 * s.fr / s.total) + '%' : ''}</td><td class="r">${s.runners}</td><td class="r muted">${s.p.lastSeen ? ago(Number(s.p.lastSeen)) : ''}</td></tr>`).join('') + `</table><p class="muted">Sprint: lifetime credits at thirty minutes with the tab open. Everyone gets the same thirty minutes. Lifetime is the long con.</p>` : '<div class="empty">No citizens yet.</div>';
 
   const recent = rows.slice().sort((a, b) => b.ts - a.ts).slice(0, 10);
   $('recent').innerHTML = recent.length ? `<table><tr><th>When</th><th>From</th><th></th><th>To</th><th class="r">Level</th><th class="r">Amount</th></tr>` +

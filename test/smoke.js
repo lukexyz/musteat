@@ -213,7 +213,19 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p2.click('[data-act="complain"]');
   await p2.waitForSelector('.toast');
   ok('complaint copied', /Ada/.test(await p2.evaluate(() => navigator.clipboard.readText())));
+  await p1.waitForFunction(() => /recruited by/.test(document.getElementById('company').textContent), null, { timeout: 8000 }).catch(() => {});
   ok('feed renders structured join event', /Sam.*was recruited by.*Ada/s.test(await p1.textContent('#company')), await p1.textContent('#company'));
+
+  console.log('sprint score: locks at thirty minutes of play');
+  ok('sprint clock shown while it runs', /Sprint clock \d+ min/.test(await p1.textContent('#rank')), await p1.textContent('#rank'));
+  await patchSave(p1, '', 's.played = 1799.9');
+  await p1.waitForFunction(() => /Sprint score/.test(document.getElementById('log').textContent), null, { timeout: 5000 });
+  await p1.waitForFunction(() => (JSON.parse(localStorage.musteat_save) || {}).sprint != null, null, { timeout: 8000 }); // the save runs every five seconds
+  const sp = await save(p1, '');
+  ok('sprint score locked at lifetime total', sp.sprint > 0 && sp.sprint === Math.floor(sp.total) && /Sprint score ₵/.test(await p1.textContent('#rank')), JSON.stringify([sp.sprint, sp.total]));
+  await p1.click('[data-act="refresh"]');
+  await p1.waitForFunction(() => /Sprint/.test(document.getElementById('board').textContent));
+  ok('board has a Sprint column with Ada locked and Sam still on the clock', /Sprint/.test(await p1.textContent('#board')) && /min in/.test(await p1.textContent('#board')), await p1.textContent('#board').then(t => t.slice(0, 300)));
 
   console.log('ledger: who paid whom');
   const led = await p1.evaluate(() => JSON.parse(localStorage.musteat_sheet).ledger || []);
@@ -230,6 +242,8 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok('ledger page ranks Ada as top earner from runners', /1[\s\S]*Ada/.test(await pl.textContent('#top')));
   ok('ledger page lists Sam and Kim as contributors', /Sam/.test(await pl.textContent('#payers')) && /Kim/.test(await pl.textContent('#payers')));
   ok('ledger page shows who pays whom', /Ada[\s\S]*Sam[\s\S]*L1/.test(await pl.textContent('#pairs')));
+  await pl.click('[data-order="sprint"]');
+  ok('ledger page can rank by sprint', /Sprint/.test(await pl.textContent('#scores')) && (await pl.getAttribute('[data-order="sprint"]', 'class')) === 'on');
   ok('ledger page has recent entries and no overflow', (await pl.$$('#recent tr')).length >= 2 && await pl.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
   await pl.close();
 
