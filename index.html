@@ -149,6 +149,17 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .biz .sub{font-size:11px;color:var(--dim)}
 .biz .cut{color:var(--acc)}
 .biz .bar{max-width:90px;height:4px;margin:3px 0 0}
+.pfsum .stat .sub{font-size:10px;color:var(--dim);margin-top:2px}
+/* The pyramid. You on top, then each level of your downline as a row. It is a pyramid. That is the joke. */
+.pyr{padding:6px 0 2px}
+.pyr .row{display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 8px}
+.pyr .row em{font-style:normal;font-size:10px;color:var(--dim);letter-spacing:1px;flex:0 0 100%;text-align:center;margin-bottom:2px}
+.pyr .node{border:1px solid var(--line);background:#000;padding:3px 8px;font-size:11px;color:var(--fg);white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis}
+.pyr .node i{font-style:normal;color:var(--acc);margin-left:6px;font-size:10px}
+.pyr .node.you{border-color:var(--gold);color:var(--gold);letter-spacing:1px;font-weight:bold}
+.pyr .node.f{border-color:var(--gold)}
+.pyr .node.idle{opacity:.5}
+.pyr .node.more{color:var(--dim);border-style:dashed}
 .empty{text-align:center;padding:30px 10px;color:var(--dim)}
 .empty b{display:block;font-size:40px;margin-bottom:8px}
 .crate{position:fixed;z-index:8;width:64px;height:64px;font-size:38px;line-height:64px;text-align:center;cursor:pointer;background:var(--panel);border:2px solid var(--gold);border-radius:8px;box-shadow:0 0 30px rgba(255,209,102,.6);animation:crate .8s infinite alternate;user-select:none}
@@ -214,6 +225,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <section><h2>Log</h2><div id="log" class="log"></div></section>
   </div>
   <div id="tab-portfolio" hidden>
+  <section><h2>Your empire</h2><div id="pfEmpire"></div></section>
   <section><h2>Your runners' businesses</h2><div id="pfRunners"></div></section>
   <section><h2>Trophy cabinet</h2><div id="portfolio"></div></section>
   </div>
@@ -1431,6 +1443,19 @@ function render() {
     });
     const royalties = live.reduce((a, l) => a + (l.e.ministry ? 0 : l.total * CONFIG.ROYALTY), 0);
     const rpmAll = live.reduce((a, l) => a + (l.e.ministry ? 0 : l.rpm), 0);
+    // The empire: how much of what you make is other people's work, and the pyramid itself.
+    const L = [1, 2, 3].map(n => biz.filter(b => b.m.level === n));
+    const othersPct = state.total > 0 ? Math.min(100, Math.round(100 * (state.down.credited || 0) / state.total)) : 0;
+    const node = b => `<span class="node${b.m.franchiseOf === state.id ? ' f' : ''}${b.idle ? ' idle' : ''}" title="${esc(b.m.name)}${b.m.shopName ? ' · ' + esc(b.m.shopName) : ' · no shop, runs for you'}${b.idle ? ' · idle' : ''}">${esc(b.m.name)}${b.cps ? '<i>₵' + fmt(b.cps) + '/s</i>' : ''}</span>`;
+    const MAXN = 12;
+    const pyramid = `<div class="pyr"><div class="row"><em>YOU · keep 100%</em><span class="node you">${esc(state.name || 'you')}</span></div>` +
+      L.map((arr, i) => arr.length ? `<div class="row"><em>L${i + 1} · ${arr.length} · ${+(CONFIG.CUTS[i] * 100).toFixed(1)}% of theirs is yours${arr.some(b => b.m.franchiseOf === state.id) ? ' (franchisees 25%)' : ''}</em>${arr.slice(0, MAXN).map(node).join('')}${arr.length > MAXN ? '<span class="node more">+' + (arr.length - MAXN) + ' more</span>' : ''}</div>` : '').join('') + '</div>';
+    setHTML('pfEmpire', biz.length ? `<div class="pfsum">
+        <div class="stat"><div class="k">People under you</div><div class="v">${biz.length}</div><div class="sub">L1 ${L[0].length} · L2 ${L[1].length} · L3 ${L[2].length}</div></div>
+        <div class="stat"><div class="k">Other people's work</div><div class="v">₵${fmt(state.down.credited || 0)}</div><div class="sub">credited to you, all time</div></div>
+        <div class="stat"><div class="k">Of your lifetime</div><div class="v">${othersPct}%</div><div class="sub">earned by someone else</div></div></div>
+      <div class="card">${pyramid}<p class="muted">Idle runners are faded. Franchisees are gold. Everyone on this diagram is paying you, whether or not they have noticed.</p></div>`
+    : `<div class="empty"><b>△</b>The pyramid has one block. It is you.<br>Everyone who joins through your link appears under you here, with what they pay you per second.<div class="row" style="justify-content:center"><button data-act="share">Copy invite for Slack</button></div></div>`);
     setHTML('portfolio', pf.length ? `<div class="pfsum">
         <div class="stat"><div class="k">Franchises</div><div class="v">${pf.filter(e => !e.ministry).length}</div></div>
         <div class="stat"><div class="k">Royalties, all time</div><div class="v">₵${fmt(royalties)}</div></div>

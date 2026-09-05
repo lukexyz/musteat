@@ -145,7 +145,8 @@ If the platform API has a different shape, change `Sheet.read`, `Sheet.upsert` a
 - Sell to the Ministry is the solo fallback: half the stamps, no royalty, and only enabled when it would raise income by at least a quarter.
 - A franchisee posts to the feed each time the franchise passes ₵100K, ₵1M, ₵10M and so on, naming who gets the 25%.
 - What a franchisor keeps earning: 25% of the franchisee's lifetime total (which includes the franchisee's own runner cuts), plus the normal 5% and 2.5% from anyone the franchisee recruits (levels 2 and 3). Runners never transfer: they belong to a code, not a shop. A Ministry sale pays stamps only.
-- The Portfolio tab starts with your runners' businesses: each downline member with their shop, level, lifetime earnings and rate, and your cut from them, all time and per second.
+- The Portfolio tab opens with your empire: headcount by level, credits earned by other people's work, the share of your income that is someone else's, and the pyramid itself (you on top, one row per level, idle runners faded, franchisees gold).
+- The Portfolio tab then lists your runners' businesses: each downline member with their shop, level, lifetime earnings and rate, and your cut from them, all time and per second.
 - The Portfolio tab is also the trophy cabinet: every franchise with the gear and buildings it had, income at handover, live total earned, revenue per minute (from the last few syncs), royalty owed to you, and whether the franchisee is still open.
 - Runners pay 10% to their shop owner until they open a shop (₵5,000).
 - Everyone with no runners pays 15% to the Sector 7 Provisional Gang on top. Recruit one runner and the gang moves on to them. This is the hook: the only way out of the tax is to send the link.

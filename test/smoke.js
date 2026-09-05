@@ -220,6 +220,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok('cut from Sam to Ada written as a level 1 row', led.some(r => r.fromName === 'Sam' && r.toName === 'Ada' && r.level === 1 && r.kind === 'cut' && r.amount > 0), JSON.stringify(led.slice(-3)));
   ok('royalty from Kim written as a franchise row', led.some(r => r.fromName === 'Kim' && r.kind === 'royalty' && r.level === 'F'), JSON.stringify(led.filter(r => r.fromName === 'Kim')));
   await p1.click('[data-tab="portfolio"]');
+  ok('empire pyramid: you on top, Sam on L1, share of income shown', /Ada[\s\S]*L1[\s\S]*Sam/.test(await p1.textContent('#pfEmpire')) && /earned by someone else/.test(await p1.textContent('#pfEmpire')), await p1.textContent('#pfEmpire').then(t => t.slice(0, 300)));
   ok("portfolio lists Sam's business and the cut taken", /Sam/.test(await p1.textContent('#pfRunners')) && /L1/.test(await p1.textContent('#pfRunners')) && /You get/.test(await p1.textContent('#pfRunners')) && /Your cut, all time[\s\S]*₵[1-9]/.test(await p1.textContent('#pfRunners')), await p1.textContent('#pfRunners').then(t => t.slice(0, 300)));
   await p1.click('[data-tab="run"]');
   ok('board shows From runners for Ada', /From runners/.test(await p1.textContent('#board')) && /Ada[\s\S]*?₵[\d.]+K?[\s\S]*?₵[\d.]+/.test(await p1.textContent('#board tr.me')));
