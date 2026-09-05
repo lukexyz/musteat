@@ -26,7 +26,10 @@ function serve() {
   });
 }
 
+// A fresh player lands on the splash. Tap it rather than wait five seconds, then wait for registration.
+const skip = async page => { await page.waitForSelector('#intro:not([hidden])', { timeout: 5000 }); await page.click('#intro'); await page.waitForSelector('#modal:not([hidden])'); };
 async function register(page, name, dept) {
+  if (await page.$('#intro:not([hidden])')) await skip(page);
   await page.waitForSelector('#modal:not([hidden])');
   await page.fill('#nm', name);
   if (dept) await page.selectOption('#dept', dept);
@@ -49,7 +52,9 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   const p1 = await ctx.newPage();
   await p1.addInitScript(PATCH_INIT);
   await p1.goto(url);
-  ok('intro modal shown', await p1.isVisible('#modal'));
+  ok('noir splash first: 2099, everyone must eat, tap to skip', await p1.isVisible('#intro') && /2099/.test(await p1.textContent('#intro')) && /EVERYONE MUST EAT/.test(await p1.textContent('#intro')) && !(await p1.isVisible('#modal')));
+  await skip(p1);
+  ok('intro modal shown after the splash', await p1.isVisible('#modal') && !(await p1.isVisible('#intro')));
   ok('body not scrollable horizontally', await p1.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
   await register(p1, 'Ada', 'Engineering');
   ok('modal hidden after START RUNNING', !(await p1.isVisible('#modal')));
@@ -155,7 +160,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   const p5 = await ctx.newPage();
   await p5.addInitScript(PATCH_INIT);
   await p5.goto(url + '?slot=5&fr=' + code);
-  await p5.waitForSelector('#modal:not([hidden])');
+  await skip(p5);
   ok('intro shows the handover offer', /Ada.*handing you.*Test Kebab №2/s.test(await p5.textContent('#modalBox')), await p5.textContent('#modalBox'));
   await p5.fill('#nm', 'Kim'); await p5.click('#go');
   await p5.waitForFunction(() => !document.getElementById('recruiter').hidden);
@@ -191,6 +196,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   console.log('second citizen recruited in another tab');
   const p2 = await ctx.newPage();
   await p2.goto(url + '?slot=2&ref=' + code + '&v=Sam');
+  await skip(p2);
   ok('intro names the referral code', new RegExp(code).test(await p2.textContent('#modalBox')));
   ok('voucher pre-fills name', (await p2.inputValue('#nm')) === 'Sam');
   await p2.click('#go');
@@ -249,6 +255,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   console.log('manual referral code on the intro');
   const p3 = await ctx.newPage();
   await p3.goto(url + '?slot=3');
+  await skip(p3);
   ok('intro has a who-sent-you box', await p3.isVisible('#refIn'));
   await p3.fill('#nm', 'Mo'); await p3.fill('#refIn', ' ' + code.toLowerCase() + ' ');
   await p3.click('#go');
@@ -258,7 +265,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
 
   const p6 = await ctx.newPage();
   await p6.goto(url + '?slot=6&ref=' + code);
-  await p6.waitForSelector('#refIn');
+  await skip(p6);
   ok('code box is sealed when the link carried a code', (await p6.getAttribute('#refIn', 'readonly')) != null && (await p6.inputValue('#refIn')) === code && /never know/.test(await p6.textContent('#modalBox')), await p6.inputValue('#refIn'));
   await p6.click('#refIn'); await p6.keyboard.press('End'); await p6.keyboard.type('ZZ');
   ok('typing does not change a sealed code', (await p6.inputValue('#refIn')) === code, await p6.inputValue('#refIn'));

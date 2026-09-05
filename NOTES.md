@@ -1,6 +1,6 @@
 # MustEat
 
-Year 3019. Lockdown day 328,500. Going outside is illegal. Everyone must eat.
+Year 3019. Lockdown day 336,041. Going outside is illegal. Everyone must eat.
 
 A single-file idle game where every player starts as a delivery runner for whoever
 sent them the link, buys gear, opens a shop, recruits colleagues to run for them,
@@ -10,6 +10,12 @@ is the joke. That is also the growth strategy.
 
 `index.v1.html` is the previous build (shop and runners only, four-endpoint
 backend). `index.html` is the current one.
+
+## First visit
+
+With no save in the browser the page opens on a splash: six lines of noir (2099, the money, the
+fever, the doors, 3019, everyone must eat) that fade in one at a time. It moves on to registration
+by itself after five seconds, or on a tap. `CONFIG.INTRO_S` sets the wait. Returning players never see it.
 
 ## Run it
 

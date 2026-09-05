@@ -26,6 +26,7 @@ function serve() {
   const page = await browser.newPage();
   await page.addInitScript(() => { window.__t = Date.now(); Date.now = () => window.__t; });
   await page.goto(url);
+  await page.click('#intro').catch(() => {}); // skip the splash
   await page.fill('#nm', 'Bot'); await page.click('#go');
   await page.waitForFunction(() => window.MUSTEAT && window.MUSTEAT.state.id);
 
