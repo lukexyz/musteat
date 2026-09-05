@@ -250,12 +250,12 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 <script>
 // ============================================================
 // CONFIG
-// The backend is imagined as a spreadsheet: two tables, read in
-// full, rows upserted by id. SHEET_API '' = local mock stored in
-// this browser's localStorage (open ?slot=2&ref=CODE in another
-// tab to be a second colleague). Set SHEET_API to the platform
-// base URL and Sheet.read/upsert/append are the only functions
-// that need to change.
+// The backend is a spreadsheet: three tables, read in full, rows
+// upserted by id. SHEET_API '' = local mock stored in this browser's
+// localStorage (open ?slot=2&ref=CODE in another tab to be a second
+// colleague). SHEET_API = the /exec URL of the Apps Script in
+// backend/Code.gs (or anything speaking the same contract) and every
+// browser shares one company. PORTING.md has the contract.
 // ============================================================
 const CONFIG = {
   SHEET_API: '',
@@ -580,10 +580,13 @@ function log(text) {
 // events:  id, ts, pid, who, kind, arg, text, effect, amount, of
 // ledger:  id, ts, from, fromName, to, toName, level, kind, amount   (one row per credited cut or royalty)
 const Sheet = {
+  pending: { events: [], ledger: [] }, // appends waiting for the next sync when there is a backend
   local() { try { return Object.assign({ players: [], events: [], ledger: [] }, JSON.parse(localStorage.getItem(CONFIG.SHEET_KEY)) || {}); } catch (e) { return { players: [], events: [], ledger: [] }; } },
   putLocal(db) { try { localStorage.setItem(CONFIG.SHEET_KEY, JSON.stringify(db)); } catch (e) {} },
-  async remote(method, table, body) {
-    const r = await fetch(CONFIG.SHEET_API + '/' + table, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+  url(params) { return CONFIG.SHEET_API + (CONFIG.SHEET_API.includes('?') ? '&' : '?') + params + '&t=' + now(); },
+  // text/plain so there is no CORS preflight; Apps Script answers POST with a redirect that fetch follows.
+  async remote(method, params, body) {
+    const r = await fetch(this.url(params), { method, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: body ? JSON.stringify(body) : undefined, redirect: 'follow' });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     return r.json();
   },
@@ -593,19 +596,34 @@ const Sheet = {
     catch (e) { if (!sheetNoted) { sheetNoted = true; log('Sheet unreachable. Running in local mode.'); } return fallback(); }
   },
   read(table) {
-    return this.guarded(() => this.remote('GET', table), () => this.local()[table] || []);
+    return this.guarded(() => this.remote('GET', 'table=' + table), () => this.local()[table] || []);
   },
   upsert(table, row) {
-    return this.guarded(() => this.remote('POST', table, { upsert: row }), () => {
+    return this.guarded(() => this.remote('POST', 'table=' + table, { upsert: row }), () => {
       const db = this.local(); const t = db[table]; const i = t.findIndex(r => r.id === row.id);
       if (i >= 0) t[i] = Object.assign(t[i], row); else t.push(row);
       this.putLocal(db); return row;
     });
   },
+  // With a backend, appends queue up and ride along with the next sync: one round trip per sync, not one per ledger row.
   append(table, row) {
-    return this.guarded(() => this.remote('POST', table, { append: row }), () => {
-      const db = this.local(); (db[table] = db[table] || []).push(row); db[table] = db[table].slice(-(table === 'ledger' ? 3000 : 300)); this.putLocal(db); return row;
-    });
+    if (CONFIG.SHEET_API) { this.pending[table].push(row); return Promise.resolve(row); }
+    const db = this.local(); (db[table] = db[table] || []).push(row); db[table] = db[table].slice(-(table === 'ledger' ? 3000 : 300)); this.putLocal(db); return Promise.resolve(row);
+  },
+  // The sync round trip: upsert my row, flush queued appends, get all three tables back.
+  sync(row) {
+    return this.guarded(async () => {
+      const append = this.pending; this.pending = { events: [], ledger: [] };
+      try { return await this.remote('POST', 'op=sync', { upsert: row, append }); }
+      catch (e) { this.pending = { events: append.events.concat(this.pending.events), ledger: append.ledger.concat(this.pending.ledger) }; throw e; }
+    }, async () => { await this.upsert('players', row); const db = this.local(); return { players: db.players, events: db.events, ledger: db.ledger }; });
+  },
+  // Tab closing with appends still queued: hand them to the browser to send after we are gone.
+  flush() {
+    if (!CONFIG.SHEET_API || !navigator.sendBeacon) return;
+    const p = this.pending; if (!p.events.length && !p.ledger.length) return;
+    this.pending = { events: [], ledger: [] };
+    try { navigator.sendBeacon(this.url('op=append'), JSON.stringify({ append: p })); } catch (e) {}
   },
 };
 
@@ -973,10 +991,8 @@ async function sync() {
   syncing = true;
   try {
     if (state.offer) { const c = calc(state); Object.assign(state.offer, { gear: Object.assign({}, state.gear), upg: Object.assign({}, state.upg), income: c.income }); }
-    await Sheet.upsert('players', rowOf(state));
-    const rows = await Sheet.read('players');
-    const events = await Sheet.read('events');
-    const ledger = await Sheet.read('ledger');
+    const db = await Sheet.sync(rowOf(state));
+    const rows = db.players || [], events = db.events || [], ledger = db.ledger || [];
     world = buildWorld(rows);
     (ledger || []).forEach(r => { world.fromRunners[r.to] = (world.fromRunners[r.to] || 0) + (Number(r.amount) || 0); });
     feed = events.slice().sort((a, b) => b.ts - a.ts).slice(0, 12);
@@ -1520,7 +1536,7 @@ function render() {
   } else setHTML('board', '<p class="muted">Nobody else is here yet. Or the sheet is loading. Either way: recruit.</p>');
 
   setHTML('log', state.log.map(e => `<div>${e.text}</div>`).join(''));
-  $('mode').textContent = CONFIG.SHEET_API ? 'connected to sheet' : 'local sheet (this browser only; invite links open as new players here)';
+  $('mode').textContent = CONFIG.SHEET_API ? 'connected to the company sheet' : 'local sheet (this browser only; invite links open as new players here)';
   setHTML('localtools', CONFIG.SHEET_API ? '' : ' · <a href="#" data-act="seed">seed demo company</a> · <a href="#" data-act="wipe">wipe company</a>');
 }
 
@@ -1542,9 +1558,9 @@ document.addEventListener('click', e => {
   if (act) act();
 });
 $('reset').addEventListener('click', e => { e.preventDefault(); ask('Delete your save?', 'The Ministry will not remember you.', 'DELETE', () => { localStorage.removeItem(KEY); location.href = location.pathname; }); });
-document.addEventListener('visibilitychange', () => { if (document.hidden) save(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { save(); Sheet.flush(); } });
 if (qs.has('dev')) window.MUSTEAT = { get state() { return state; }, calc, GEAR, UPGRADES, ACH, gearCost, buy, buyUpgrade, runDelivery, collectCrate, frame, save, sync, franchise, render };
-window.addEventListener('beforeunload', save);
+window.addEventListener('beforeunload', () => { save(); Sheet.flush(); });
 
 function showOffline(o) {
   modal(`<h3>Welcome back, citizen</h3>

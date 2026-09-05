@@ -34,10 +34,32 @@ upsert(table, row)   -> Promise<row>          insert or merge by row.id
 append(table, row)   -> Promise<row>          insert; id is client-generated and unique
 ```
 
-That is the entire surface. `index.html` has them on the `Sheet` object under
+That is the entire logical surface. `index.html` has them on the `Sheet` object under
 `// ---------------- Sheet adapter ----------------`, and `ledger.html` has a two-line `read`.
 Both pages carry a `CONFIG.SHEET_API` string: empty means the localStorage mock, anything else
-means the adapter talks to that base URL.
+means the adapter talks to that URL.
+
+### The wire format the client speaks today
+
+`backend/Code.gs` is the reference backend (a Google Sheet behind an Apps Script web app) and
+`test/sheetmock.js` is the same contract in Node. The URL is one endpoint with query parameters:
+
+| call | request | response |
+| --- | --- | --- |
+| read | `GET ?table=players` | `[row, ...]` |
+| upsert | `POST ?table=players` body `{"upsert": row}` | the row |
+| append | `POST ?table=events` body `{"append": row}` | the row |
+| sync | `POST ?op=sync` body `{"upsert": row, "append": {"events": [...], "ledger": [...]}}` | `{"players": [...], "events": [...], "ledger": [...]}` |
+| late appends | `POST ?op=append` body `{"append": {...}}` (sent with `sendBeacon` when a tab closes) | `{"ok": true}` |
+
+`sync` exists so a client makes one round trip every 30 seconds instead of four: it upserts the
+player's row, flushes any appends queued since the last sync, and returns all three tables. A
+backend that only offers the three basic calls still works if `Sheet.sync` is rewritten to call
+them in turn, which is what the local mock does.
+
+POST bodies are sent as `text/plain` so browsers skip the CORS preflight, and the client follows
+redirects, because Apps Script answers every POST with a 302 to where the JSON actually is. A
+Toqan adapter can ignore both quirks.
 
 ### Merge semantics for upsert
 
@@ -68,15 +90,16 @@ the code does today; if that gets slow, the two readers only need `ledger` for s
 ## How to port
 
 1. Decide the shape Toqan gives you: REST endpoints, a client SDK, or a document store.
-2. In `index.html`, replace the bodies of `Sheet.read`, `Sheet.upsert` and `Sheet.append` (or the
-   `Sheet.remote` helper if it is REST with a different shape). Keep `Sheet.guarded`: any failure
-   falls back to the local mock so the game never breaks in front of a colleague.
+2. In `index.html`, replace the bodies of `Sheet.read`, `Sheet.upsert`, `Sheet.append` and
+   `Sheet.sync` (or just `Sheet.remote` if Toqan is REST with a similar shape). Keep
+   `Sheet.guarded`: any failure falls back to the local mock so the game never breaks in front of
+   a colleague.
 3. In `ledger.html`, replace `read(table)`.
 4. Set `CONFIG.SHEET_API` on both pages to anything non-empty. It is only ever tested for truthiness
    and passed to your adapter, so a base URL, a database name or the string `toqan` all work.
-5. Run `cd test && node smoke.js`. It drives the real page and a second player in another tab
-   through registration, recruiting, cuts, a franchise handover and the ledger page. It uses the
-   local mock, so also open two browsers against the real backend and recruit one from the other.
+5. Run `cd test && node smoke.js` (local mock, one browser) and `node remote.js` (three separate
+   browser contexts sharing one company through `sheetmock.js`). Then open two real browsers
+   against Toqan and recruit one from the other.
 
 ### Skeleton
 

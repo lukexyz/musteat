@@ -69,7 +69,7 @@ footer{margin-top:24px;font-size:12px;color:var(--dim);border-top:1px solid var(
   <footer>Cuts are 10% / 5% / 2.5% of a runner's lifetime earnings by level, royalties 25% of a franchisee's, credited to the owner on sync and recorded here by the receiving client. Self-reported, like everything else in the food economy. <a href="index.html">Back to the game</a></footer>
 </div>
 <script>
-// Reads the same sheet as the game. Local mode: the browser's localStorage sheet. Backend: the same three GET endpoints.
+// Reads the same sheet as the game. Local mode: the browser's localStorage sheet. Backend: GET ?table=players|events|ledger on the same URL.
 // PORT BOUNDARY: read(table) is the only storage call on this page. See PORTING.md.
 const CONFIG = { SHEET_API: '', SHEET_KEY: 'musteat_sheet' };
 const $ = id => document.getElementById(id);
@@ -89,7 +89,7 @@ const SPRINT_S = 1800;
 let order = 'total'; // or 'sprint': lifetime credits at thirty minutes of play, the same clock for everyone
 document.getElementById('order').addEventListener('click', e => { const b = e.target.closest('[data-order]'); if (!b) return; order = b.dataset.order; [...document.querySelectorAll('[data-order]')].forEach(x => x.classList.toggle('on', x === b)); render(); });
 async function read(table) {
-  if (CONFIG.SHEET_API) { try { const r = await fetch(CONFIG.SHEET_API + '/' + table); if (r.ok) return await r.json(); } catch (e) {} return []; }
+  if (CONFIG.SHEET_API) { try { const r = await fetch(CONFIG.SHEET_API + (CONFIG.SHEET_API.includes('?') ? '&' : '?') + 'table=' + table + '&t=' + Date.now()); if (r.ok) return await r.json(); } catch (e) {} return []; }
   try { return (JSON.parse(localStorage.getItem(CONFIG.SHEET_KEY)) || {})[table] || []; } catch (e) { return []; }
 }
 const sum = (arr, f) => arr.reduce((a, r) => a + (f(r) || 0), 0);
@@ -99,7 +99,7 @@ const nameOf = (players, id, fallback) => { const p = players.find(x => x.id ===
 async function render() {
   const [players, ledger] = await Promise.all([read('players'), read('ledger')]);
   const rows = (ledger || []).map(r => Object.assign({}, r, { amount: Number(r.amount) || 0, ts: Number(r.ts) || 0 }));
-  $('mode').textContent = (CONFIG.SHEET_API ? 'connected to sheet' : 'local sheet (this browser only)') + ' · refreshes every 10s';
+  $('mode').textContent = (CONFIG.SHEET_API ? 'connected to the company sheet' : 'local sheet (this browser only)') + ' · refreshes every ' + (CONFIG.SHEET_API ? 30 : 10) + 's';
   $('nRows').textContent = rows.length.toLocaleString();
   $('sumAll').textContent = '₵' + fmt(sum(rows, r => r.amount));
   $('sumRoy').textContent = '₵' + fmt(sum(rows.filter(r => r.kind === 'royalty'), r => r.amount));
@@ -132,7 +132,7 @@ async function render() {
     recent.map(r => `<tr><td class="muted">${ago(r.ts)}</td><td>${esc(nameOf(players, r.from, r.fromName))}</td><td class="muted">→</td><td>${esc(nameOf(players, r.to, r.toName))}</td><td class="r ${r.kind === 'royalty' ? 'gold' : 'blue'}">${r.kind === 'royalty' ? 'royalty' : 'L' + esc(r.level)}</td><td class="r">₵${fmt(r.amount)}</td></tr>`).join('') + `</table>` : '<div class="empty">The ledger is empty.</div>';
 }
 render();
-setInterval(render, 10000);
+setInterval(render, CONFIG.SHEET_API ? 30000 : 10000);
 window.addEventListener('storage', e => { if (e.key === CONFIG.SHEET_KEY) render(); });
 </script>
 </body>

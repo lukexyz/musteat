@@ -14,7 +14,7 @@ The whole thing came out of one prompt, more or less:
 
 Everything after that was arguing about the numbers.
 
-Single HTML file, no build, saves in your browser. `ledger.html` is the high-score table, with the ledger of who is paying whom underneath. Technical notes in `NOTES.md`. Storage contract for moving it onto another database in `PORTING.md`.
+Single HTML file, no build, saves in your browser. To make every browser share one company, put `backend/Code.gs` behind a Google Sheet as an Apps Script web app and paste its URL into `CONFIG.SHEET_API` (steps in `NOTES.md`). `ledger.html` is the high-score table, with the ledger of who is paying whom underneath. Technical notes in `NOTES.md`. Storage contract for moving it onto another database in `PORTING.md`.
 
 ```
 cd test && npm install && node smoke.js

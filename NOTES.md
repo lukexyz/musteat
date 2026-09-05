@@ -61,6 +61,7 @@ a second tab, bulk buy, upgrades, a crate, a franchise handover in another tab a
 
 ```
 cd test && npm install && node smoke.js          # add --headed to watch it
+node remote.js                                   # three separate browser contexts sharing one company through sheetmock.js
 ```
 
 ## Balance play-test
@@ -122,18 +123,37 @@ on the client from the full `players` table, so the backend stores rows and noth
 
 `ledger.html` reads the three tables and shows top earners from runners, biggest contributors, who pays whom, high scores and the most recent entries. It refreshes itself. In local mode it reads the same browser sheet; with a backend it reads the same endpoints as the game. The leaderboard in the game shows a "From runners" column from the same table.
 
-### Wire the real backend
+### Wire the Google Sheet (the GitHub Pages version)
 
-Set `CONFIG.SHEET_API` at the top of the script. The client then calls:
+GitHub Pages is static, so on its own every browser is its own company. `backend/Code.gs` turns a
+Google Sheet into the shared backend:
 
-| Method | Path | Body | Returns |
-| --- | --- | --- | --- |
-| GET | `/players`, `/events`, `/ledger` | | array of rows |
-| POST | `/players` | `{upsert: row}` | anything 2xx |
-| POST | `/events`, `/ledger` | `{append: row}` | anything 2xx |
+1. Create a blank Google Sheet. Extensions > Apps Script. Replace the contents of Code.gs with
+   `backend/Code.gs` and save.
+2. Deploy > New deployment > type Web app. Execute as: Me. Who has access: Anyone. Deploy, authorise
+   it once, copy the URL ending in `/exec`.
+3. Paste that URL into `CONFIG.SHEET_API` in `index.html` and `ledger.html`. Commit, push, done.
+   The tabs `players`, `events` and `ledger` appear in the sheet on the first sync, with headers.
 
-If the platform API has a different shape, change `Sheet.read`, `Sheet.upsert` and
-`Sheet.append` only. Any failure falls back to the local sheet so the game never breaks.
+Every browser that opens the page now shares one company. Invite links stop carrying a dev slot.
+If the sheet is unreachable the game falls back to local mode and says so in the log.
+
+Redeploy the web app (Deploy > Manage deployments > edit > new version) after changing Code.gs;
+the URL stays the same.
+
+The client makes one POST per sync (every 30 seconds per open tab) that upserts the player row,
+flushes queued feed and ledger rows, and returns all three tables, plus one GET per intro. Apps
+Script runtime is capped per day (about 90 minutes on a personal account, 6 hours on a Workspace
+one); at a few hundred milliseconds a call that is comfortably a working day of thirty people on a
+Workspace account, and tight on a personal one. `CONFIG.SYNC_S` is the lever.
+
+Strings that would turn into formulas or numbers in a cell (`=1+1`, `007`) are stored with a
+zero-width-space prefix and stripped on the way out, so a name cannot become a formula.
+
+`test/sheetmock.js` is the same contract in Node, in memory. `node test/sheetmock.js` serves the
+game at http://127.0.0.1:8787/ already wired to itself: open it in two different browsers (or a
+normal and a private window) to play a shared company locally. `PORTING.md` has the full contract
+for moving to another database.
 
 ## Mechanics in one place
 
