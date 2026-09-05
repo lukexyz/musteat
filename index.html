@@ -178,7 +178,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <section><h2>Gear <span class="qty" id="qty"></span></h2><div id="gear"></div></section>
   <section><h2>Upgrades</h2><div id="upgrades"></div></section>
   <section><h2>Your shop &amp; runners</h2><div id="shop" class="card"></div></section>
-  <section><h2>Supply chain</h2><div id="buildings"></div></section>
+  <section><h2>Supply chain</h2><div class="hint">Buildings. Credits buy them, but only people unlock them: each one needs runners under you. A building makes your runners earn more and makes your cut of it bigger. That is the whole trick.</div><div id="buildings"></div></section>
   <section><h2>The Ministry</h2><div id="ministry" class="card"></div></section>
   <section><h2>Franchise</h2><div id="franchise" class="card"></div></section>
   <section><h2>Commendations</h2><div id="ach" class="card"></div></section>
@@ -374,8 +374,8 @@ const ACH = [
   ['gear250', 'Where Do You Keep It All', 'own 250 pieces of gear', s => gearTotal(s) >= 250],
   ['shop', 'Entrepreneur (Under Investigation)', 'open a shop', s => !!s.shop],
   ['run1', 'Somebody Fell For It', 'recruit one runner', s => s.down.list.length >= 1],
-  ['run5', 'Middle Management', '5 in your downline', s => s.down.list.length >= 5],
-  ['run25', 'Pyramid, Technically', '25 in your downline', s => s.down.list.length >= 25],
+  ['run5', 'Middle Management', '3 in your downline', s => s.down.list.length >= 3],
+  ['run25', 'Pyramid, Technically', '6 in your downline', s => s.down.list.length >= 6],
   ['depot', 'Has a Freezer', 'build a Depot', s => !!s.buildings.depot],
   ['plant', 'Industrial Wok', 'build a Kitchen Plant', s => !!s.buildings.plant],
   ['factory', 'Paste All the Way Down', 'build a Nutrient Factory', s => !!s.buildings.factory],
@@ -394,37 +394,39 @@ const ACH = [
 const RANKS = [
   { name: 'Runner', mul: 1, need: -1 },
   { name: 'Shop Owner', mul: 1.1, need: 0 },
-  { name: 'District Overlord', mul: 1.25, need: 3 },
-  { name: 'Regional Nutrient Baron', mul: 1.5, need: 10 },
-  { name: 'Supreme Ministry of Eating', mul: 2, need: 25 },
+  { name: 'District Overlord', mul: 1.25, need: 2 },
+  { name: 'Regional Nutrient Baron', mul: 1.5, need: 4 },
+  { name: 'Supreme Ministry of Eating', mul: 2, need: 8 },
 ];
 // Buildings are gated on PEOPLE, not credits. Credits can be waited out. Colleagues cannot.
 // Each one helps the people below you (so recruits want to join you) and pays you more (so you want recruits).
+// Scaled for a company of tens, not thousands: one, two, three runners, not a hundred.
 const BUILDINGS = [
-  { id: 'depot', name: 'Local Food Depot', cost: 8000, unlock: 10,
+  { id: 'depot', name: 'Local Food Depot', cost: 8000, unlock: 2,
     desc: 'A garage, a freezer, a sign that says DEPOT in a font the Ministry dislikes.',
     down: 'Your direct runners deliver +25% faster.', up: '+5% extra on direct runner earnings.',
-    needText: '3 direct runners', need: s => s.down.list.filter(m => m.level === 1).length >= 3 },
-  { id: 'plant', name: 'Kitchen Plant', cost: 25000, unlock: 25, after: 'depot',
+    needText: '1 direct runner', need: s => s.down.list.filter(m => m.level === 1).length >= 1 },
+  { id: 'plant', name: 'Kitchen Plant', cost: 25000, unlock: 4, after: 'depot',
     desc: 'Industrial woks. Conveyor belts. A smell that is legally food.',
     down: 'Everyone in your downline delivers one zone higher.', up: 'All runner cuts ×1.25.',
-    needText: '10 runners in your downline', need: s => s.down.list.length >= 10 },
-  { id: 'factory', name: 'Nutrient Factory', cost: 100000, unlock: 50, after: 'plant',
+    needText: '2 runners in your downline', need: s => s.down.list.length >= 2 },
+  { id: 'factory', name: 'Nutrient Factory', cost: 100000, unlock: 6, after: 'plant',
     desc: 'Makes the paste that the plants make into the meals that the runners run.',
     down: 'Everyone in your downline gets +25% order value.', up: 'All runner cuts ×1.5.',
-    needText: '25 downline and 2 downline Depots', need: s => s.down.list.length >= 25 && s.down.list.filter(m => hasB(m, 'depot')).length >= 2 },
-  { id: 'ministry', name: 'Ministry of Eating seat', cost: 500000, unlock: 100, after: 'factory',
+    needText: '3 runners in your downline', need: s => s.down.list.length >= 3 },
+  { id: 'ministry', name: 'Ministry of Eating seat', cost: 500000, unlock: 10, after: 'factory',
     desc: 'A chair. A stamp. Absolute power over lunch.',
     down: 'Your supply chain is exempt from your decrees.', up: 'All runner cuts ×2. Issue one company-wide decree per day.',
-    needText: '3 downline Nutrient Factories', need: s => s.down.list.filter(m => hasB(m, 'factory')).length >= 3 },
+    needText: '3 direct runners, one of them with a Depot', need: s => s.down.list.filter(m => m.level === 1).length >= 3 && s.down.list.some(m => m.level === 1 && hasB(m, 'depot')) },
 ];
 // Global milestones: the whole company recruits towards these. Thresholds are citizen counts.
+const HOVER_SUBSIDY_AT = 3;
 const MILESTONES = [
-  { at: 5, text: 'Hoverbike subsidy (half price)' },
-  { at: 10, text: 'Depot blueprints declassified' },
-  { at: 25, text: 'Kitchen Plant blueprints declassified' },
-  { at: 50, text: 'Nutrient Factory blueprints declassified' },
-  { at: 100, text: 'The Ministry of Eating accepts applications' },
+  { at: 2, text: 'Depot blueprints declassified' },
+  { at: HOVER_SUBSIDY_AT, text: 'Hoverbike subsidy (half price)' },
+  { at: 4, text: 'Kitchen Plant blueprints declassified' },
+  { at: 6, text: 'Nutrient Factory blueprints declassified' },
+  { at: 10, text: 'The Ministry of Eating accepts applications' },
 ];
 const DECREES = {
   feast: { name: 'Mandatory Feast', text: 'declared a <b>Mandatory Feast</b>. Every citizen delivers ×2 for 10 minutes.' },
@@ -434,7 +436,7 @@ const DEPTS = ['Engineering', 'Product', 'Design', 'Sales', 'Marketing', 'Financ
 const SHARE = [
   "I'm running food deliveries in MustEat (it's the year 3019, it's a whole thing). Join as my runner and I get 10% of everything you earn. Forever. {link}",
   "I've opened a shop in MustEat and I need runners. It's legal. Probably. {link}",
-  "I now control a district in MustEat. I need 10 runners to become Regional Nutrient Baron. Don't ask questions. {link}",
+  "I now control a district in MustEat. I need 4 runners to become Regional Nutrient Baron. Don't ask questions. {link}",
   "Regional Nutrient Baron here. The Ministry is watching. I need bodies. Warm ones, ideally. {link}",
   "I am the Supreme Ministry of Eating. You are legally required to open this link. {link}",
 ];
@@ -624,7 +626,7 @@ function gearCost(g, l, n) {
   n = n || 1; if (g.max) n = Math.min(n, g.max - l); if (n <= 0) return 0;
   const r = g.growth || 1.15;
   let c = g.cost * Math.pow(r, l) * (Math.pow(r, n) - 1) / (r - 1);
-  if (g.id === 'hover' && world.citizens >= 5) c *= 0.5;
+  if (g.id === 'hover' && world.citizens >= HOVER_SUBSIDY_AT) c *= 0.5;
   return Math.floor(c);
 }
 const stampsFor = total => Math.floor(Math.cbrt(Math.max(0, total) / CONFIG.STAMP_BASE));
@@ -1250,7 +1252,7 @@ function render() {
       rev = `<div class="rev ${l ? '' : 'off'}${neon}><b>₵${fmt(inc)}/s</b><span>${l ? pctText + ' of income' : 'not yet'}</span><i style="--w:${Math.round(pct)}%"></i></div>`;
     } else if (g.valueMul) rev = `<div class="rev val ${l ? '' : 'off'}${neon}><b>×${(1 + g.valueMul * l).toFixed(1)} value</b><span>on every order</span><i style="--w:${Math.round(100 * l / g.max)}%"></i></div>`;
     else if (g.id === 'mask') rev = `<div class="rev val ${l ? '' : 'off'}${neon}><b>−${25 * l}% trouble</b><span>inspections, rain, rivals</span><i style="--w:${Math.round(100 * l / g.max)}%"></i></div>`;
-    const desc = secret ? 'Classified. Buy the thing above it first.' : g.desc + (g.dps ? ' +' + fmt(g.dps * mult) + '/s each.' : '') + (g.zone != null && l === 0 ? ' Unlocks ' + ZONES[g.zone].name + '.' : '') + (g.id === 'hover' && world.citizens >= 5 ? ' <span class="need">Subsidised.</span>' : '');
+    const desc = secret ? 'Classified. Buy the thing above it first.' : g.desc + (g.dps ? ' +' + fmt(g.dps * mult) + '/s each.' : '') + (g.zone != null && l === 0 ? ' Unlocks ' + ZONES[g.zone].name + '.' : '') + (g.id === 'hover' && world.citizens >= HOVER_SUBSIDY_AT ? ' <span class="need">Subsidised.</span>' : '');
     return `<div class="item ${secret ? 'locked' : ''}"><div><b>${secret ? '???' : g.name}</b><span class="lvl">Lv ${l}</span><div class="d">${desc}</div></div>${rev}
       <button data-buy="${g.id}" ${maxed || state.cash < cost ? 'disabled' : ''}>${maxed ? 'MAX' : '₵' + fmt(cost) + (n > 1 ? ' ×' + n : '')}</button></div>`;
   }).join(''));

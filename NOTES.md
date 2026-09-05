@@ -143,10 +143,11 @@ If the platform API has a different shape, change `Sheet.read`, `Sheet.upsert` a
 - Runners pay 10% to their shop owner until they open a shop (₵5,000).
 - Shop owners get 10% / 5% / 2.5% of level 1 / 2 / 3 downline lifetime earnings, forever.
 - Buildings need a shop, the previous building, a company-wide citizen count, and people:
-  Depot 3 direct runners, Kitchen Plant 10 downline, Nutrient Factory 25 downline plus
-  2 downline Depots, Ministry seat 3 downline Factories. Each helps the people below
-  (faster deliveries, higher zone, more value) and pays the owner more (bigger cuts).
-- Milestones at 5 / 10 / 25 / 50 / 100 citizens declassify the Hoverbike subsidy and each blueprint.
+  Depot 1 direct runner, Kitchen Plant 2 downline, Nutrient Factory 3 downline, Ministry seat
+  3 direct runners one of whom has a Depot. Each helps the people below (faster deliveries,
+  higher zone, more value) and pays the owner more (bigger cuts). Scaled for a company of tens.
+- Milestones at 2 / 3 / 4 / 6 / 10 citizens declassify each blueprint and the Hoverbike subsidy.
+- Ranks: Shop Owner on opening a shop, District Overlord at 2 in your downline, Regional Nutrient Baron at 4, Supreme Ministry of Eating at 8.
 - Sectors: each department belongs to the shop with the most runners from it.
 - Nudges (idle runners), complaints (runners against owners), vouchers (₵200 to give a
   named colleague ₵250) and share messages are all copy-to-clipboard for Slack. Where the
