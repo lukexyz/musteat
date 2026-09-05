@@ -153,6 +153,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .empty b{display:block;font-size:40px;margin-bottom:8px}
 .crate{position:fixed;z-index:8;width:64px;height:64px;font-size:38px;line-height:64px;text-align:center;cursor:pointer;background:var(--panel);border:2px solid var(--gold);border-radius:8px;box-shadow:0 0 30px rgba(255,209,102,.6);animation:crate .8s infinite alternate;user-select:none}
 .crate[hidden]{display:none}
+.crate.first::after{content:'take it';position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:6px;font-size:11px;letter-spacing:3px;color:var(--gold);white-space:nowrap;text-shadow:0 0 8px #000}
 @keyframes crate{from{transform:scale(1)}to{transform:scale(1.15)}}
 .ach span{display:inline-block;margin:2px 4px 2px 0;padding:2px 6px;border:1px solid var(--line);font-size:11px;color:var(--gold)}
 @media(max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:24px}.tstats{grid-template-columns:repeat(2,1fr)}}
@@ -233,6 +234,8 @@ const CONFIG = {
   CRATE_MIN_S: 300,           // unmarked ration crates: seconds between them, plus up to CRATE_RANGE_S
   CRATE_RANGE_S: 600,
   CRATE_SHOW_S: 13,           // seconds a crate stays on screen
+  CRATE_FIRST_S: 30,          // the first crate lands this many seconds after registration, plus up to 15
+  CRATE_FIRST_SHOW_S: 30,     // and waits longer, because nobody knows what it is yet
   STAMP_BASE: 1e7,            // Ration Stamps = cbrt(lifetime earnings / STAMP_BASE); income × sqrt(1 + 0.2 × stamps)
   ROYALTY: 0.25,              // a franchisor's cut of a franchisee's lifetime earnings, forever
 };
@@ -724,25 +727,45 @@ function scheduleCrate(t) { state.crateAt = t + (CONFIG.CRATE_MIN_S + Math.rando
 function crateTick(t) {
   if (!state.id) return;
   const el = $('crate');
+  const first = !state.crates;
   if (crateShown) {
-    if (t - crateShown > CONFIG.CRATE_SHOW_S * 1000) { crateShown = 0; el.hidden = true; scheduleCrate(t); }
+    if (t - crateShown > (first ? CONFIG.CRATE_FIRST_SHOW_S : CONFIG.CRATE_SHOW_S) * 1000) { crateShown = 0; el.hidden = true; scheduleCrate(t); }
     return;
   }
-  if (!state.crateAt || state.crateAt < t - 60000) { state.crateAt = t + 20000 + Math.random() * 40000; return; } // missed while away: soon
+  if (!state.crateAt || state.crateAt < t - 60000) { // missed while away: soon. Never opened one: the hook, inside the first minute
+    state.crateAt = first ? Math.max(t + 5000, (state.created || t) + (CONFIG.CRATE_FIRST_S + Math.random() * 15) * 1000) : t + 20000 + Math.random() * 40000;
+    return;
+  }
   if (t >= state.crateAt) {
-    crateShown = t; el.hidden = false;
+    crateShown = t; el.hidden = false; el.classList.toggle('first', first);
     el.style.left = (5 + Math.random() * 70) + 'vw'; el.style.top = (15 + Math.random() * 60) + 'vh';
   }
 }
 function collectCrate() {
   if (!crateShown) return;
   const t = now(); crateShown = 0; $('crate').hidden = true; scheduleCrate(t);
+  const first = !state.crates;
   state.crates = (state.crates || 0) + 1;
   const c = calc(state), r = Math.random();
+  if (first) { // always cash, enough for the first piece of tech, plus a rush, plus the explanation
+    const bonus = Math.max(60, Math.floor(c.value * 15 + c.income * 120));
+    earn(bonus, 0); state.fx.rush = t + 77000;
+    log('<b>Unmarked ration crate:</b> ₵' + fmt(bonus) + ', a LUNCH RUSH (income ×7 for 77 seconds), and a note that said "eat".');
+    showFirstCrate(bonus); render(); return;
+  }
   if (r < 0.45) { state.fx.rush = t + 77000; log('<b>Unmarked ration crate:</b> LUNCH RUSH. Income ×7 for 77 seconds.'); toast('LUNCH RUSH: income ×7 for 77s'); }
   else if (r < 0.6) { state.fx.panic = t + 13000; log('<b>Unmarked ration crate:</b> PANIC BUYING. Taps ×777 for 13 seconds. Tap. TAP.'); toast('PANIC BUYING: taps ×777 for 13s. TAP.'); }
   else { const bonus = Math.floor(Math.min(state.cash * 0.15, c.income * 900) + 13); earn(bonus, 0); log('<b>Unmarked ration crate:</b> contained ₵' + fmt(bonus) + ' and a note that said "eat".'); toast('Crate: +₵' + fmt(bonus)); }
   render();
+}
+
+function showFirstCrate(bonus) {
+  modal(`<h3>📦 Unmarked ration crate</h3>
+    <p>It was sitting in the airlock. No label, no sender, no questions. Inside: <b>₵${fmt(bonus)}</b> and a note. The note says <b>eat</b>.</p>
+    <p>Also, somehow, a <b>Lunch Rush</b>: income ×7 for the next 77 seconds. Spend the credits now.</p>
+    <p class="muted">Crates like this fall every few minutes while the tab is open. Cash, lunch rushes, panic buying. Nobody is watching. Take them.</p>
+    <button id="ok" class="big2">TAKEN</button>`);
+  $('ok').onclick = closeModal;
 }
 
 // ---------------- Commendations ----------------

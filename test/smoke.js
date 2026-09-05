@@ -131,6 +131,8 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p1.click('#crate', { force: true }); // it pulses, so it is never 'stable'
   await p1.waitForTimeout(100);
   ok('crate collected and logged', !(await p1.isVisible('#crate')) && /Unmarked ration crate/.test(await p1.textContent('#log')));
+  ok('first crate explains itself and pays', /note says/.test(await p1.textContent('#modalBox')) && /Lunch Rush/.test(await p1.textContent('#modalBox')), await p1.textContent('#modalBox'));
+  await p1.click('#ok');
   await patchSave(p1, '', 's.fx = { viral: Date.now() + 20000, rush: Date.now() + 60000 }');
   await p1.waitForSelector('#fx span[data-tip]');
   ok('effect chips carry tooltips', /Viral/.test(await p1.textContent('#fx')) && /Lunch Rush/.test(await p1.textContent('#fx')) && /Deliveries ×2/.test(await p1.getAttribute('#fx span[data-tip]', 'title')));
