@@ -253,6 +253,17 @@ function fmt(n) {
   const dp = i >= 3 ? (n < 10 ? 3 : n < 100 ? 2 : 1) : (n < 10 ? 2 : 1);
   return n.toFixed(dp).replace(/\.0+$/, '') + u[i];
 }
+// The credits box: as many decimals as it takes for the last digit to move every frame at the current income, capped at six.
+function fmtLive(v, perSec) {
+  v = Number(v) || 0; perSec = Number(perSec) || 0;
+  if (v < 1000 || perSec <= 0) return fmt(v);
+  const u = ['K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No'];
+  let i = -1, m = v;
+  while (m >= 1000 && i < u.length - 1) { m /= 1000; i++; }
+  const step = (perSec / 60) / Math.pow(1000, i + 1); // change per animation frame, in display units
+  const d = clamp(Math.ceil(-Math.log10(step)), m < 10 ? 2 : 1, 6);
+  return m.toFixed(d) + u[i];
+}
 function ago(ts) {
   const s = Math.max(0, (now() - ts) / 1000);
   if (s < 90) return 'just now';
@@ -1167,17 +1178,18 @@ function closeModal() { $('modal').hidden = true; }
 function toast(text) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = text; document.body.appendChild(t); setTimeout(() => t.remove(), 2600); }
 
 // Credits tween towards the real value at 60fps; render() only sets it directly where there is no animation frame.
-let shownCash = null, tweening = false;
+let shownCash = null, tweening = false, liveIncome = 0;
 function tween() {
   if (shownCash == null) shownCash = state.cash;
   const d = state.cash - shownCash;
   shownCash = Math.abs(d) < Math.max(0.5, state.cash * 0.0005) ? state.cash : shownCash + d * 0.18;
-  $('cash').textContent = '₵' + fmt(shownCash);
+  $('cash').textContent = '₵' + fmtLive(shownCash, liveIncome);
   requestAnimationFrame(tween);
 }
 function render() {
   const c = calc(state), t = now();
-  if (!tweening) $('cash').textContent = '₵' + fmt(state.cash);
+  liveIncome = c.income;
+  if (!tweening) $('cash').textContent = '₵' + fmtLive(state.cash, c.income);
   $('ips').textContent = '₵' + fmt(c.income) + (c.tax ? ' (−10%)' : '');
   $('deliv').textContent = fmt(Math.floor(state.deliveries));
   $('zone').textContent = ZONES[c.zone].name + (c.outbreak ? ' (fallback)' : c.supply.plant ? ' (via plant)' : '');
