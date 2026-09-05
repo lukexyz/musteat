@@ -62,7 +62,8 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   for (let i = 0; i < 15; i++) await p1.click('#run');
   await p1.waitForTimeout(300);
   ok('15 taps = 15 deliveries', (await p1.textContent('#deliv')) === '15', await p1.textContent('#deliv'));
-  ok('taps earned credits', parseFloat((await p1.textContent('#cash')).replace(/[^0-9.]/g, '')) > 60, await p1.textContent('#cash'));
+  ok('taps earned credits', parseFloat((await p1.textContent('#cash')).replace(/[^0-9.]/g, '')) > 45, await p1.textContent('#cash'));
+  ok('gang tax shown while you have no runners', !(await p1.evaluate(() => document.getElementById('gang').hidden)) && /\(−15%\)/.test(await p1.textContent('#ips')), await p1.textContent('#ips'));
   ok('order text rendered', /for /.test(await p1.textContent('#order')));
 
   console.log('clicks on re-rendered buttons');
@@ -199,6 +200,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p1.waitForFunction(() => /Sam/.test(document.getElementById('shop').textContent), null, { timeout: 8000 }).catch(() => {});
   ok('owner sees Sam in runners table', /Sam/.test(await p1.textContent('#shop')));
   ok('owner log notes the arrival', /Sam.*joined as your runner/.test(await p1.textContent('#log')));
+  ok('gang tax lifted once a runner arrives', await p1.evaluate(() => document.getElementById('gang').hidden) && /Extortion tax lifted/.test(await p1.textContent('#log')), await p1.textContent('#ips'));
   ok('leaderboard lists both', /Ada/.test(await p1.textContent('#board')) && /Sam/.test(await p1.textContent('#board')));
   await p2.click('[data-act="complain"]');
   await p2.waitForSelector('.toast');
@@ -255,11 +257,13 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   const p6 = await ctx.newPage();
   await p6.goto(url + '?slot=6&ref=' + code);
   await p6.waitForSelector('#refIn');
+  ok('code box is sealed when the link carried a code', (await p6.getAttribute('#refIn', 'readonly')) != null && (await p6.inputValue('#refIn')) === code && /never know/.test(await p6.textContent('#modalBox')), await p6.inputValue('#refIn'));
   await p6.click('#refIn'); await p6.keyboard.press('End'); await p6.keyboard.type('ZZ');
-  ok('code box accepts typing on top of the link code', (await p6.inputValue('#refIn')) === code + 'ZZ', await p6.inputValue('#refIn'));
-  await p6.fill('#refIn', ''); await p6.fill('#nm', 'Solo'); await p6.click('#go');
-  await p6.waitForFunction(() => /Solo/.test(document.getElementById('rank').textContent));
-  ok('clearing the code box registers with no recruiter', (await p6.evaluate(() => document.getElementById('recruiter').hidden)) && (await save(p6, '6')).ref === null, JSON.stringify((await save(p6, '6')).ref));
+  ok('typing does not change a sealed code', (await p6.inputValue('#refIn')) === code, await p6.inputValue('#refIn'));
+  await p6.fill('#nm', 'Solo'); await p6.click('#go');
+  await p6.waitForFunction(() => !document.getElementById('recruiter').hidden);
+  ok('sealed code registers under the recruiter, with the temptation line', (await save(p6, '6')).ref === code && /never know/.test(await p6.textContent('#recruiter')), await p6.textContent('#recruiter'));
+  ok('runner with no runners pays both taxes', /\(−25%\)/.test(await p6.textContent('#ips')), await p6.textContent('#ips'));
   await p6.close();
 
   console.log('no clipboard (iframe-like): copy box fallback, voucher without prompt()');

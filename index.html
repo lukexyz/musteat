@@ -107,6 +107,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .box h3{margin:0 0 8px;color:#fff;letter-spacing:1px}
 .box textarea{width:100%;font:inherit;font-size:13px;padding:8px;background:#000;color:#fff;border:1px solid var(--line);margin:8px 0;resize:vertical}
 .box input,.box select{width:100%;font:inherit;padding:8px;background:#000;color:#fff;border:1px solid var(--line);margin:8px 0}
+.box input[readonly]{color:var(--acc);border-style:dashed;cursor:not-allowed}
 .box .big2{width:100%;padding:12px;font-weight:bold;background:var(--acc);color:#000;border:none;margin-top:6px}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--acc);color:#000;padding:8px 14px;border-radius:4px;font-weight:bold;z-index:20;max-width:90vw}
 .pop{position:fixed;pointer-events:none;z-index:6;font-weight:bold;font-size:24px;letter-spacing:1px;color:#fff;white-space:nowrap;text-shadow:0 0 4px #000,0 0 10px #000,0 0 14px var(--acc),0 0 30px var(--acc);animation:pop .9s ease-out forwards;transform:translate(-50%,-50%)}
@@ -164,6 +165,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
     <div class="rankbox" id="rank"></div>
   </header>
   <div id="recruiter" class="banner" hidden></div>
+  <div id="gang" class="banner" hidden></div>
   <div id="supply" class="banner good" hidden></div>
   <section class="stats">
     <div class="stat"><div class="k">Credits</div><div class="v" id="cash">0</div></div>
@@ -226,6 +228,7 @@ const CONFIG = {
   OFFLINE_HALF_H: 24,
   CUTS: [0.10, 0.05, 0.025],  // share of level 1/2/3 downline lifetime earnings
   RUNNER_TAX: 0.10,           // what a runner without a shop pays their shop owner
+  GANG_TAX: 0.15,             // the local gang's cut of everyone with no runners. Recruit one and they move on to them
   SYNC_S: 30,
   CRATE_MIN_S: 300,           // unmarked ration crates: seconds between them, plus up to CRATE_RANGE_S
   CRATE_RANGE_S: 600,
@@ -679,11 +682,13 @@ function calc(s) {
   const panic = (s.fx.panic || 0) > t;
   if ((s.fx.rival || 0) > t && !s.contracts) { valMul *= 0.7; }
   const tax = (s.ref && !s.shop) ? CONFIG.RUNNER_TAX : 0;
+  const gang = (s.down && s.down.list && s.down.list.length) ? 0 : CONFIG.GANG_TAX; // protection money, until you have someone to point them at
+  const keep = 1 - tax - gang;
   return {
-    dps: dps * dpsMul, value: value * valMul, zone, rank, tax, outbreak, supply, panic,
-    income: dps * dpsMul * value * valMul * (1 - tax),
+    dps: dps * dpsMul, value: value * valMul, zone, rank, tax, gang, keep, outbreak, supply, panic,
+    income: dps * dpsMul * value * valMul * keep,
     tapBonus: dps * dpsMul * value * valMul * 0.02 * upgCount(s, u => u.tap),
-    baseIncome: dps * value * (1 - tax), baseDps: dps,
+    baseIncome: dps * value * keep, baseDps: dps,
   };
 }
 function earn(amount, meals) {
@@ -836,7 +841,9 @@ function applyDownline(list) {
     known[m.id] = m.shopName || '';
   });
   state.known = known;
+  const hadRunners = state.down.list.length > 0;
   state.down.list = list; state.down.at = now();
+  if (!first && !hadRunners && list.length) { log('<b>Your first runner.</b> The Sector 7 Provisional Gang has moved on to them. Extortion tax lifted.'); toast('Extortion tax lifted. The gang has a new customer.'); }
   const samples = {};
   list.forEach(m => { const t = Number(m.total) || 0; const arr = (state.down.samples || {})[m.id] || []; const last = arr[arr.length - 1]; samples[m.id] = !last || last.total !== t ? arr.concat({ t: now(), total: t }).slice(-6) : arr; });
   state.down.samples = samples;
@@ -921,7 +928,7 @@ function buy(id) {
 function runDelivery(ev) {
   const c = calc(state);
   const tip = Math.random() * 0.6;
-  const gain = (c.value * (1 + tip) + c.tapBonus) * (1 - c.tax) * (c.panic ? 777 : 1);
+  const gain = (c.value * (1 + tip) + c.tapBonus) * c.keep * (c.panic ? 777 : 1);
   earn(gain, 1); state.taps++;
   if (navigator.vibrate) { try { navigator.vibrate(8); } catch (e) {} }
   const via = c.supply.plant ? (state.up.find(u => hasB(u, 'plant')) || {}).name : null;
@@ -1197,7 +1204,7 @@ function render() {
   const c = calc(state), t = now();
   liveIncome = c.income;
   if (!tweening) $('cash').textContent = '₵' + fmtLive(state.cash, c.income);
-  $('ips').textContent = '₵' + fmt(c.income) + (c.tax ? ' (−10%)' : '');
+  $('ips').textContent = '₵' + fmt(c.income) + (c.keep < 1 ? ' (−' + Math.round((1 - c.keep) * 100) + '%)' : '');
   $('deliv').textContent = fmt(Math.floor(state.deliveries));
   $('zone').textContent = ZONES[c.zone].name + (c.outbreak ? ' (fallback)' : c.supply.plant ? ' (via plant)' : '');
   const r = RANKS[c.rank]; const next = RANKS[c.rank + 1];
@@ -1210,8 +1217,13 @@ function render() {
     setHTML('recruiter', `You run <b>${esc(state.shop ? state.shop.name : 'a franchise')}</b>, a franchise of <b>${esc(state.franchiseName || 'someone')}</b>. They keep 25% of everything you make. The tech was theirs. The debt is yours.`);
   } else if (state.ref && !state.shop) {
     rb.hidden = false;
-    setHTML('recruiter', `You are running for <b>${esc(state.recruiter || 'someone with the code ' + state.ref + ' (not in this company yet)')}</b>. They take 10% of everything you make. Open your own shop to take it back, or <a href="#" data-act="complain">file a complaint</a> where everyone can see it.`);
+    setHTML('recruiter', `You are running for <b>${esc(state.recruiter || 'someone with the code ' + state.ref + ' (not in this company yet)')}</b>. They take 10% of everything you make. Open your own shop to take it back, or <a href="#" data-act="complain">file a complaint</a> where everyone can see it. Or think it through: "maybe I should recruit my own runner instead of paying tax to ${esc(state.recruiter || 'them')}... they would never know." They would not. <a href="#" data-act="share">Copy your invite</a>.`);
   } else rb.hidden = true;
+  const gb = $('gang');
+  if (c.gang) {
+    gb.hidden = false;
+    setHTML('gang', `<b>The Sector 7 Provisional Gang</b> takes ${Math.round(CONFIG.GANG_TAX * 100)}% of everything you make. They call it protection. Recruit one runner with your invite link and they leave you alone. They go after your runner instead. That is how protection works. <a href="#" data-act="share">Copy invite</a>`);
+  } else gb.hidden = true;
   const sb = $('supply'); const perks = [];
   if (c.supply.depot) perks.push('Depot: +25% deliveries');
   if (c.supply.plant) perks.push('Kitchen Plant: +1 zone');
@@ -1444,18 +1456,21 @@ function showOffline(o) {
 }
 async function showIntro() {
   const ref = state.ref, v = qs.get('v');
-  let fr = null;
-  if (qs.get('fr')) { const rows = await Sheet.read('players'); const owner = rows.find(r => r.code === qs.get('fr')); const o = parseOffer(owner); if (owner) fr = { owner, offer: o, open: !!o && owner.claimedOffer !== o.id }; }
+  const sealed = !!ref && !!(qs.get('ref') || qs.get('fr')); // the link carried a code. It stays. Everyone thinks about removing it.
+  let fr = null, recName = null;
+  const rows = (qs.get('fr') || ref) ? await Sheet.read('players') : [];
+  if (qs.get('fr')) { const owner = rows.find(r => r.code === qs.get('fr')); const o = parseOffer(owner); if (owner) fr = { owner, offer: o, open: !!o && owner.claimedOffer !== o.id }; }
+  if (ref) { const r = rows.find(x => x.code === ref); recName = r ? r.name : null; }
   modal(`<h3>MUSTEAT — Citizen registration</h3>
     <p class="muted">Year 3019. Lockdown has lasted 900 years. Going outside is illegal, unless you are carrying food. Congratulations: you are now carrying food.</p>
     ${v ? '<p><b>' + esc(v) + '</b>, someone bought you a ration voucher worth <b>₵' + CONFIG.VOUCHER_BONUS + '</b>. They want something. They want you to run.</p>' : ''}
     ${fr && fr.open ? '<p>🏆 <b>' + esc(fr.owner.name) + '</b> is handing you <b>' + esc(fr.offer.shopName) + '</b>: ' + esc(gearSummary(fr.offer.gear)) + ', ₵' + fmt(fr.offer.income) + '/s, ready to run. They keep 25% of everything you make. Sign here before someone else does.</p>'
       : fr ? '<p><b>' + esc(fr.owner.name) + '</b> offered their business, but ' + (fr.owner.claimedName ? '<b>' + esc(fr.owner.claimedName) + '</b> got there first' : 'the offer is gone') + '. You can still run for them.</p>'
-      : ref ? '<p>You were recruited with code <b>' + esc(ref) + '</b>. Your shop owner takes 10% of what you earn. You will resent this. Good.</p>' : '<p>Nobody recruited you. You found this yourself. The Ministry finds that suspicious.</p>'}
+      : ref ? '<p>You were recruited' + (recName ? ' by <b>' + esc(recName) + '</b>' : '') + ' with code <b>' + esc(ref) + '</b>. Your shop owner takes 10% of what you earn. You will resent this. Good.</p>' : '<p>Nobody recruited you. You found this yourself. The Ministry finds that suspicious.</p>'}
     <input id="nm" placeholder="Your name (as colleagues would know it)" maxlength="40" value="${esc(v || '')}" autofocus>
     <select id="dept">${DEPTS.map(d => '<option>' + d + '</option>').join('')}</select>
-    <input id="refIn" placeholder="Who sent you? Their code, if the link lost it (optional)" maxlength="12" value="${esc(ref || '')}" style="text-transform:uppercase" autocomplete="off" spellcheck="false">
-    <div class="hint">The code is at the end of the invite link, after ?ref=. Without it your recruiter gets nothing, which they will mention.</div>
+    <input id="refIn" placeholder="Who sent you? Their code, if the link lost it (optional)" maxlength="12" value="${esc(ref || '')}" style="text-transform:uppercase" autocomplete="off" spellcheck="false" ${sealed ? 'readonly title="Sealed. The code stays on the invite."' : ''}>
+    <div class="hint">${sealed ? 'Recruiter code, sealed by the Ministry. It cannot be removed from an invite. Thinking "maybe I should recruit my own runner instead of paying tax to ' + esc(recName || 'them') + '... they would never know"? They would not. You will have your own link in a minute.' : 'The code is at the end of the invite link, after ?ref=. Without it your recruiter gets nothing, which they will mention.'}</div>
     <button id="go" class="big2">${fr && fr.open ? 'TAKE THE BUSINESS' : 'START RUNNING'}</button>`);
   // Whatever is typed in the code box wins, including clearing it. Untouched, it keeps what the link carried.
   let refEdited = false;
@@ -1464,7 +1479,7 @@ async function showIntro() {
     const n = $('nm').value.trim().slice(0, 40); if (!n) return;
     state.name = n; state.dept = $('dept').value;
     const typed = String($('refIn').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
-    state.ref = typed || (refEdited ? null : state.ref) || null;
+    state.ref = sealed ? state.ref : (typed || (refEdited ? null : state.ref) || null);
     log('Registered citizen <b>' + esc(n) + '</b> of ' + esc(state.dept) + '. Welcome to the food economy.');
     closeModal(); start(false);
   };

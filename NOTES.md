@@ -141,6 +141,7 @@ If the platform API has a different shape, change `Sheet.read`, `Sheet.upsert` a
 - The Portfolio tab starts with your runners' businesses: each downline member with their shop, level, lifetime earnings and rate, and your cut from them, all time and per second.
 - The Portfolio tab is also the trophy cabinet: every franchise with the gear and buildings it had, income at handover, live total earned, revenue per minute (from the last few syncs), royalty owed to you, and whether the franchisee is still open.
 - Runners pay 10% to their shop owner until they open a shop (₵5,000).
+- Everyone with no runners pays 15% to the Sector 7 Provisional Gang on top. Recruit one runner and the gang moves on to them. This is the hook: the only way out of the tax is to send the link.
 - Shop owners get 10% / 5% / 2.5% of level 1 / 2 / 3 downline lifetime earnings, forever.
 - Buildings need a shop, the previous building, a company-wide citizen count, and people:
   Depot 1 direct runner, Kitchen Plant 2 downline, Nutrient Factory 3 downline, Ministry seat
@@ -152,7 +153,7 @@ If the platform API has a different shape, change `Sheet.read`, `Sheet.upsert` a
 - Nudges (idle runners), complaints (runners against owners), vouchers (₵200 to give a
   named colleague ₵250) and share messages are all copy-to-clipboard for Slack. Where the
   clipboard is blocked (iframes, app shells) the text opens in a selectable box instead. No prompt() or confirm() anywhere.
-- The intro has a "who sent you" box for the referral code, for links that lost their query string.
+- The intro has a "who sent you" box for the referral code, for links that lost their query string. When the link carried a code the box is sealed (read-only): affiliate codes cannot be removed from invites. The copy suggests recruiting your own runner instead.
 - Daily ration pays 10 minutes of income once per 20h, only if you open the page.
 - Ministry seat holders issue one decree per day: Mandatory Feast (everyone ×2 for
   10 minutes) or Company-wide Audit (+25 suspicion for everyone outside their chain).
