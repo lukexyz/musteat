@@ -12,8 +12,9 @@ body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 ui-monospace,C
 a{color:var(--acc)}
 .wrap{max-width:860px;margin:0 auto;padding:12px 12px 40px}
 header{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:12px}
-h1{margin:0;font-size:26px;letter-spacing:3px;color:#fff}
+h1{margin:0;font-size:26px;letter-spacing:3px;color:#fff;line-height:1.2;display:flex;align-items:center;gap:.3em;flex-wrap:wrap}
 h1 span{color:var(--acc)}
+h1 .logo{display:block;height:.72em;width:auto;mix-blend-mode:screen}
 .tag{color:var(--dim);font-size:12px}
 h2{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin:18px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
@@ -43,7 +44,7 @@ footer{margin-top:24px;font-size:12px;color:var(--dim);border-top:1px solid var(
 <body>
 <div class="wrap">
   <header>
-    <div><h1>MUST<span>EAT</span> · THE LEDGER</h1><div class="tag">Every cut and royalty ever credited. Who pays whom, how much, and who is actually winning.</div></div>
+    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"><span style="color:#fff">· THE LEDGER</span></h1><div class="tag">Every cut and royalty ever credited. Who pays whom, how much, and who is actually winning.</div></div>
     <div class="muted" id="mode"></div>
   </header>
   <section class="stats">
