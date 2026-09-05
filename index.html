@@ -1228,6 +1228,7 @@ function seedDemo() {
     const row = { id: uid('p'), code: name.slice(0, 4).toUpperCase() + uid().slice(0, 3).toUpperCase(), name, ref, dept: o.dept || rnd(DEPTS.slice(0, 9)),
       total: Math.floor(o.total || 200 + Math.random() * 6000), meals: Math.floor(50 + Math.random() * 900), rank: o.shop ? 1 : 0,
       shopName: o.shop ? rnd(SHOP_NAMES) : null, buildings: o.b || '', lastSeen: t - Math.random() * (o.idle ? 4 : 1) * 86400000 };
+    row.sprint = Math.floor(row.total * (0.3 + Math.random() * 0.5)); row.played = 1800 + Math.floor(Math.random() * 20000); // they all did their thirty minutes
     db.players.push(row); db.events.push({ id: uid('e'), ts: t - Math.random() * 3 * 86400000, pid: row.id, who: name, kind: 'join', arg: parent, text: parent ? 'was recruited by ' + parent : 'joined. Nobody recruited them. Suspicious.' });
     if (row.shopName) db.events.push({ id: uid('e'), ts: t - Math.random() * 2 * 86400000, pid: row.id, who: name, kind: 'shop', arg: row.shopName, text: 'opened ' + row.shopName });
     return row;
