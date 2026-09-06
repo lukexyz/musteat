@@ -186,6 +186,15 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .crate[hidden]{display:none}
 .crate.first::after{content:'take it';position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:6px;font-size:11px;letter-spacing:3px;color:var(--gold);white-space:nowrap;text-shadow:0 0 8px #000}
 @keyframes crate{from{transform:scale(1)}to{transform:scale(1.15)}}
+.crate.open{animation:crateOpen .45s ease-in forwards;pointer-events:none}
+@keyframes crateOpen{0%{transform:scale(1);opacity:1}35%{transform:scale(1.35) rotate(-7deg);opacity:1}100%{transform:scale(2.4) rotate(9deg);filter:blur(6px);opacity:0}}
+.glow{position:fixed;inset:0;pointer-events:none;z-index:7;box-shadow:inset 0 0 90px rgba(255,209,102,.55);animation:glowfade .7s ease-out forwards}
+@keyframes glowfade{from{opacity:1}to{opacity:0}}
+.loot{position:relative;overflow:hidden;margin:10px auto 0;max-width:440px;padding:8px 14px;border:1px solid var(--gold);border-radius:6px;background:linear-gradient(180deg,#1b1910,var(--panel));color:var(--gold);font-size:13px;box-shadow:0 0 18px rgba(255,209,102,.18);animation:fadeup .3s ease-out}
+.loot[hidden]{display:none}
+.loot i{display:block;font-style:normal;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
+.loot.shimmer::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.3) 50%,transparent 65%);transform:translateX(-100%);animation:shimmer .9s ease-out forwards}
+@keyframes shimmer{to{transform:translateX(100%)}}
 .ach span{display:inline-block;margin:2px 4px 2px 0;padding:2px 6px;border:1px solid var(--line);font-size:11px;color:var(--gold)}
 @media(max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:24px}.tstats{grid-template-columns:repeat(2,1fr)}}
 /* First-visit splash. Lines fade up one at a time; the bar at the bottom is the five seconds. */
@@ -229,6 +238,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <section class="run">
     <button id="run" class="big">RUN DELIVERY</button>
     <div id="order" class="order">Tap to run your first delivery. Mind the acid rain.</div>
+    <div id="loot" class="loot" hidden></div>
     <div id="fx" class="fx"></div>
     <div id="ration" class="row" style="justify-content:center"></div>
   </section>
@@ -851,20 +861,37 @@ function crateTick(t) {
 }
 function collectCrate() {
   if (!crateShown) return;
-  const t = now(); crateShown = 0; $('crate').hidden = true; scheduleCrate(t);
+  const t = now(); crateShown = 0; scheduleCrate(t);
+  const el = $('crate'), rc = el.getBoundingClientRect();
   const first = !state.crates;
   state.crates = (state.crates || 0) + 1;
   const c = calc(state), r = Math.random();
+  let big, text, bonus = 0;
   if (first) { // always cash, enough for the first piece of tech, plus a rush, plus the explanation
-    const bonus = Math.max(60, Math.floor(c.value * 15 + c.income * 120));
+    bonus = Math.max(60, Math.floor(c.value * 15 + c.income * 120));
     earn(bonus, 0); state.fx.rush = t + 77000;
     log('<b>Unmarked ration crate:</b> ₵' + fmt(bonus) + ', a LUNCH RUSH (income ×7 for 77 seconds), and a note that said "eat".');
-    showFirstCrate(bonus); render(); return;
-  }
-  if (r < 0.45) { state.fx.rush = t + 77000; log('<b>Unmarked ration crate:</b> LUNCH RUSH. Income ×7 for 77 seconds.'); toast('LUNCH RUSH: income ×7 for 77s'); }
-  else if (r < 0.6) { state.fx.panic = t + 13000; log('<b>Unmarked ration crate:</b> PANIC BUYING. Taps ×777 for 13 seconds. Tap. TAP.'); toast('PANIC BUYING: taps ×777 for 13s. TAP.'); }
-  else { const bonus = Math.floor(Math.min(state.cash * 0.15, c.income * 900) + 13); earn(bonus, 0); log('<b>Unmarked ration crate:</b> contained ₵' + fmt(bonus) + ' and a note that said "eat".'); toast('Crate: +₵' + fmt(bonus)); }
+    big = '+₵' + fmt(bonus); text = '+₵' + fmt(bonus) + ' and a LUNCH RUSH: income ×7 for 77 seconds';
+  } else if (r < 0.45) { state.fx.rush = t + 77000; log('<b>Unmarked ration crate:</b> LUNCH RUSH. Income ×7 for 77 seconds.'); big = '×7'; text = 'LUNCH RUSH: income ×7 for 77 seconds. Buy things now.'; }
+  else if (r < 0.6) { state.fx.panic = t + 13000; log('<b>Unmarked ration crate:</b> PANIC BUYING. Taps ×777 for 13 seconds. Tap. TAP.'); big = '×777'; text = 'PANIC BUYING: every tap ×777 for 13 seconds. Tap. TAP.'; }
+  else { bonus = Math.floor(Math.min(state.cash * 0.15, c.income * 900) + 13); earn(bonus, 0); log('<b>Unmarked ration crate:</b> contained ₵' + fmt(bonus) + ' and a note that said "eat".'); big = '+₵' + fmt(bonus); text = '+₵' + fmt(bonus) + ' and a note that said "eat".'; }
+  crateOpen(el, rc.left + rc.width / 2, rc.top + rc.height / 2, big, text);
+  if (first) showFirstCrate(bonus);
   render();
+}
+// The moment: the crate bursts gold and folds away, the screen edges glow for a beat, the reward lands in the
+// strip under the order line (scrolling there if it is off screen), and the strip shimmers once. No toast.
+let lootTimer = 0;
+function crateOpen(el, x, y, big, text) {
+  burst(x, y, big, 'gold');
+  el.classList.add('open'); setTimeout(() => { el.classList.remove('open'); el.hidden = true; }, 450);
+  const g = document.createElement('i'); g.className = 'glow'; document.body.appendChild(g); setTimeout(() => g.remove(), 700);
+  const lo = $('loot'); lo.hidden = false; lo.innerHTML = '<i>Unmarked ration crate</i>' + esc(text);
+  clearTimeout(lootTimer); lootTimer = setTimeout(() => { lo.hidden = true; }, 7000);
+  const r = lo.getBoundingClientRect();
+  if (r.top < 0 || r.bottom > innerHeight) lo.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  lo.classList.remove('shimmer'); void lo.offsetWidth; lo.classList.add('shimmer');
+  lo.addEventListener('animationend', () => lo.classList.remove('shimmer'), { once: true });
 }
 
 function showFirstCrate(bonus) {

@@ -156,7 +156,8 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p1.waitForSelector('#crate:not([hidden])', { timeout: 5000 });
   ok('unmarked crate appears when due', await p1.isVisible('#crate'));
   await p1.click('#crate', { force: true }); // it pulses, so it is never 'stable'
-  await p1.waitForTimeout(100);
+  ok('the crate bursts gold and the reward lands in the loot strip with a shimmer', !!(await p1.$('.pop.gold')) && !!(await p1.$('.glow')) && await p1.isVisible('#loot') && /Unmarked ration crate/.test(await p1.textContent('#loot')) && /Lunch Rush/i.test(await p1.textContent('#loot')) && (await p1.getAttribute('#loot', 'class')).includes('shimmer'), await p1.textContent('#loot'));
+  await p1.waitForSelector('#crate', { state: 'hidden', timeout: 3000 });
   ok('crate collected and logged', !(await p1.isVisible('#crate')) && /Unmarked ration crate/.test(await p1.textContent('#log')));
   ok('first crate explains itself and pays', /note says/.test(await p1.textContent('#modalBox')) && /Lunch Rush/.test(await p1.textContent('#modalBox')), await p1.textContent('#modalBox'));
   await p1.click('#ok');
