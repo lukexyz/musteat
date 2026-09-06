@@ -93,6 +93,8 @@ h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);m
 .card{background:var(--panel);border:1px solid var(--line);padding:10px;overflow-x:auto}
 .card p{margin:6px 0}
 .muted{color:var(--dim);font-size:12px}
+.help{background:transparent;border:1px solid transparent;color:var(--dim);font-size:12px;padding:2px 7px;border-radius:6px;cursor:pointer;transition:background .15s}
+.help:hover:not(:disabled){background:rgba(255,255,255,.06);border-color:transparent;color:var(--fg)}
 .bar{height:10px;background:#111;border:1px solid var(--line);margin:6px 0}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--gold),var(--warn))}
 .bar.cool i{background:linear-gradient(90deg,var(--blue),var(--acc))}
@@ -1167,6 +1169,16 @@ function complain() {
   const shop = (state.up[0] && state.up[0].shopName) || 'their shop';
   copy(rnd(COMPLAINTS).replace('{owner}', owner).replace('{meals}', fmt(Math.floor(state.deliveries))).replace('{shop}', shop).replace('{cut}', fmt(cut)).replace('{link}', rootLink()), 'Complaint copied. Post it somewhere public.');
 }
+function rationInfo() {
+  const c = calc(state), worth = Math.max(50, Math.floor(c.baseIncome * 600));
+  const left = state.ration + CONFIG.RATION_H * H - now();
+  modal(`<h3>The daily ration</h3>
+    <p>The Ministry issues one every <b>${CONFIG.RATION_H} hours</b> to anyone still alive. It is not food. It is credits, because the Ministry stopped pretending some time ago.</p>
+    <p>It is worth about <b>ten minutes of your base income</b>, minimum ₵50. Right now that would be <b>₵${fmt(worth)}</b>, so the better your operation is when you claim it, the bigger it is.</p>
+    <p class="muted">Why ${CONFIG.RATION_H} hours and not 24: so tomorrow's is always ready when you get in. ${left > 0 ? 'Next one in ' + dur(left / 1000) + '.' : 'One is ready now.'} Do not question the colour.</p>
+    <button id="ok" class="big2">UNDERSTOOD</button>`);
+  $('ok').onclick = closeModal;
+}
 function claimRation() {
   if (now() - state.ration < CONFIG.RATION_H * H) return;
   const c = calc(state); const gain = Math.max(50, Math.floor(c.baseIncome * 600));
@@ -1440,7 +1452,7 @@ function render() {
   if ((state.fx.panic || 0) > t) chip('🛒 Panic buying ×777', state.fx.panic, 's', 'From an unmarked ration crate: every tap on RUN DELIVERY pays ×777 for 13 seconds. Tap. TAP.');
   setHTML('fx', fx.join(' · '));
   const rationReady = now() - state.ration >= CONFIG.RATION_H * H;
-  setHTML('ration', rationReady ? `<button data-act="ration">Claim daily ration (₵${fmt(Math.max(50, Math.floor(c.baseIncome * 600)))})</button>` : `<span class="muted">Next ration in ${dur((state.ration + CONFIG.RATION_H * H - now()) / 1000)}</span>`);
+  setHTML('ration', rationReady ? `<button data-act="ration">Claim daily ration (₵${fmt(Math.max(50, Math.floor(c.baseIncome * 600)))})</button>` : `<button class="help" data-act="rationInfo" title="What is a daily ration?">Next ration in ${dur((state.ration + CONFIG.RATION_H * H - now()) / 1000)}</button>`);
 
   const qty = state.qty || 1;
   setHTML('qty', [1, 10, 100].map(n => `<button class="${qty === n ? 'on' : ''}" data-qty="${n}">×${n}</button>`).join(''));
@@ -1645,7 +1657,7 @@ document.addEventListener('click', e => {
   const dc = e.target.closest('[data-decree]'); if (dc) return decree(dc.dataset.decree);
   const b = e.target.closest('[data-act]'); if (!b) return;
   e.preventDefault();
-  const act = { shop: openShopDialog, share, voucher, complain, ration: claimRation, refresh: sync, bribe, drone: buyDrone, contracts: buyContracts, seed: seedDemo, wipe: wipeCompany, franchise, withdraw: withdrawOffer, ministry: ministryDialog, rename: renameDialog }[b.dataset.act];
+  const act = { shop: openShopDialog, share, voucher, complain, ration: claimRation, rationInfo, refresh: sync, bribe, drone: buyDrone, contracts: buyContracts, seed: seedDemo, wipe: wipeCompany, franchise, withdraw: withdrawOffer, ministry: ministryDialog, rename: renameDialog }[b.dataset.act];
   if (act) act();
 });
 $('reset').addEventListener('click', e => { e.preventDefault(); ask('Delete your save?', 'The Ministry will not remember you.', 'DELETE', () => { localStorage.removeItem(KEY); location.href = location.pathname; }); });

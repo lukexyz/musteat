@@ -82,6 +82,12 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok('banner expands to the full text on click', await p1.evaluate(() => document.getElementById('gang').open) && /protection works/.test(await p1.textContent('#gangM')));
   ok('gang tax shown while you have no runners', !(await p1.evaluate(() => document.getElementById('gang').hidden)) && /\(−15%\)/.test(await p1.textContent('#ips')), await p1.textContent('#ips'));
   ok('order text rendered', /for /.test(await p1.textContent('#order')));
+  await p1.click('[data-act="ration"]');
+  await p1.waitForSelector('#ration .help');
+  ok('after claiming, the countdown is a quiet button', /Next ration in/.test(await p1.textContent('#ration .help')));
+  await p1.click('#ration .help');
+  ok('the countdown explains the daily ration on click', await p1.isVisible('#modal') && /ten minutes of your base income/.test(await p1.textContent('#modalBox')), await p1.textContent('#modalBox'));
+  await p1.click('#ok');
 
   console.log('clicks on re-rendered buttons');
   const trainers = p1.locator('[data-buy="trainers"]');
