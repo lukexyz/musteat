@@ -137,9 +137,14 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .up .d{color:var(--dim);font-size:12px;flex:1}
 .up button{margin-top:6px;width:100%}
 .hint{font-size:11px;color:var(--dim);margin:-4px 0 6px}
-.tabs{display:flex;gap:6px;margin:0 0 14px}
-.tabs button{flex:1;padding:9px;letter-spacing:2px;font-weight:bold;font-size:12px}
-.tabs button.on{background:var(--acc);color:#000;border-color:var(--acc)}
+/* Folder tabs. The open one is outlined in the accent and has no bottom edge, so it runs into the page below.
+   The closed one sits a little lower and darker, behind. The RUN DELIVERY button underneath stays the loud thing. */
+.tabs{display:flex;gap:4px;margin:0 0 14px;padding:0 8px;border-bottom:1px solid var(--line)}
+.tabs button{flex:1;padding:8px 8px 7px;margin:4px 0 0;letter-spacing:2px;font-weight:bold;font-size:12px;color:var(--dim);background:#0a0f11;border:1px solid var(--line);border-bottom:none;border-radius:7px 7px 0 0}
+.tabs button:hover:not(.on){color:var(--fg);border-color:#2c3c42}
+.tabs button.on{margin:0 0 -1px;padding-bottom:12px;color:var(--acc);background:var(--bg);border-color:var(--acc);border-bottom:1px solid var(--bg);text-shadow:0 0 8px rgba(57,255,20,.45)}
+.tabs button.on:hover{color:var(--acc)}
+@media(max-width:520px){.tabs button{letter-spacing:1px;font-size:11px;padding-left:4px;padding-right:4px}}
 .pfsum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 .trophy{background:linear-gradient(180deg,#151a0f,var(--panel));border:1px solid var(--gold);padding:12px;margin-bottom:10px;box-shadow:0 0 18px rgba(255,209,102,.12)}
 .trophy.grey{border-color:var(--line);box-shadow:none;background:var(--panel);opacity:.85}
@@ -213,7 +218,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
     <div class="stat"><div class="k">Deliveries</div><div class="v" id="deliv">0</div></div>
     <div class="stat"><div class="k">Zone</div><div class="v small" id="zone"></div></div>
   </section>
-  <nav class="tabs"><button id="tabRunB" class="on" data-tab="run">RUN</button><button id="tabPfB" data-tab="portfolio">PORTFOLIO <span id="pfN"></span></button></nav>
+  <nav class="tabs"><button id="tabRunB" class="on" data-tab="run">OPERATIONS</button><button id="tabPfB" data-tab="portfolio">PORTFOLIO <span id="pfN"></span></button></nav>
   <div id="tab-run">
   <section class="run">
     <button id="run" class="big">RUN DELIVERY</button>
