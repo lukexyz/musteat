@@ -89,7 +89,7 @@ h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);m
 @keyframes neon{0%{opacity:0}8%{opacity:1;color:#fff;text-shadow:0 0 8px var(--acc),0 0 22px var(--acc)}16%{opacity:.15}24%{opacity:1;color:#fff;text-shadow:0 0 8px var(--acc),0 0 22px var(--acc)}38%{opacity:.35}50%{opacity:1;color:#fff;text-shadow:0 0 10px var(--acc),0 0 28px var(--acc)}100%{opacity:1;color:var(--fg);text-shadow:none}}
 @keyframes neonIn{from{opacity:0}to{opacity:1}}
 @keyframes rain{from{background-position:0 -120px}to{background-position:0 0}}
-@media(max-width:520px){.item{flex-wrap:wrap}.item .body{flex:1 1 60%}.rev{flex:1;text-align:left;min-width:0}.rev i{max-width:120px}}
+@media(max-width:520px){.item{flex-wrap:wrap}.item .body{flex:1 1 60%}.rev{flex:1 1 140px;text-align:left;min-width:0;white-space:normal}.rev i{max-width:120px}}
 .card{background:var(--panel);border:1px solid var(--line);padding:10px;overflow-x:auto}
 .card p{margin:6px 0}
 .muted{color:var(--dim);font-size:12px}
@@ -160,6 +160,15 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .tstats div{background:#000;border:1px solid var(--line);padding:6px;min-width:0}
 .tstats .k{display:block;font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
 .tstats b{color:#fff;font-size:15px;white-space:nowrap}
+.trophy.small{padding:8px 12px}
+.trophy.small .tname{font-size:15px}
+.trophy.small .tstats{margin:8px 0 0}
+.trophy.top{border-width:2px;background:linear-gradient(180deg,#2b2310,var(--panel));box-shadow:0 0 30px rgba(255,209,102,.3)}
+.trophy.top .tname{font-size:22px;text-shadow:0 0 12px rgba(255,209,102,.5)}
+.shelf{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin:16px 0 8px;border-bottom:1px dotted var(--line);padding-bottom:4px}
+.shelf span{letter-spacing:0;text-transform:none;margin-left:6px}
+.ach span.top{display:block;font-size:13px;color:#fff;padding:5px 8px;margin:0 0 6px;border-color:var(--gold);background:linear-gradient(90deg,#3a2f0a,var(--panel));box-shadow:0 0 12px rgba(255,209,102,.3)}
+.rankbox b.gilded{color:#fff;text-shadow:0 0 8px var(--gold),0 0 20px var(--gold)}
 .feat{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
 .feat span{font-size:11px;padding:2px 6px;border:1px solid var(--line);color:var(--blue)}
 .feat span.b{color:var(--gold)}
@@ -441,6 +450,7 @@ UPGRADES.push({ id: 'ledger', name: 'Advanced Cryptochain Bookkeeping', cost: 10
 // Commendations (achievements). Each is +2% income, forever, like kittens but with paperwork.
 const gearTotal = s => Object.values(s.gear || {}).reduce((a, b) => a + b, 0);
 const ACH = [
+  ['complete', 'Every Upgrade. Every Single One.', 'buy every upgrade there is', s => Object.keys(s.upg || {}).length >= UPGRADES.length], // the top of the tree
   ['meals100', 'Employee of the Minute', '100 deliveries', s => s.deliveries >= 100],
   ['meals1k', 'Wears the Vest', '1,000 deliveries', s => s.deliveries >= 1000],
   ['meals10k', 'Knows Every Airlock', '10K deliveries', s => s.deliveries >= 1e4],
@@ -477,7 +487,7 @@ const ACH = [
   ['fr1', 'Franchisor', 'franchise a business to a colleague', s => (s.portfolio || []).some(e => !e.ministry)],
   ['fr3', 'Chain Reaction', 'three franchises in the cabinet', s => (s.portfolio || []).filter(e => !e.ministry).length >= 3],
   ['frEe', 'Instant Empire', 'take over a franchise', s => !!s.franchiseOf],
-].map(([id, name, desc, test]) => ({ id, name, desc, test }));
+].map(([id, name, desc, test]) => ({ id, name, desc, test, top: id === 'complete' }));
 const RANKS = [
   { name: 'Runner', mul: 1, need: -1 },
   { name: 'Shop Owner', mul: 1.1, need: 0 },
@@ -1043,6 +1053,9 @@ function applyDownline(list) {
     known[m.id] = m.shopName || '';
   });
   state.known = known;
+  const seen = state.down.seen || {};
+  list.forEach(m => { if (!seen[m.id]) seen[m.id] = now(); });
+  state.down.seen = seen;
   const hadRunners = state.down.list.length > 0;
   state.down.list = list; state.down.at = now();
   if (!first && !hadRunners && list.length) {
@@ -1435,7 +1448,7 @@ function render() {
   $('deliv').textContent = fmt(Math.floor(state.deliveries));
   $('zone').textContent = ZONES[c.zone].name + (c.outbreak ? ' (fallback)' : c.supply.plant ? ' (via plant)' : '');
   const r = RANKS[c.rank]; const next = RANKS[c.rank + 1];
-  setHTML('rank', `<b>${esc(state.name || 'Unknown Citizen')} <a href="#" data-act="rename" title="Rename yourself or your shop. Your code and runners stay.">✎</a></b>${r.name}${state.dept ? ' · ' + esc(state.dept) : ''} · ×${r.mul} income` +
+  setHTML('rank', `<b class="${state.ach.complete ? 'gilded' : ''}" ${state.ach.complete ? 'title="Every upgrade. Every single one. The name is gold now."' : ''}>${esc(state.name || 'Unknown Citizen')} <a href="#" data-act="rename" title="Rename yourself or your shop. Your code and runners stay.">✎</a></b>${r.name}${state.dept ? ' · ' + esc(state.dept) : ''} · ×${r.mul} income` +
     (next ? `<br>${state.shop ? downCount() + '/' + next.need + ' runners to ' + next.name : 'Open a shop to rank up'}` : '<br>There is nothing above you.') +
     (state.sprint != null ? `<br><span title="Lifetime credits at thirty minutes of play">Sprint score ₵${fmt(state.sprint)}</span>` : `<br><span title="Your lifetime credits when this hits zero become your sprint score, the fair one on the high-score table">Sprint clock ${Math.max(0, Math.ceil((CONFIG.SPRINT_S - (state.played || 0)) / 60))} min</span>`));
 
@@ -1510,7 +1523,7 @@ function render() {
   const bought = Object.keys(state.upg).length;
   const nextUp = UPGRADES.filter(u => !state.upg[u.id] && !u.unlock(state)).sort((a, b) => a.cost - b.cost)[0];
   setHTML('upgrades', (avail.length ? `<div class="ups">${avail.map(u => `<div class="up ${u.id === 'ledger' ? 'ledger' : ''}"><b>${u.name}</b><div class="d">${u.desc}</div><button data-upg="${u.id}" ${state.cash < u.cost ? 'disabled' : ''}>₵${fmt(u.cost)}</button></div>`).join('')}</div>` : '') +
-    `<p class="muted">${bought} of ${UPGRADES.length} upgrades bought.${nextUp ? ' Next unlock: ' + nextUp.name + ' at ' + nextUp.hint + '.' : ''}${avail.length ? '' : ' Buy tech, tap, deliver: upgrades unlock from all three.'}</p>`);
+    `<p class="muted">${bought >= UPGRADES.length ? 'All ' + UPGRADES.length + ' of them. There is a trophy for that, in the cabinet.' : bought + ' of ' + UPGRADES.length + ' upgrades bought.'}${nextUp ? ' Next unlock: ' + nextUp.name + ' at ' + nextUp.hint + '.' : ''}${avail.length ? '' : ' Buy tech, tap, deliver: upgrades unlock from all three.'}</p>`);
 
   let sh;
   const vbtn = `<button data-act="voucher" ${state.cash < CONFIG.VOUCHER_COST ? 'disabled' : ''}>Ration voucher for a colleague (₵${CONFIG.VOUCHER_COST})</button>`;
@@ -1621,7 +1634,22 @@ function render() {
         <div class="stat"><div class="k">Of your lifetime</div><div class="v">${othersPct}%</div><div class="sub">earned by someone else</div></div></div>
       <div class="card">${pyramid}<p class="muted">Idle runners are faded. Franchisees are gold. Everyone on this diagram is paying you, whether or not they have noticed.</p></div>`
     : `<div class="empty"><b>△</b>The pyramid has one block. It is you.<br>Everyone who joins through your link appears under you here, with what they pay you per second.<div class="row" style="justify-content:center"><button data-act="share">Copy invite for Slack</button></div></div>`);
-    setHTML('portfolio', pf.length ? `<div class="pfsum">
+    // People as trophies: every downline member gets a shelf card with what has been taken from them.
+    const seen = state.down.seen || {};
+    const via = m => { if (m.level === 1) return 'Direct'; const r = state.down.list.find(x => x.code === m.ref); return 'Via ' + (r ? esc(r.name) : 'someone'); };
+    const shelf = biz.length ? `<h3 class="shelf">Runners <span>people, kept</span></h3>` + biz.map(({ m, cut, cps, idle, r }) => `<div class="trophy small ${idle ? 'grey' : ''}">
+        <div class="tname">${esc(m.name)}</div>
+        <div class="muted">${m.shopName ? esc(m.shopName) + ' · ' + RANKS[Number(m.rank) || 0].name : 'No shop. Runs for you.'} · ${m.franchiseOf === state.id ? 'Franchisee' : via(m)}${seen[m.id] ? ' · in the cabinet since ' + dateStr(seen[m.id]) : ''}</div>
+        <div class="tstats">
+          <div><span class="k">Taken, all time</span><b>₵${fmt(cut)}</b></div>
+          <div><span class="k">Taking now</span><b>${cps == null ? 'pending' : '₵' + fmt(cps) + '/s'}</b></div>
+          <div><span class="k">Your rate</span><b>${Math.round(r * 100)}%</b></div>
+          <div><span class="k">Status</span><b>${idle ? 'Idle ' + ago(Number(m.lastSeen)) : 'Open'}</b></div></div>
+      </div>`).join('') + '<p class="muted">"Taken" is what your ledger says was credited to you from them, which is exact. "Taking now" is their rate over the last few syncs.</p>' : '';
+    const topT = state.ach.complete ? `<div class="trophy top"><div class="tname">Every Upgrade. Every Single One.</div>
+        <div class="muted">Completed ${dateStr(state.ach.complete)} · all ${UPGRADES.length} upgrades · the highest honour the food economy has</div>
+        <div class="muted">Your name is in gold at the top of the page. Nobody else can see it. You know.</div></div>` : '';
+    const cab = pf.length ? `<div class="pfsum">
         <div class="stat"><div class="k">Franchises</div><div class="v">${pf.filter(e => !e.ministry).length}</div></div>
         <div class="stat"><div class="k">Royalties, all time</div><div class="v">₵${fmt(royalties)}</div></div>
         <div class="stat"><div class="k">Chain rev / min</div><div class="v">₵${fmt(rpmAll)}</div></div></div>` +
@@ -1635,13 +1663,14 @@ function render() {
           <div><span class="k">Status</span><b>${status}</b></div></div>
         <div class="feat">${GEAR.filter(g => e.gear[g.id]).map(g => '<span>' + esc(g.name) + ' ×' + e.gear[g.id] + '</span>').join('')}${bnames(r ? r.buildings : e.buildings).split(', ').filter(Boolean).map(b => '<span class="b">' + esc(b) + '</span>').join('')}</div>
         <div class="muted">Handed over at ₵${fmt(e.income)}/s with ${e.upg} upgrades.${e.ministry ? ' The Ministry has since lost the paperwork.' : ''}</div>
-      </div>`).join('')
-    : '<div class="empty"><b>🏆</b>Nothing in the cabinet yet.<br>Franchise a business to a colleague and it lives here forever: what it had, what it earns, what they owe you.</div>');
+      </div>`).join('') : '';
+    setHTML('portfolio', topT || cab || shelf ? topT + cab + shelf
+      : '<div class="empty"><b>🏆</b>Nothing in the cabinet yet.<br>Franchise a business to a colleague, or recruit a runner: both live here forever. Businesses with what they earn you. People with what you have taken from them.</div>');
   }
 
-  const got = ACH.filter(a => state.ach[a.id]), todo = ACH.filter(a => !state.ach[a.id]).slice(0, 3);
+  const got = ACH.filter(a => state.ach[a.id]).sort((a, b) => (b.top ? 1 : 0) - (a.top ? 1 : 0)), todo = ACH.filter(a => !state.ach[a.id] && !a.top).slice(0, 3);
   setHTML('ach', `<p><b>${got.length}</b> of ${ACH.length} commendations · income +${got.length * 2}%</p>
-    <div class="ach">${got.map(a => `<span title="${esc(a.desc)}">${esc(a.name)}</span>`).join('')}</div>
+    <div class="ach">${got.map(a => `<span class="${a.top ? 'top' : ''}" title="${esc(a.desc)}">${esc(a.name)}</span>`).join('')}</div>
     ${todo.length ? '<p class="muted">Next: ' + todo.map(a => a.desc).join(' · ') + '.</p>' : '<p class="muted">Every commendation earned. The Ministry has run out of stamps.</p>'}`);
 
   const nextMs = MILESTONES.find(m => world.citizens < m.at);

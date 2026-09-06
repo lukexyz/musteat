@@ -210,7 +210,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok('ministry dialog names the price', /Sell to the Ministry\?/.test(await p1.textContent('#modalBox')));
   await p1.click('#confirm');
   await p1.waitForTimeout(100);
-  ok('sold: 12 stamps, grey trophy in the cabinet', /Ration Stamps: 12/.test(await p1.textContent('#franchise')) && (await p1.evaluate(() => { document.querySelector('[data-tab="portfolio"]').click(); return /Sold to the Ministry/.test(document.getElementById('portfolio').textContent) && document.querySelectorAll('#portfolio .trophy').length === 2; })));
+  ok('sold: 12 stamps, grey trophy in the cabinet', /Ration Stamps: 12/.test(await p1.textContent('#franchise')) && (await p1.evaluate(() => { document.querySelector('[data-tab="portfolio"]').click(); return /Sold to the Ministry/.test(document.getElementById('portfolio').textContent) && document.querySelectorAll('#portfolio .trophy:not(.small)').length === 2; })));
   await p1.click('[data-tab="run"]');
   await patchSave(p5, '5', 's.total = 150000');
   await p5.waitForFunction(() => /passed ₵100K/.test(document.getElementById('log').textContent), null, { timeout: 5000 });
@@ -262,6 +262,10 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok('royalty from Kim written as a franchise row', led.some(r => r.fromName === 'Kim' && r.kind === 'royalty' && r.level === 'F'), JSON.stringify(led.filter(r => r.fromName === 'Kim')));
   await p1.click('[data-tab="portfolio"]');
   ok('empire pyramid: you on top, Sam on L1, share of income shown', /Ada[\s\S]*L1[\s\S]*Sam/.test(await p1.textContent('#pfEmpire')) && /earned by someone else/.test(await p1.textContent('#pfEmpire')), await p1.textContent('#pfEmpire').then(t => t.slice(0, 300)));
+  ok('runner shelf: Sam is a trophy with what was taken from him', /Runners[\s\S]*Sam[\s\S]*Taken, all time/.test(await p1.textContent('#portfolio')) && !!(await p1.$('#portfolio .trophy.small')), await p1.textContent('#portfolio').then(t => t.slice(-400)));
+  await p1.evaluate(() => { const s = window.MUSTEAT.state; window.MUSTEAT.UPGRADES.forEach(u => { s.upg[u.id] = 1; }); });
+  await p1.waitForFunction(() => /Every Upgrade/.test(document.getElementById('ach').textContent), null, { timeout: 5000 });
+  ok('every upgrade bought: top commendation first, name gilded, trophy pinned at the top of the cabinet', /^\s*Every Upgrade/.test(await p1.textContent('#ach .ach')) && !!(await p1.$('#rank b.gilded')) && /^\s*Every Upgrade/.test(await p1.textContent('#portfolio')) && /There is a trophy for that/.test(await p1.textContent('#upgrades')), await p1.textContent('#portfolio').then(t => t.slice(0, 200)));
   ok("portfolio lists Sam's business and the cut taken", /Sam/.test(await p1.textContent('#pfRunners')) && /L1/.test(await p1.textContent('#pfRunners')) && /You get/.test(await p1.textContent('#pfRunners')) && /Your cut, all time[\s\S]*₵[1-9]/.test(await p1.textContent('#pfRunners')), await p1.textContent('#pfRunners').then(t => t.slice(0, 300)));
   await p1.click('[data-tab="run"]');
   ok('board shows From runners for Ada', /From runners/.test(await p1.textContent('#board')) && /Ada[\s\S]*?₵[\d.]+K?[\s\S]*?₵[\d.]+/.test(await p1.textContent('#board tr.me')));
