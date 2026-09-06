@@ -21,7 +21,7 @@ const HEADERS = {
 const ZW = '​'; // zero-width space prefix that keeps a string a string: no formulas from "=1+1", no numbers from "007"
 
 function doGet(e) {
-  const t = (e.parameter || {}).table;
+  const t = ((e && e.parameter) || {}).table; // e is undefined when Run from the editor, which is how the script gets authorised
   return out(t && TABLES.indexOf(t) >= 0 ? readTable(t) : { error: 'table=players|events|ledger' });
 }
 
