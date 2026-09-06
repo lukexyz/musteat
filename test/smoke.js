@@ -74,13 +74,16 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p1.waitForTimeout(300);
   ok('15 taps = 15 deliveries', (await p1.textContent('#deliv')) === '15', await p1.textContent('#deliv'));
   ok('taps earned credits', parseFloat((await p1.textContent('#cash')).replace(/[^0-9.]/g, '')) > 45, await p1.textContent('#cash'));
-  ok('no banners in the first two minutes', await p1.evaluate(() => document.getElementById('gang').hidden && document.getElementById('recruiter').hidden) && /\(−15%\)/.test(await p1.textContent('#ips')), await p1.textContent('#ips'));
+  ok('no banners in the first two minutes, but the cut is on the stat', await p1.evaluate(() => document.getElementById('gang').hidden && document.getElementById('recruiter').hidden) && /\(−15%\)/.test(await p1.textContent('#cut')), await p1.textContent('#cut'));
+  await p1.click('#cut');
+  ok('the cut explains itself from minute one: the gang, the rate lost, the nudge', /Sector 7 Provisional Gang/.test(await p1.textContent('#modalBox')) && /a second you are not keeping/.test(await p1.textContent('#modalBox')) && /someone else for them to lean on/.test(await p1.textContent('#modalBox')), await p1.textContent('#modalBox'));
+  await p1.click('#ok');
   await reveal(p1);
   ok('the gang knocks after two minutes, and logs it', /knock on the airlock/.test(await p1.textContent('#log')), await p1.textContent('#log'));
   ok('gang banner shown collapsed as a one-line warning', !(await p1.evaluate(() => document.getElementById('gang').hidden || document.getElementById('gang').open)) && /Warning.*wants to talk to you/.test(await p1.textContent('#gangS')), await p1.textContent('#gangS'));
   await p1.click('#gangS');
   ok('banner expands to the full text on click', await p1.evaluate(() => document.getElementById('gang').open) && /protection works/.test(await p1.textContent('#gangM')));
-  ok('gang tax shown while you have no runners', !(await p1.evaluate(() => document.getElementById('gang').hidden)) && /\(−15%\)/.test(await p1.textContent('#ips')), await p1.textContent('#ips'));
+  ok('gang tax shown while you have no runners', !(await p1.evaluate(() => document.getElementById('gang').hidden)) && /\(−15%\)/.test(await p1.textContent('#cut')), await p1.textContent('#cut'));
   ok('order text rendered', /for /.test(await p1.textContent('#order')));
   await p1.click('[data-act="ration"]');
   await p1.waitForSelector('#ration .help');
@@ -322,7 +325,10 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p6.waitForFunction(() => window.MUSTEAT.state.id); await reveal(p6);
   await p6.waitForFunction(() => !document.getElementById('recruiter').hidden);
   ok('sealed code registers under the recruiter, with the temptation line', (await save(p6, '6')).ref === code && /never know/.test(await p6.textContent('#recruiter')), await p6.textContent('#recruiter'));
-  ok('runner with no runners pays both taxes', /\(−25%\)/.test(await p6.textContent('#ips')), await p6.textContent('#ips'));
+  ok('runner with no runners pays both taxes', /\(−25%\)/.test(await p6.textContent('#cut')), await p6.textContent('#cut'));
+  await p6.click('#cut');
+  ok('both cuts explained, with the recruiter named and the shop nudge', /10%[\s\S]*Ada[\s\S]*15%[\s\S]*Sector 7/.test(await p6.textContent('#modalBox')) && /Twenty-five percent/.test(await p6.textContent('#modalBox')) && await p6.isVisible('#toShop'), await p6.textContent('#modalBox'));
+  await p6.click('#ok');
   await p6.close();
 
   console.log('no clipboard (iframe-like): copy box fallback, voucher without prompt()');

@@ -95,6 +95,7 @@ h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);m
 .muted{color:var(--dim);font-size:12px}
 .help{background:transparent;border:1px solid transparent;color:var(--dim);font-size:12px;padding:2px 7px;border-radius:6px;cursor:pointer;transition:background .15s}
 .help:hover:not(:disabled){background:rgba(255,255,255,.06);border-color:transparent;color:var(--fg)}
+.stat .v .help{font-size:inherit;color:var(--dim);padding:0 6px;margin-left:2px;vertical-align:baseline}
 .bar{height:10px;background:#111;border:1px solid var(--line);margin:6px 0}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--gold),var(--warn))}
 .bar.cool i{background:linear-gradient(90deg,var(--blue),var(--acc))}
@@ -238,7 +239,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <div id="supply" class="banner good" hidden></div>
   <section class="stats">
     <div class="stat"><div class="k">Credits</div><div class="v" id="cash">0</div></div>
-    <div class="stat"><div class="k">Per second</div><div class="v" id="ips">0</div></div>
+    <div class="stat"><div class="k">Per second</div><div class="v"><span id="ips">0</span><button id="cut" class="help" data-act="cutInfo" hidden></button></div></div>
     <div class="stat"><div class="k">Deliveries</div><div class="v" id="deliv">0</div></div>
     <div class="stat"><div class="k">Zone</div><div class="v small" id="zone"></div></div>
   </section>
@@ -1209,6 +1210,21 @@ function complain() {
   const shop = (state.up[0] && state.up[0].shopName) || 'their shop';
   copy(rnd(COMPLAINTS).replace('{owner}', owner).replace('{meals}', fmt(Math.floor(state.deliveries))).replace('{shop}', shop).replace('{cut}', fmt(cut)).replace('{link}', rootLink()), 'Complaint copied. Post it somewhere public.');
 }
+function cutInfo() {
+  const c = calc(state); if (c.keep >= 1) return;
+  const lostPs = c.income / c.keep - c.income, lostAll = state.total / c.keep * (1 - c.keep);
+  const parts = [];
+  if (c.tax) parts.push(`<p><b>${Math.round(c.tax * 100)}%</b> to <b>${esc(state.recruiter || 'whoever sent you the link')}</b>, who sent you the link. Open your own shop and it stops.</p>`);
+  if (c.gang) parts.push(`<p><b>${Math.round(c.gang * 100)}%</b> to the <b>Sector 7 Provisional Gang</b>, for protection. Recruit one runner and they go and protect them instead.</p>`);
+  const closing = c.tax && c.gang ? 'Twenty-five percent. To people who have never carried a bao in their lives.' : c.tax ? 'Hmmm. Maybe I should go independent.' : 'Hmmm. Maybe I should find someone else for them to lean on.';
+  modal(`<h3>Where the ${Math.round((1 - c.keep) * 100)}% goes</h3>
+    ${parts.join('')}
+    <p>That is <b>₵${fmt(lostPs)}</b> a second you are not keeping. <b>₵${fmt(lostAll)}</b> so far, all time.</p>
+    <p class="muted">"${closing}"</p>
+    <div class="row">${!state.shop ? '<button id="toShop">Open a shop</button>' : ''}<button data-act="share">Copy invite</button><button id="ok" class="big2" style="width:auto;flex:1">FINE</button></div>`);
+  $('ok').onclick = closeModal;
+  if ($('toShop')) $('toShop').onclick = () => { closeModal(); $('shop').scrollIntoView({ block: 'center', behavior: 'smooth' }); };
+}
 function rationInfo() {
   const c = calc(state), worth = Math.max(50, Math.floor(c.baseIncome * 600));
   const left = state.ration + CONFIG.RATION_H * H - now();
@@ -1444,7 +1460,9 @@ function render() {
   const c = calc(state), t = now();
   liveIncome = c.income;
   if (!tweening) $('cash').textContent = '₵' + fmtLive(state.cash, c.income);
-  $('ips').textContent = '₵' + fmt(c.income) + (c.keep < 1 ? ' (−' + Math.round((1 - c.keep) * 100) + '%)' : '');
+  $('ips').textContent = '₵' + fmt(c.income);
+  const cutB = $('cut'); cutB.hidden = c.keep >= 1;
+  if (c.keep < 1) { const ct = '(−' + Math.round((1 - c.keep) * 100) + '%)'; if (cutB.textContent !== ct) { cutB.textContent = ct; cutB.title = 'Why minus ' + Math.round((1 - c.keep) * 100) + '%? Click.'; } }
   $('deliv').textContent = fmt(Math.floor(state.deliveries));
   $('zone').textContent = ZONES[c.zone].name + (c.outbreak ? ' (fallback)' : c.supply.plant ? ' (via plant)' : '');
   const r = RANKS[c.rank]; const next = RANKS[c.rank + 1];
@@ -1713,7 +1731,7 @@ document.addEventListener('click', e => {
   const dc = e.target.closest('[data-decree]'); if (dc) return decree(dc.dataset.decree);
   const b = e.target.closest('[data-act]'); if (!b) return;
   e.preventDefault();
-  const act = { shop: openShopDialog, share, voucher, complain, ration: claimRation, rationInfo, refresh: sync, bribe, drone: buyDrone, contracts: buyContracts, seed: seedDemo, wipe: wipeCompany, franchise, withdraw: withdrawOffer, ministry: ministryDialog, rename: renameDialog }[b.dataset.act];
+  const act = { shop: openShopDialog, share, voucher, complain, ration: claimRation, rationInfo, cutInfo, refresh: sync, bribe, drone: buyDrone, contracts: buyContracts, seed: seedDemo, wipe: wipeCompany, franchise, withdraw: withdrawOffer, ministry: ministryDialog, rename: renameDialog }[b.dataset.act];
   if (act) act();
 });
 $('reset').addEventListener('click', e => { e.preventDefault(); ask('Delete your save?', 'The Ministry will not remember you.', 'DELETE', () => { localStorage.removeItem(KEY); location.href = location.pathname; }); });
