@@ -20,6 +20,7 @@ function serve() {
       const file = path.join(ROOT, req.url.split('?')[0] === '/' ? 'index.html' : req.url.split('?')[0]);
       fs.readFile(file, (err, data) => {
         if (err) { rsp.writeHead(404); return rsp.end(); }
+        if (file.endsWith('.html')) data = data.toString('utf8').replace(/SHEET_API: '[^']*'/, "SHEET_API: ''"); // tests run the local mock whatever the page is wired to
         rsp.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); rsp.end(data);
       });
     }).listen(0, '127.0.0.1', () => res({ srv, url: 'http://127.0.0.1:' + srv.address().port + '/index.html' }));

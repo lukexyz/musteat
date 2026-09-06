@@ -42,7 +42,7 @@ function start(port, cb) {
     const file = path.join(ROOT, u.pathname === '/' ? 'index.html' : u.pathname);
     fs.readFile(file, (err, data) => {
       if (err) { rsp.writeHead(404); return rsp.end(); }
-      if (file.endsWith('.html')) data = data.toString('utf8').replace("SHEET_API: ''", "SHEET_API: 'http://127.0.0.1:" + srv.address().port + "/api'");
+      if (file.endsWith('.html')) data = data.toString('utf8').replace(/SHEET_API: '[^']*'/, "SHEET_API: 'http://127.0.0.1:" + srv.address().port + "/api'");
       rsp.writeHead(200, { 'Content-Type': file.endsWith('.png') ? 'image/png' : 'text/html; charset=utf-8' }); rsp.end(data);
     });
   }).listen(port, '127.0.0.1', () => cb && cb({ srv, db, url: 'http://127.0.0.1:' + srv.address().port + '/' }));

@@ -71,7 +71,7 @@ footer{margin-top:24px;font-size:12px;color:var(--dim);border-top:1px solid var(
 <script>
 // Reads the same sheet as the game. Local mode: the browser's localStorage sheet. Backend: GET ?table=players|events|ledger on the same URL.
 // PORT BOUNDARY: read(table) is the only storage call on this page. See PORTING.md.
-const CONFIG = { SHEET_API: '', SHEET_KEY: 'musteat_sheet' };
+const CONFIG = { SHEET_API: 'https://script.google.com/macros/s/AKfycbxOJetGrJ2DQaaXUVJWdURPZDnkLWAuL5WxRXU3EUiAcdqb9czgCgUG6VY90YAGy7N_Qg/exec', SHEET_KEY: 'musteat_sheet' };
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function fmt(n) {

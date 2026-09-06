@@ -15,7 +15,7 @@ const TPS = process.argv[3] == null ? 2 : +process.argv[3];
 function serve() {
   return new Promise(res => {
     const srv = http.createServer((req, rsp) => {
-      fs.readFile(path.join(ROOT, 'index.html'), (err, data) => { rsp.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); rsp.end(data); });
+      fs.readFile(path.join(ROOT, 'index.html'), (err, data) => { rsp.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); rsp.end(data.toString('utf8').replace(/SHEET_API: '[^']*'/, "SHEET_API: ''")); });
     }).listen(0, '127.0.0.1', () => res({ srv, url: 'http://127.0.0.1:' + srv.address().port + '/index.html?dev' }));
   });
 }
