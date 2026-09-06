@@ -5,6 +5,7 @@ const { chromium } = require('playwright');
 const { start } = require('./sheetmock');
 let pass = 0, fail = 0;
 const ok = (name, cond, extra) => { if (cond) { pass++; console.log('  ok   ' + name); } else { fail++; console.log('  FAIL ' + name + (extra ? '  -> ' + String(extra).replace(/\s+/g, ' ').slice(0, 300) : '')); } };
+const reveal = async page => { await page.evaluate(() => { window.MUSTEAT.state.played = 200; }); for (let i = 0; i < 3; i++) { const m = await page.waitForSelector('#modal:not([hidden])', { timeout: 1500 }).catch(() => null); if (!m) break; await page.click('#modalBox #ok'); } };
 const skip = async page => { await page.waitForSelector('#intro:not([hidden])', { timeout: 5000 }); await page.click('#intro'); await page.waitForSelector('#modal:not([hidden])'); };
 
 start(0, async ({ srv, db, url }) => {
@@ -35,6 +36,7 @@ start(0, async ({ srv, db, url }) => {
   await B.goto(game + '&ref=' + code); await skip(B);
   ok('intro names Ada from the shared sheet, code sealed', /recruited by[\s\S]*Ada/.test(await B.textContent('#modalBox')) && (await B.getAttribute('#refIn', 'readonly')) != null, await B.textContent('#modalBox'));
   await B.fill('#nm', 'Bob'); await B.click('#go');
+  await B.waitForFunction(() => window.MUSTEAT.state.id); await reveal(B);
   await B.waitForFunction(() => /running for[\s\S]*Ada/.test(document.getElementById('recruiter').textContent), null, { timeout: 8000 }).catch(() => {});
   ok('Bob runs for Ada, resolved from the shared sheet', /running for[\s\S]*Ada/.test(await B.textContent('#recruiter')), await B.textContent('#recruiter'));
   for (let i = 0; i < 8; i++) await B.click('#run');
@@ -67,6 +69,7 @@ start(0, async ({ srv, db, url }) => {
   await C.goto(game + '&fr=' + code); await skip(C);
   ok('Kim sees the handover offer', /Ada[\s\S]*handing you[\s\S]*Bunker Bao №2/.test(await C.textContent('#modalBox')), await C.textContent('#modalBox'));
   await C.fill('#nm', 'Kim'); await C.click('#go');
+  await C.waitForFunction(() => window.MUSTEAT.state.id); await reveal(C);
   await C.waitForFunction(() => /franchise of[\s\S]*Ada/.test(document.getElementById('recruiter').textContent), null, { timeout: 8000 }).catch(() => {});
   ok('Kim is a franchisee of Ada', /franchise of[\s\S]*Ada/.test(await C.textContent('#recruiter')), await C.textContent('#recruiter'));
   const ada = db.players.find(p => p.name === 'Ada');

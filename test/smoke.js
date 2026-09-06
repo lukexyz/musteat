@@ -36,6 +36,11 @@ async function register(page, name, dept) {
   if (dept) await page.selectOption('#dept', dept);
   await page.click('#go');
 }
+// The recruiter and the gang only introduce themselves after two minutes of play. Age the player and read the letters.
+const reveal = async page => {
+  await page.evaluate(() => { window.MUSTEAT.state.played = 200; });
+  for (let i = 0; i < 3; i++) { const m = await page.waitForSelector('#modal:not([hidden])', { timeout: 1500 }).catch(() => null); if (!m) break; await page.click('#modalBox #ok'); }
+};
 const save = async (page, slot) => JSON.parse(await page.evaluate(k => localStorage.getItem(k), 'musteat_save' + (slot ? '_' + slot : '')));
 // The game saves on beforeunload, so patch the save from an init script that runs on the next load instead.
 const patchSave = async (page, slot, fn) => { await page.evaluate(([k, src]) => localStorage.setItem('__patch', JSON.stringify({ k, src })), ['musteat_save' + (slot ? '_' + slot : ''), fn]); await page.reload(); };
@@ -52,7 +57,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   console.log('registration');
   const p1 = await ctx.newPage();
   await p1.addInitScript(PATCH_INIT);
-  await p1.goto(url);
+  await p1.goto(url + '?dev');
   ok('noir splash first: 2099, everyone must eat, tap to skip', await p1.isVisible('#intro') && /2099/.test(await p1.textContent('#intro')) && /EVERYONE MUST EAT/.test(await p1.textContent('#intro')) && !(await p1.isVisible('#modal')));
   await skip(p1);
   ok('intro modal shown after the splash', await p1.isVisible('#modal') && !(await p1.isVisible('#intro')));
@@ -69,6 +74,12 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p1.waitForTimeout(300);
   ok('15 taps = 15 deliveries', (await p1.textContent('#deliv')) === '15', await p1.textContent('#deliv'));
   ok('taps earned credits', parseFloat((await p1.textContent('#cash')).replace(/[^0-9.]/g, '')) > 45, await p1.textContent('#cash'));
+  ok('no banners in the first two minutes', await p1.evaluate(() => document.getElementById('gang').hidden && document.getElementById('recruiter').hidden) && /\(−15%\)/.test(await p1.textContent('#ips')), await p1.textContent('#ips'));
+  await reveal(p1);
+  ok('the gang knocks after two minutes, and logs it', /knock on the airlock/.test(await p1.textContent('#log')), await p1.textContent('#log'));
+  ok('gang banner shown collapsed as a one-line warning', !(await p1.evaluate(() => document.getElementById('gang').hidden || document.getElementById('gang').open)) && /Warning.*wants to talk to you/.test(await p1.textContent('#gangS')), await p1.textContent('#gangS'));
+  await p1.click('#gangS');
+  ok('banner expands to the full text on click', await p1.evaluate(() => document.getElementById('gang').open) && /protection works/.test(await p1.textContent('#gangM')));
   ok('gang tax shown while you have no runners', !(await p1.evaluate(() => document.getElementById('gang').hidden)) && /\(−15%\)/.test(await p1.textContent('#ips')), await p1.textContent('#ips'));
   ok('order text rendered', /for /.test(await p1.textContent('#order')));
 
@@ -160,17 +171,20 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok('offer shown as pending', /Offer out since/.test(await p1.textContent('#franchise')) && /Test Kebab №2/.test(await p1.textContent('#franchise')));
   const p5 = await ctx.newPage();
   await p5.addInitScript(PATCH_INIT);
-  await p5.goto(url + '?slot=5&fr=' + code);
+  await p5.goto(url + '?dev&slot=5&fr=' + code);
   await skip(p5);
   ok('intro shows the handover offer', /Ada.*handing you.*Test Kebab №2/s.test(await p5.textContent('#modalBox')), await p5.textContent('#modalBox'));
   await p5.fill('#nm', 'Kim'); await p5.click('#go');
+  await p5.waitForFunction(() => window.MUSTEAT.state.id); await reveal(p5);
   await p5.waitForFunction(() => !document.getElementById('recruiter').hidden);
+  ok('franchisee gets the letter from head office', /letter from head office/.test(await p5.textContent('#log')), await p5.textContent('#log'));
   ok('franchisee banner names the franchisor', /franchise of.*Ada/s.test(await p5.textContent('#recruiter')), await p5.textContent('#recruiter'));
   ok('franchisee got the gear and the shop', /×12/.test(await p5.textContent('#gear')) && /Test Kebab №2/.test(await p5.textContent('#shop')));
   for (let i = 0; i < 3; i++) await p5.click('#run');
   await p1.bringToFront();
-  await p1.click('[data-act="refresh"]');
+  if (!/took over/.test(await p1.textContent('#log'))) await p1.click('[data-act="refresh"]'); // unless the 30s sync already brought the news
   await p1.waitForFunction(() => /took over/.test(document.getElementById('log').textContent), null, { timeout: 8000 });
+  ok('gang tax lifted once the first person lands under you', await p1.evaluate(() => document.getElementById('gang').hidden) && /Extortion tax lifted/.test(await p1.textContent('#log')), await p1.textContent('#log'));
   ok('handover modal shown to the franchisor', /Kim took over Test Kebab №2/.test(await p1.textContent('#modalBox')));
   await p1.click('#ok');
   ok('portfolio tab opened with the trophy', !(await p1.evaluate(() => document.getElementById('tab-portfolio').hidden)) && /Test Kebab №2/.test(await p1.textContent('#portfolio')) && /Franchised to.*Kim/s.test(await p1.textContent('#portfolio')));
@@ -196,12 +210,14 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
 
   console.log('second citizen recruited in another tab');
   const p2 = await ctx.newPage();
-  await p2.goto(url + '?slot=2&ref=' + code + '&v=Sam');
+  await p2.goto(url + '?dev&slot=2&ref=' + code + '&v=Sam');
   await skip(p2);
   ok('intro names the referral code', new RegExp(code).test(await p2.textContent('#modalBox')));
   ok('voucher pre-fills name', (await p2.inputValue('#nm')) === 'Sam');
   await p2.click('#go');
+  await p2.waitForFunction(() => window.MUSTEAT.state.id); await reveal(p2);
   await p2.waitForFunction(() => !document.getElementById('recruiter').hidden);
+  ok('runner gets the letter under the door, then the knock', /letter under the airlock door/.test(await p2.textContent('#log')) && /knock on the airlock/.test(await p2.textContent('#log')), await p2.textContent('#log'));
   ok('recruit banner names the owner', /running for.*Ada/s.test(await p2.textContent('#recruiter')));
   ok('voucher bonus credited', (await save(p2, '2')).cash >= 250, (await save(p2, '2')).cash);
   for (let i = 0; i < 3; i++) await p2.click('#run');
@@ -209,8 +225,9 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p1.waitForFunction(() => /Sam/.test(document.getElementById('shop').textContent), null, { timeout: 8000 }).catch(() => {});
   ok('owner sees Sam in runners table', /Sam/.test(await p1.textContent('#shop')));
   ok('owner log notes the arrival', /Sam.*joined as your runner/.test(await p1.textContent('#log')));
-  ok('gang tax lifted once a runner arrives', await p1.evaluate(() => document.getElementById('gang').hidden) && /Extortion tax lifted/.test(await p1.textContent('#log')), await p1.textContent('#ips'));
+  ok('gang banner stays hidden with runners', await p1.evaluate(() => document.getElementById('gang').hidden));
   ok('leaderboard lists both', /Ada/.test(await p1.textContent('#board')) && /Sam/.test(await p1.textContent('#board')));
+  await p2.click('#recruiterS'); // the complaint link lives in the expanded banner
   await p2.click('[data-act="complain"]');
   await p2.waitForSelector('.toast');
   ok('complaint copied', /Ada/.test(await p2.evaluate(() => navigator.clipboard.readText())));
@@ -223,7 +240,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p1.waitForFunction(() => /Sprint score/.test(document.getElementById('log').textContent), null, { timeout: 5000 });
   await p1.waitForFunction(() => (JSON.parse(localStorage.musteat_save) || {}).sprint != null, null, { timeout: 8000 }); // the save runs every five seconds
   const sp = await save(p1, '');
-  ok('sprint score locked at lifetime total', sp.sprint > 0 && sp.sprint === Math.floor(sp.total) && /Sprint score ₵/.test(await p1.textContent('#rank')), JSON.stringify([sp.sprint, sp.total]));
+  ok('sprint score locked at lifetime total', sp.sprint > 0 && sp.sprint <= sp.total && sp.sprint >= sp.total * 0.99 && /* income keeps accruing until the save lands */ /Sprint score ₵/.test(await p1.textContent('#rank')), JSON.stringify([sp.sprint, sp.total]));
   await p1.click('[data-act="refresh"]');
   await p1.waitForFunction(() => /Sprint/.test(document.getElementById('board').textContent));
   ok('board has a Sprint column with Ada locked and Sam still on the clock', /Sprint/.test(await p1.textContent('#board')) && /min in/.test(await p1.textContent('#board')), await p1.textContent('#board').then(t => t.slice(0, 300)));
@@ -270,22 +287,24 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
 
   console.log('manual referral code on the intro');
   const p3 = await ctx.newPage();
-  await p3.goto(url + '?slot=3');
+  await p3.goto(url + '?dev&slot=3');
   await skip(p3);
   ok('intro has a who-sent-you box', await p3.isVisible('#refIn'));
   await p3.fill('#nm', 'Mo'); await p3.fill('#refIn', ' ' + code.toLowerCase() + ' ');
   await p3.click('#go');
+  await p3.waitForFunction(() => window.MUSTEAT.state.id); await reveal(p3);
   await p3.waitForFunction(() => !document.getElementById('recruiter').hidden);
   ok('typed code resolves to the owner', /running for.*Ada/s.test(await p3.textContent('#recruiter')), await p3.textContent('#recruiter'));
   await p3.close();
 
   const p6 = await ctx.newPage();
-  await p6.goto(url + '?slot=6&ref=' + code);
+  await p6.goto(url + '?dev&slot=6&ref=' + code);
   await skip(p6);
   ok('code box is sealed when the link carried a code', (await p6.getAttribute('#refIn', 'readonly')) != null && (await p6.inputValue('#refIn')) === code && /never know/.test(await p6.textContent('#modalBox')), await p6.inputValue('#refIn'));
   await p6.click('#refIn'); await p6.keyboard.press('End'); await p6.keyboard.type('ZZ');
   ok('typing does not change a sealed code', (await p6.inputValue('#refIn')) === code, await p6.inputValue('#refIn'));
   await p6.fill('#nm', 'Solo'); await p6.click('#go');
+  await p6.waitForFunction(() => window.MUSTEAT.state.id); await reveal(p6);
   await p6.waitForFunction(() => !document.getElementById('recruiter').hidden);
   ok('sealed code registers under the recruiter, with the temptation line', (await save(p6, '6')).ref === code && /never know/.test(await p6.textContent('#recruiter')), await p6.textContent('#recruiter'));
   ok('runner with no runners pays both taxes', /\(−25%\)/.test(await p6.textContent('#ips')), await p6.textContent('#ips'));

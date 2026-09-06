@@ -29,6 +29,15 @@ h1 .logo{display:block;height:.72em;width:auto;mix-blend-mode:screen;margin:.24e
 .rankbox b{display:block;font-size:14px;color:var(--gold)}
 .banner{margin:10px 0 0;padding:8px 10px;border:1px dashed var(--warn);color:#ffb3c0;font-size:13px}
 .banner.good{border-color:var(--acc);color:#bfffb0}
+details.banner{padding:0;border-color:transparent}
+details.banner[open]{border-color:var(--warn)}
+details.banner summary{list-style:none;cursor:pointer;padding:6px 10px}
+details.banner summary::-webkit-details-marker{display:none}
+details.banner summary b{color:var(--warn)}
+details.banner summary::after{content:'\25B8';margin-left:8px;color:var(--dim)}
+details.banner[open] summary::after{content:'\25BE'}
+details.banner summary:hover{background:rgba(255,255,255,.04)}
+details.banner .more{padding:0 10px 8px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
 .stat{background:var(--panel);border:1px solid var(--line);padding:8px}
 .stat .k{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
@@ -195,8 +204,8 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
     <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 3019. Lockdown day 336,041. Going outside is illegal. Everyone must eat.</div></div>
     <div class="rankbox" id="rank"></div>
   </header>
-  <div id="recruiter" class="banner" hidden></div>
-  <div id="gang" class="banner" hidden></div>
+  <details id="recruiter" class="banner" hidden><summary id="recruiterS"></summary><div class="more" id="recruiterM"></div></details>
+  <details id="gang" class="banner" hidden><summary id="gangS"></summary><div class="more" id="gangM"></div></details>
   <div id="supply" class="banner good" hidden></div>
   <section class="stats">
     <div class="stat"><div class="k">Credits</div><div class="v" id="cash">0</div></div>
@@ -274,6 +283,7 @@ const CONFIG = {
   CUTS: [0.10, 0.05, 0.025],  // share of level 1/2/3 downline lifetime earnings
   RUNNER_TAX: 0.10,           // what a runner without a shop pays their shop owner
   GANG_TAX: 0.15,             // the local gang's cut of everyone with no runners. Recruit one and they move on to them
+  REVEAL_S: 120,              // seconds of play before the recruiter and the gang introduce themselves. The cut was always there
   SYNC_S: 30,
   SPRINT_S: 1800,             // seconds of open-tab play after which the sprint score locks
   INTRO_S: 5,                 // seconds the first-visit splash stays before it moves on by itself
@@ -544,6 +554,7 @@ function fresh() {
     ration: 0, lastDecree: 0, decreesSeen: [], rankSeen: 0,
     log: [], lastSeen: now(), created: now(), lastOrder: null,
     played: 0, sprint: null,   // seconds with the tab open; lifetime credits when that hit SPRINT_S
+    told: {},                  // when the recruiter (rec) and the gang (gang) were revealed, so it happens once
   };
 }
 function load() {
@@ -787,6 +798,7 @@ function frame() {
   }
   state.heat = clamp(state.heat + dt * (0.03 + 0.01 * downCount() + 0.01 * Math.log10(1 + c.baseIncome)), 0, 100);
   crateTick(t);
+  checkReveal(c);
   if (t - achAt > 1000) { achAt = t; checkAch(); checkMilestone(); }
   if (t >= state.nextEvent) {
     fireEvent();
@@ -844,6 +856,50 @@ function showFirstCrate(bonus) {
     <p class="muted">Crates like this fall every few minutes while the tab is open. Cash, lunch rushes, panic buying. Nobody is watching. Take them.</p>
     <button id="ok" class="big2">TAKEN</button>`);
   $('ok').onclick = closeModal;
+}
+
+// ---------------- The reveal ----------------
+// Both cuts apply from the first delivery. Nobody is told for two minutes, by which time they have worked out how to
+// run, earn and buy, and the news lands as news. Recruiter first, the gang a minute later. Never over another dialog.
+const WARN = '\u26a0';
+function checkReveal(c) {
+  if (!$('modal').hidden) return;
+  const told = state.told || (state.told = {}), played = state.played || 0;
+  const hasRec = !!state.franchiseOf || !!(state.ref && !state.shop);
+  if (hasRec && !told.rec && played >= CONFIG.REVEAL_S) { told.rec = now(); revealRecruiter(c); return; }
+  if (c.gang && !told.gang && played >= CONFIG.REVEAL_S + (hasRec ? 60 : 0)) { told.gang = now(); revealGang(c); }
+}
+function revealRecruiter(c) {
+  if (state.franchiseOf) {
+    const paid = Math.floor(state.total * CONFIG.ROYALTY), who = state.franchiseName || 'the franchisor';
+    modal(`<h3>A letter from head office</h3>
+      <p>Cream paper. Embossed. From <b>${esc(who)}</b>, who handed you <b>${esc(state.shop ? state.shop.name : 'the shop')}</b>.</p>
+      <p>It reminds you, warmly, that they keep <b>25%</b> of everything you make. Forever. So far that is <b>₵${fmt(paid)}</b>. The tech was theirs. The debt is yours.</p>
+      <p class="muted">It is signed "with confidence in you". It is not signed by a person.</p>
+      <button id="ok" class="big2">FILE IT</button>`);
+    log('<b>A letter from head office.</b> ' + esc(who) + ' keeps 25% of everything you make. It was in the contract. There was no contract.');
+  } else {
+    const paid = Math.floor(state.total / c.keep * c.tax), who = state.recruiter || 'whoever gave you that link';
+    modal(`<h3>A letter under the airlock door</h3>
+      <p>No stamp. It is from <b>${esc(who)}</b>. It says thank you. It does not say for what.</p>
+      <p>What it is for: they take <b>10%</b> of everything you make, and have since your first delivery. <b>₵${fmt(paid)}</b> so far. You did not notice. That was the idea.</p>
+      <p>Open your own shop and it stops. Or think it through: maybe you should recruit a runner of your own instead of paying tax to ${esc(who)}. They would never know.</p>
+      <button id="ok" class="big2">NOTED</button>
+      <p class="muted"><a href="#" data-act="share">Copy your invite</a>. Somebody has to be at the bottom. It does not have to be you.</p>`);
+    log('<b>A letter under the airlock door.</b> ' + esc(who) + ' takes 10% of everything you make. Has done since your first delivery. ₵' + fmt(paid) + ' so far.');
+  }
+  $('ok').onclick = closeModal;
+}
+function revealGang(c) {
+  const paid = Math.floor(state.total / c.keep * c.gang);
+  modal(`<h3>A knock on the airlock</h3>
+    <p>Three knocks. A pause. Three more. A voice through the seal: "<b>Sector 7 Provisional Gang.</b> We have been protecting you." You did not ask.</p>
+    <p>Protection costs <b>${Math.round(CONFIG.GANG_TAX * 100)}%</b> of everything you make, and it has since your first delivery: <b>₵${fmt(paid)}</b> so far. Nobody protects you from them.</p>
+    <p>Recruit one runner with your invite link and they go and protect your runner instead. That is how protection works.</p>
+    <button id="ok" class="big2">UNDERSTOOD</button>
+    <p class="muted"><a href="#" data-act="share">Copy your invite</a> and find someone to point them at.</p>`);
+  $('ok').onclick = closeModal;
+  log('<b>A knock on the airlock.</b> The Sector 7 Provisional Gang. ' + Math.round(CONFIG.GANG_TAX * 100) + '% of everything, since day one. ₵' + fmt(paid) + ' so far.');
 }
 
 // ---------------- Commendations ----------------
@@ -944,7 +1000,12 @@ function applyDownline(list) {
   state.known = known;
   const hadRunners = state.down.list.length > 0;
   state.down.list = list; state.down.at = now();
-  if (!first && !hadRunners && list.length) { log('<b>Your first runner.</b> The Sector 7 Provisional Gang has moved on to them. Extortion tax lifted.'); toast('Extortion tax lifted. The gang has a new customer.'); }
+  if (!first && !hadRunners && list.length) {
+    const told = state.told || (state.told = {});
+    log('<b>Your first runner.</b> The Sector 7 Provisional Gang has moved on to them. Extortion tax lifted.' + (told.gang ? '' : ' You did not know there was one. There was. 15%, since day one.'));
+    toast('Extortion tax lifted. The gang has a new customer.');
+    told.gang = told.gang || now(); // no knock on the door for a threat that has already left
+  }
   const samples = {};
   list.forEach(m => { const t = Number(m.total) || 0; const arr = (state.down.samples || {})[m.id] || []; const last = arr[arr.length - 1]; samples[m.id] = !last || last.total !== t ? arr.concat({ t: now(), total: t }).slice(-6) : arr; });
   state.down.samples = samples;
@@ -1314,18 +1375,23 @@ function render() {
     (next ? `<br>${state.shop ? downCount() + '/' + next.need + ' runners to ' + next.name : 'Open a shop to rank up'}` : '<br>There is nothing above you.') +
     (state.sprint != null ? `<br><span title="Lifetime credits at thirty minutes of play">Sprint score ₵${fmt(state.sprint)}</span>` : `<br><span title="Your lifetime credits when this hits zero become your sprint score, the fair one on the high-score table">Sprint clock ${Math.max(0, Math.ceil((CONFIG.SPRINT_S - (state.played || 0)) / 60))} min</span>`));
 
-  const rb = $('recruiter');
-  if (state.franchiseOf) {
+  // The warning banners wait for the reveal (checkReveal), then sit collapsed to one line. The details element keeps its
+  // own open/closed state; only the text inside is rewritten, so a render tick never snaps it shut.
+  const told = state.told || {}, rb = $('recruiter');
+  if (state.franchiseOf && told.rec) {
     rb.hidden = false;
-    setHTML('recruiter', `You run <b>${esc(state.shop ? state.shop.name : 'a franchise')}</b>, a franchise of <b>${esc(state.franchiseName || 'someone')}</b>. They keep 25% of everything you make. The tech was theirs. The debt is yours.`);
-  } else if (state.ref && !state.shop) {
+    setHTML('recruiterS', `<b>Warning ${WARN}</b> Head office keeps 25% of everything you make...`);
+    setHTML('recruiterM', `You run <b>${esc(state.shop ? state.shop.name : 'a franchise')}</b>, a franchise of <b>${esc(state.franchiseName || 'someone')}</b>. They keep 25% of everything you make. The tech was theirs. The debt is yours.`);
+  } else if (state.ref && !state.shop && told.rec) {
     rb.hidden = false;
-    setHTML('recruiter', `You are running for <b>${esc(state.recruiter || 'someone with the code ' + state.ref + ' (not in this company yet)')}</b>. They take 10% of everything you make. Open your own shop to take it back, or <a href="#" data-act="complain">file a complaint</a> where everyone can see it. Or think it through: "maybe I should recruit my own runner instead of paying tax to ${esc(state.recruiter || 'them')}... they would never know." They would not. <a href="#" data-act="share">Copy your invite</a>.`);
+    setHTML('recruiterS', `<b>Warning ${WARN}</b> Someone is taking 10% of everything you make...`);
+    setHTML('recruiterM', `You are running for <b>${esc(state.recruiter || 'someone with the code ' + state.ref + ' (not in this company yet)')}</b>. They take 10% of everything you make. Open your own shop to take it back, or <a href="#" data-act="complain">file a complaint</a> where everyone can see it. Or think it through: "maybe I should recruit my own runner instead of paying tax to ${esc(state.recruiter || 'them')}... they would never know." They would not. <a href="#" data-act="share">Copy your invite</a>.`);
   } else rb.hidden = true;
   const gb = $('gang');
-  if (c.gang) {
+  if (c.gang && told.gang) {
     gb.hidden = false;
-    setHTML('gang', `<b>The Sector 7 Provisional Gang</b> takes ${Math.round(CONFIG.GANG_TAX * 100)}% of everything you make. They call it protection. Recruit one runner with your invite link and they leave you alone. They go after your runner instead. That is how protection works. <a href="#" data-act="share">Copy invite</a>`);
+    setHTML('gangS', `<b>Warning ${WARN}</b> The Sector 7 Provisional Gang wants to talk to you...`);
+    setHTML('gangM', `<b>The Sector 7 Provisional Gang</b> takes ${Math.round(CONFIG.GANG_TAX * 100)}% of everything you make. They call it protection. Recruit one runner with your invite link and they leave you alone. They go after your runner instead. That is how protection works. <a href="#" data-act="share">Copy invite</a>`);
   } else gb.hidden = true;
   const sb = $('supply'); const perks = [];
   if (c.supply.depot) perks.push('Depot: +25% deliveries');
