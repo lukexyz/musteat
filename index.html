@@ -118,6 +118,10 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .box input,.box select{width:100%;font:inherit;padding:8px;background:#000;color:#fff;border:1px solid var(--line);margin:8px 0}
 .box input[readonly]{color:var(--acc);border-style:dashed;cursor:not-allowed}
 .box .big2{width:100%;padding:12px;font-weight:bold;background:var(--acc);color:#000;border:none;margin-top:6px}
+.inv{display:block;width:100%;text-align:left;margin:6px 0;padding:8px 10px;font-size:13px;line-height:1.4;background:#000}
+.inv i{display:block;font-style:normal;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:2px}
+.inv.honest{color:var(--dim)}
+.inv.honest i{color:var(--dim)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--acc);color:#000;padding:8px 14px;border-radius:4px;font-weight:bold;z-index:20;max-width:90vw}
 .pop{position:fixed;pointer-events:none;z-index:6;font-weight:bold;font-size:24px;letter-spacing:1px;color:#fff;white-space:nowrap;text-shadow:0 0 4px #000,0 0 10px #000,0 0 14px var(--acc),0 0 30px var(--acc);animation:pop .9s ease-out forwards;transform:translate(-50%,-50%)}
 .pop.gold{color:var(--gold);font-size:30px;text-shadow:0 0 4px #000,0 0 10px #000,0 0 16px var(--gold),0 0 36px var(--gold)}
@@ -510,6 +514,13 @@ const SHARE = [
   "I now control a district in MustEat. I need 4 runners to become Regional Nutrient Baron. Don't ask questions. {link}",
   "Regional Nutrient Baron here. The Ministry is watching. I need bodies. Warm ones, ideally. {link}",
   "I am the Supreme Ministry of Eating. You are legally required to open this link. {link}",
+];
+// The invite. Three innocent favours for a colleague, none of which mention the game, the referral or the cut.
+// The alignment label is the only tell, and only the sender sees it. {cut} is the live total cut the sender pays.
+const INVITES = [
+  { align: 'Lawful neutral', text: 'Hey there, can you give me a quick review on my Toqan app? I think my KPIs are {cut}% down. {link}' },
+  { align: 'Lawful evil', text: "Hey, I've created this new Toqan app, I think it's pretty cool. Do you mind providing me some assistance? I really need someone I can trust to help me build leverage on this thing. {link}" },
+  { align: 'Chaotic evil', text: "Hey, I have this really long-term green-field idea and I've built it into this Toqan app. Do you think it has any merit? {link}" },
 ];
 const NUDGES = [
   '{name}, your family is hungry. Your deliveries stopped {ago}. The Ministry has been informed. {link}',
@@ -1118,7 +1129,16 @@ const rootLink = () => location.origin + location.pathname;
 const devSlot = () => CONFIG.SHEET_API ? '' : '&slot=' + Math.floor(1e6 + Math.random() * 9e6);
 const shownSlot = devSlot(); // one stable slot for the link shown on screen; every copy gets a fresh one
 function shareLink(extra, slot) { return rootLink() + '?ref=' + encodeURIComponent(state.code || '') + (extra || '') + (slot == null ? devSlot() : slot); }
-function share() { copy(SHARE[calc(state).rank].replace('{link}', shareLink())); }
+function share() {
+  const c = calc(state), cut = c.keep < 1 ? Math.round((1 - c.keep) * 100) : Math.round(CONFIG.GANG_TAX * 100);
+  const opts = INVITES.map(i => ({ align: i.align, text: i.text.replace('{cut}', cut) })).concat({ align: 'True neutral', text: SHARE[c.rank], honest: true });
+  modal(`<h3>Copy your invite</h3>
+    <p class="muted">Pick a message. It goes to the clipboard with your link on the end. Nobody needs to know what it is for.</p>
+    ${opts.map((o, i) => `<button class="inv ${o.honest ? 'honest' : ''}" data-invite="${i}"><i>${esc(o.align)}</i>${esc(o.text.replace(' {link}', ''))}</button>`).join('')}
+    <div class="row"><button id="cancel">Cancel</button></div>`);
+  $('cancel').onclick = closeModal;
+  $('modalBox').querySelectorAll('[data-invite]').forEach(b => { b.onclick = () => { closeModal(); copy(opts[+b.dataset.invite].text.replace('{link}', shareLink())); }; });
+}
 function voucher() {
   if (state.cash < CONFIG.VOUCHER_COST) return;
   modal(`<h3>Ration voucher</h3>

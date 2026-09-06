@@ -110,9 +110,13 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok('invite link shown with ?ref=', /\?ref=[A-Z0-9]+/.test(link), link);
   const code = (link.match(/ref=([A-Z0-9]+)/) || [])[1];
   await p1.click('#shop [data-act="share"]');
+  await p1.waitForSelector('[data-invite]');
+  ok('share opens a picker with three alignments and the honest one', (await p1.$$('[data-invite]')).length === 4 && /Lawful neutral[\s\S]*Lawful evil[\s\S]*Chaotic evil[\s\S]*True neutral/.test(await p1.textContent('#modalBox')) && /KPIs are 15% down/.test(await p1.textContent('#modalBox')), await p1.textContent('#modalBox'));
+  await p1.click('[data-invite="0"]');
   await p1.waitForSelector('.toast');
+  ok('picker closed after the pick', !(await p1.isVisible('#modal')));
   const clip = await p1.evaluate(() => navigator.clipboard.readText());
-  ok('share copies message containing link', clip.includes('?ref=' + code), clip);
+  ok('share copies the innocent message with the link and no mention of the game', clip.includes('?ref=' + code) && /Toqan app/.test(clip) && !/MustEat/.test(clip), clip);
   ok('dev link carries a fresh slot so it opens as a new player here', /&slot=\d{7}/.test(clip) && /&slot=\d{7}/.test(link) && clip.match(/&slot=(\d+)/)[1] !== link.match(/&slot=(\d+)/)[1], clip);
   await p1.reload();
   ok('shop survives reload', /Test Kebab/.test(await p1.textContent('#shop')));
@@ -317,7 +321,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p4.goto(url + '?dev');
   await register(p4, 'Nia');
   await p4.waitForFunction(() => window.MUSTEAT && window.MUSTEAT.state.id);
-  await p4.click('[data-act="share"]');
+  await p4.click('[data-act="share"]'); await p4.click('[data-invite="1"]');
   ok('share falls back to a selectable box', await p4.isVisible('#copyBox') && /\?ref=/.test(await p4.inputValue('#copyBox')));
   await p4.click('#confirm');
   ok('copy box closes', !(await p4.isVisible('#modal')));
