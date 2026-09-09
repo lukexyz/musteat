@@ -1,0 +1,340 @@
+[
+  {
+    "id": "trainers",
+    "name": "Hazmat Trainers",
+    "file": "hazmat-trainers.png",
+    "size": [
+      32,
+      32
+    ],
+    "sourceFile": "source/hazmat-trainers.png",
+    "sourceSize": [
+      226,
+      167
+    ],
+    "sheetRegion": [
+      0,
+      30,
+      239,
+      244
+    ],
+    "trimBounds": [
+      2,
+      44,
+      228,
+      211
+    ],
+    "interiorBackgroundSeeds": []
+  },
+  {
+    "id": "hover",
+    "name": "Hoverbike",
+    "file": "hoverbike.png",
+    "size": [
+      32,
+      32
+    ],
+    "sourceFile": "source/hoverbike.png",
+    "sourceSize": [
+      222,
+      197
+    ],
+    "sheetRegion": [
+      240,
+      25,
+      480,
+      244
+    ],
+    "trimBounds": [
+      8,
+      16,
+      230,
+      213
+    ],
+    "interiorBackgroundSeeds": []
+  },
+  {
+    "id": "drones",
+    "name": "Drone Swarm",
+    "file": "drone-swarm.png",
+    "size": [
+      32,
+      32
+    ],
+    "sourceFile": "source/drone-swarm.png",
+    "sourceSize": [
+      265,
+      166
+    ],
+    "sheetRegion": [
+      481,
+      30,
+      763,
+      235
+    ],
+    "trimBounds": [
+      7,
+      17,
+      272,
+      183
+    ],
+    "interiorBackgroundSeeds": []
+  },
+  {
+    "id": "teleport",
+    "name": "Teleport Licence (Expired)",
+    "file": "teleport-licence-expired.png",
+    "size": [
+      32,
+      32
+    ],
+    "sourceFile": "source/teleport-licence-expired.png",
+    "sourceSize": [
+      149,
+      209
+    ],
+    "sheetRegion": [
+      764,
+      20,
+      940,
+      245
+    ],
+    "trimBounds": [
+      10,
+      13,
+      159,
+      222
+    ],
+    "interiorBackgroundSeeds": []
+  },
+  {
+    "id": "vats",
+    "name": "Vat Farm Franchise",
+    "file": "vat-farm-franchise.png",
+    "size": [
+      32,
+      32
+    ],
+    "sourceFile": "source/vat-farm-franchise.png",
+    "sourceSize": [
+      220,
+      208
+    ],
+    "sheetRegion": [
+      0,
+      245,
+      242,
+      465
+    ],
+    "trimBounds": [
+      11,
+      5,
+      231,
+      213
+    ],
+    "interiorBackgroundSeeds": []
+  },
+  {
+    "id": "pipeline",
+    "name": "Nutrient Pipeline",
+    "file": "nutrient-pipeline.png",
+    "size": [
+      32,
+      32
+    ],
+    "sourceFile": "source/nutrient-pipeline.png",
+    "sourceSize": [
+      206,
+      196
+    ],
+    "sheetRegion": [
+      245,
+      245,
+      478,
+      465
+    ],
+    "trimBounds": [
+      16,
+      17,
+      222,
+      213
+    ],
+    "interiorBackgroundSeeds": []
+  },
+  {
+    "id": "cannon",
+    "name": "Orbital Drop Cannon",
+    "file": "orbital-drop-cannon.png",
+    "size": [
+      32,
+      32
+    ],
+    "sourceFile": "source/orbital-drop-cannon.png",
+    "sourceSize": [
+      214,
+      212
+    ],
+    "sheetRegion": [
+      480,
+      245,
+      706,
+      465
+    ],
+    "trimBounds": [
+      3,
+      2,
+      217,
+      214
+    ],
+    "interiorBackgroundSeeds": []
+  },
+  {
+    "id": "clones",
+    "name": "Runner Cloning Vats",
+    "file": "runner-cloning-vats.png",
+    "size": [
+      32,
+      32
+    ],
+    "sourceFile": "source/runner-cloning-vats.png",
+    "sourceSize": [
+      208,
+      207
+    ],
+    "sheetRegion": [
+      708,
+      245,
+      940,
+      465
+    ],
+    "trimBounds": [
+      9,
+      8,
+      217,
+      215
+    ],
+    "interiorBackgroundSeeds": []
+  },
+  {
+    "id": "timeloop",
+    "name": "Time-Loop Kitchen",
+    "file": "time-loop-kitchen.png",
+    "size": [
+      32,
+      32
+    ],
+    "sourceFile": "source/time-loop-kitchen.png",
+    "sourceSize": [
+      214,
+      178
+    ],
+    "sheetRegion": [
+      0,
+      466,
+      241,
+      693
+    ],
+    "trimBounds": [
+      12,
+      24,
+      226,
+      202
+    ],
+    "interiorBackgroundSeeds": [
+      [
+        140,
+        535
+      ]
+    ]
+  },
+  {
+    "id": "portal",
+    "name": "Ministry Lunch Portal",
+    "file": "ministry-lunch-portal.png",
+    "size": [
+      32,
+      32
+    ],
+    "sourceFile": "source/ministry-lunch-portal.png",
+    "sourceSize": [
+      194,
+      205
+    ],
+    "sheetRegion": [
+      245,
+      466,
+      467,
+      693
+    ],
+    "trimBounds": [
+      12,
+      4,
+      206,
+      209
+    ],
+    "interiorBackgroundSeeds": []
+  },
+  {
+    "id": "pod",
+    "name": "Thermal Pod",
+    "file": "thermal-pod.png",
+    "size": [
+      32,
+      32
+    ],
+    "sourceFile": "source/thermal-pod.png",
+    "sourceSize": [
+      220,
+      197
+    ],
+    "sheetRegion": [
+      469,
+      466,
+      706,
+      693
+    ],
+    "trimBounds": [
+      8,
+      3,
+      228,
+      200
+    ],
+    "interiorBackgroundSeeds": []
+  },
+  {
+    "id": "mask",
+    "name": "Filtration Mask",
+    "file": "filtration-mask.png",
+    "size": [
+      32,
+      32
+    ],
+    "sourceFile": "source/filtration-mask.png",
+    "sourceSize": [
+      210,
+      185
+    ],
+    "sheetRegion": [
+      708,
+      466,
+      940,
+      693
+    ],
+    "trimBounds": [
+      7,
+      24,
+      217,
+      209
+    ],
+    "interiorBackgroundSeeds": [
+      [
+        840,
+        523
+      ],
+      [
+        907,
+        570
+      ]
+    ]
+  }
+]

@@ -31,6 +31,10 @@ h1 span{color:var(--acc)}
 h1 .logo{display:block;height:.72em;width:auto;mix-blend-mode:screen;margin:.24em 0}
 .tag{color:var(--dim);font-size:12px}
 #lockdownDay{white-space:nowrap;font-variant-numeric:tabular-nums}
+.survival-line{white-space:nowrap}
+.survival-cursor{display:inline-block;width:.55em;height:.9em;margin:0 .15em 0 .12em;vertical-align:-.12em;pointer-events:none;opacity:1;background:repeating-linear-gradient(0deg,#fff 0 2px,#ffffffcc 2px 3px);border-radius:35% 18% 30% 16%;transform:skewX(-7deg);box-shadow:0 0 2px #ffffff80,0 0 5px #ffffff40,0 0 9px #ffffff18;filter:blur(.2px);animation:survival-cursor-blink 2.8s ease-in-out infinite}
+@keyframes survival-cursor-blink{0%,40%,100%{opacity:1}52%,88%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.survival-cursor{animation:none;opacity:.55}}
 .lockdown-digit{display:inline-block;position:relative;vertical-align:bottom;overflow:hidden;width:1ch;height:1.45em}
 .lockdown-digit>span{display:block}
 .lockdown-digit.tick>span{animation:lockdown-in .7s cubic-bezier(.2,.7,.2,1) both}
@@ -81,8 +85,13 @@ h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);m
 .item .need{font-size:11px;color:var(--gold)}
 .item button{min-width:96px;white-space:nowrap}
 .item .body{flex:1;min-width:0}
-/* Compact technology identifiers keep every row recognisable without external icon assets. */
-.item .ico{flex:0 0 36px;width:36px;height:36px;border:1px solid #2c3b40;border-radius:4px;background:#000;align-self:center;display:grid;place-items:center;color:var(--blue);font-size:11px;letter-spacing:1px}
+/* Frosted specimen windows clear when a technology reaches its reveal level. */
+.item .ico{position:relative;overflow:hidden;flex:0 0 36px;width:36px;height:36px;border:1px solid #2c3b40;border-radius:4px;background:#000;align-self:center;display:grid;place-items:center;color:var(--blue);font-size:11px;letter-spacing:1px}
+.item .ico img{display:block;width:32px;height:32px;image-rendering:pixelated}
+.item .ico.sealed img{filter:blur(5px) saturate(.45);opacity:.38}
+.ico-glass{position:absolute;inset:0;background:linear-gradient(135deg,#d0faff38,#92bdce12 42%,#172e3890),repeating-linear-gradient(0deg,#aacbd518 0 1px,transparent 1px 3px),repeating-linear-gradient(115deg,#c8eaff09 0 1px,transparent 1px 4px);box-shadow:inset 0 0 10px #9fd9eb30,inset 1px 1px 0 #e5faff25;opacity:0;pointer-events:none}
+.sealed .ico-glass{opacity:1}
+.ico-scan{position:absolute;inset:0 0 auto;height:3px;background:#efffff;box-shadow:0 0 8px 3px #70eaff,0 -7px 14px #47d9ff;opacity:0;pointer-events:none}
 .item.locked .ico{border-style:dotted}
 .rev{text-align:right;min-width:92px;font-size:10px;color:var(--dim);white-space:nowrap;letter-spacing:.3px}
 .rev b{display:block;font-size:12px;font-weight:600;color:var(--fg)}
@@ -135,6 +144,8 @@ td.r,th.r{text-align:right}
 .feed div i{color:var(--dim);font-style:normal;font-size:11px;margin-left:6px}
 .link{font-size:12px;word-break:break-all;background:#000;border:1px solid var(--line);padding:6px;margin-top:6px;color:var(--blue)}
 footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
+.visual-settings{margin-top:12px}.visual-settings button{font-size:11px;padding:6px 10px;color:var(--dim)}
+.visual-settings button[aria-pressed="true"]{color:var(--blue);border-color:#367785}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
 .modal[hidden]{display:none}
 .box{background:var(--panel);border:1px solid var(--acc);padding:18px;max-width:460px;width:100%;box-shadow:0 0 40px rgba(57,255,20,.2)}
@@ -276,6 +287,8 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 @media(prefers-reduced-motion:reduce){.shop-shutter{display:none}.shop-sign,.shop-opening .shop-opening-line{opacity:1}}
 .terminal-letter h3{text-shadow:0 0 12px #70ff8830}.terminal-letter .target-char{filter:none;transition:opacity 60ms ease-out;color:inherit;text-shadow:none}
 .terminal-letter.terminal-boot{animation:terminal-boot 160ms ease-out 3}
+.target-rabbit{position:absolute;z-index:5;pointer-events:none;color:#f5ffff;filter:drop-shadow(0 0 3px #eaffffb0);opacity:0}
+.target-rabbit svg{display:block;width:100%;height:100%}
 @keyframes terminal-boot{0%,100%{border-color:#437a53;box-shadow:inset 0 0 35px #0005,0 0 18px #39ff1418}35%{border-color:#c7ffda;box-shadow:inset 0 0 28px #8aff9c12,0 0 30px #39ff1440}}
 .white-rabbit{position:absolute;inset:0;z-index:5;pointer-events:none;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at center,#071110ee,transparent 68%);animation:rabbit-transmission 1s linear both}
 .rabbit-signal{position:relative;width:min(260px,65%);aspect-ratio:1;filter:drop-shadow(0 0 8px #ecffff80) drop-shadow(0 0 28px #89f8d845);animation:rabbit-lock 1s ease-out both}
@@ -347,7 +360,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 <body>
 <div class="wrap">
   <header>
-    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 2099. Lockdown day <span id="lockdownDay">336,041</span>. Going outside is illegal. Survivors must eat.</div></div>
+    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 2099. Lockdown day <span id="lockdownDay">336,041</span>. Going outside is illegal. <span class="survival-line"><span class="survival-cursor" aria-hidden="true"></span>Survivors must eat.</span></div></div>
     <div class="rankbox" id="rank"></div>
   </header>
   <div id="supply" class="banner good" hidden></div>
@@ -387,7 +400,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <section><h2>Your runners' businesses</h2><div id="pfRunners"></div></section>
   <section><h2>Trophy cabinet</h2><div id="portfolio"></div></section>
   </div>
-  <footer>MustEat is a game. Please do not start an actual pyramid scheme. · <span id="mode"></span> · <a href="ledger.html" target="_blank">high scores</a> · <a href="#" data-act="saveInfo">save game</a> · <a href="#" data-act="replayIntro">replay intro</a> · <a href="#" id="reset">reset game</a> <span id="localtools"></span></footer>
+  <footer>MustEat is a game. Please do not start an actual pyramid scheme. · <span id="mode"></span> · <a href="ledger.html" target="_blank">high scores</a> · <a href="#" data-act="saveInfo">save game</a> · <a href="#" data-act="replayIntro">replay intro</a> · <a href="#" id="reset">reset game</a> <span id="localtools"></span><div class="visual-settings"><button id="techIconsToggle" type="button" aria-pressed="false">Tech icons: off</button></div></footer>
 </div>
 <button id="protectionTab" class="protection-tab" aria-controls="protectionDrawer" aria-expanded="false" hidden>Protection · −15%</button>
 <div id="drawerShade" class="drawer-shade" hidden></div>
@@ -535,18 +548,18 @@ function ask(title, text, yes, fn) {
 
 // ---------------- Data tables ----------------
 const GEAR = [
-  { id: 'trainers', name: 'Hazmat Trainers', desc: 'Run faster. Breathe worse.', cost: 60, dps: 0.1 },
-  { id: 'hover', name: 'Hoverbike', desc: 'Second-hand. Smells of ozone and regret.', cost: 600, dps: 0.6, zone: 1 },
-  { id: 'drones', name: 'Drone Swarm', desc: 'They deliver. They also watch.', cost: 6000, dps: 4, zone: 2 },
-  { id: 'teleport', name: 'Teleport Licence (Expired)', desc: 'Technically still works. Mostly.', cost: 80000, dps: 30, zone: 3 },
-  { id: 'vats', name: 'Vat Farm Franchise', desc: 'Grow the meal inside the customer\'s building. Legally a restaurant.', cost: 1e6, dps: 220 },
-  { id: 'pipeline', name: 'Nutrient Pipeline', desc: 'Paste, at pressure, straight into the bunker. No plate required.', cost: 1.5e7, dps: 1600, zone: 4 },
-  { id: 'cannon', name: 'Orbital Drop Cannon', desc: 'Fires a hot meal at 9 km/s. Customers sign a waiver.', cost: 2.5e8, dps: 12000 },
-  { id: 'clones', name: 'Runner Cloning Vats', desc: 'You, but more of you. HR has been informed. HR is also you.', cost: 4e9, dps: 90000 },
-  { id: 'timeloop', name: 'Time-Loop Kitchen', desc: 'Cook once, deliver forever. The soup remembers.', cost: 7e10, dps: 700000, zone: 5 },
-  { id: 'portal', name: 'Ministry Lunch Portal', desc: 'A door into every canteen at once. Do not look through it.', cost: 1.5e12, dps: 5.5e6 },
-  { id: 'pod', name: 'Thermal Pod', desc: '+10% order value per level. Max 10. Food arrives at "a temperature".', cost: 400, growth: 3, valueMul: 0.10, max: 10 },
-  { id: 'mask', name: 'Filtration Mask', desc: 'Fewer bad things happen to you. Max 3.', cost: 200, growth: 2.2, max: 3 },
+  { id: 'trainers', icon: 'hazmat-trainers.png', name: 'Hazmat Trainers', desc: 'Run faster. Breathe worse.', cost: 60, dps: 0.1 },
+  { id: 'hover', icon: 'hoverbike.png', name: 'Hoverbike', desc: 'Second-hand. Smells of ozone and regret.', cost: 600, dps: 0.6, zone: 1 },
+  { id: 'drones', icon: 'drone-swarm.png', name: 'Drone Swarm', desc: 'They deliver. They also watch.', cost: 6000, dps: 4, zone: 2 },
+  { id: 'teleport', icon: 'teleport-licence-expired.png', name: 'Teleport Licence (Expired)', desc: 'Technically still works. Mostly.', cost: 80000, dps: 30, zone: 3 },
+  { id: 'vats', icon: 'vat-farm-franchise.png', name: 'Vat Farm Franchise', desc: 'Grow the meal inside the customer\'s building. Legally a restaurant.', cost: 1e6, dps: 220 },
+  { id: 'pipeline', icon: 'nutrient-pipeline.png', name: 'Nutrient Pipeline', desc: 'Paste, at pressure, straight into the bunker. No plate required.', cost: 1.5e7, dps: 1600, zone: 4 },
+  { id: 'cannon', icon: 'orbital-drop-cannon.png', name: 'Orbital Drop Cannon', desc: 'Fires a hot meal at 9 km/s. Customers sign a waiver.', cost: 2.5e8, dps: 12000 },
+  { id: 'clones', icon: 'runner-cloning-vats.png', name: 'Runner Cloning Vats', desc: 'You, but more of you. HR has been informed. HR is also you.', cost: 4e9, dps: 90000 },
+  { id: 'timeloop', icon: 'time-loop-kitchen.png', name: 'Time-Loop Kitchen', desc: 'Cook once, deliver forever. The soup remembers.', cost: 7e10, dps: 700000, zone: 5 },
+  { id: 'portal', icon: 'ministry-lunch-portal.png', name: 'Ministry Lunch Portal', desc: 'A door into every canteen at once. Do not look through it.', cost: 1.5e12, dps: 5.5e6 },
+  { id: 'pod', icon: 'thermal-pod.png', name: 'Thermal Pod', desc: '+10% order value per level. Max 10. Food arrives at "a temperature".', cost: 400, growth: 3, valueMul: 0.10, max: 10 },
+  { id: 'mask', icon: 'filtration-mask.png', name: 'Filtration Mask', desc: 'Fewer bad things happen to you. Max 3.', cost: 200, growth: 2.2, max: 3 },
 ];
 const ZONES = [
   { name: 'Sector 7 Housing Blocks', mul: 1 },
@@ -1409,12 +1422,46 @@ window.addEventListener('storage', e => {
 });
 
 // ---------------- Actions ----------------
+const TECH_ICONS_KEY = 'musteat_tech_icons';
+let techIconsEnabled = false;
+try { techIconsEnabled = localStorage.getItem(TECH_ICONS_KEY) === 'on'; } catch (e) {}
+const iconReveals = new Map();
+const ICON_REVEAL_MS = 2600;
+const iconRevealLevel = g => Math.min(10, g.max || 10);
+function techIcon(g, secret, level) {
+  if (secret || !techIconsEnabled) return `<div class="ico" data-ico="${g.id}" aria-hidden="true">${secret ? '?' : g.id.slice(0, 2).toUpperCase()}</div>`;
+  const threshold = iconRevealLevel(g), sealed = level < threshold;
+  return `<div class="ico${sealed ? ' sealed' : ''}" data-ico="${g.id}" aria-hidden="true"><img src="media/icons_v3/${g.icon}" width="32" height="32" alt=""><span class="ico-glass"></span><span class="ico-scan"></span></div>`;
+}
+function animateTechIcons() {
+  if (!techIconsEnabled) { iconReveals.clear(); return; }
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  for (const [id, started] of iconReveals) {
+    const elapsed = performance.now() - started;
+    if (reduced || elapsed >= ICON_REVEAL_MS) { iconReveals.delete(id); continue; }
+    const el = document.querySelector(`[data-ico="${id}"]`);
+    if (!el || el.classList.contains('sealed') || el.iconRevealStarted === started) continue;
+    el.iconRevealStarted = started;
+    // Gear rows are rebuilt as prices change. Resume the same reveal clock on new nodes.
+    const play = (target, frames) => {
+      const animation = target.animate(frames, {duration:ICON_REVEAL_MS, easing:'ease-out'});
+      animation.currentTime = elapsed;
+    };
+    play(el.querySelector('img'), [{filter:'blur(5px) saturate(.45)',opacity:.38,offset:0},{filter:'blur(2px) brightness(2.2)',opacity:.85,offset:.22},{filter:'blur(0px) brightness(1.6)',opacity:1,offset:.45},{filter:'blur(0px) brightness(1)',opacity:1}]);
+    play(el.querySelector('.ico-glass'), [{opacity:1,clipPath:'inset(0 0 0 0)',offset:0},{opacity:.85,clipPath:'inset(0 0 0 0)',offset:.12},{opacity:0,clipPath:'inset(100% 0 0 0)',offset:.6},{opacity:0,clipPath:'inset(100% 0 0 0)'}]);
+    play(el.querySelector('.ico-scan'), [{opacity:0,transform:'translateY(0px)',offset:0},{opacity:1,transform:'translateY(0px)',offset:.12},{opacity:.9,transform:'translateY(34px)',offset:.6},{opacity:0,transform:'translateY(38px)',offset:.75},{opacity:0,transform:'translateY(38px)'}]);
+    play(el, [{borderColor:'#81edff',boxShadow:'0 0 8px #83eaff50',transform:'scale(1)',offset:0},{borderColor:'#efffff',boxShadow:'0 0 22px 4px #83eaff90, inset 0 0 12px #83eaff70',transform:'scale(1.18)',offset:.3},{borderColor:'#4cd9ef',boxShadow:'0 0 12px #83eaff50',transform:'scale(1.06)',offset:.65},{borderColor:'#2c3b40',boxShadow:'0 0 0px #83eaff00',transform:'scale(1)'}]);
+    const row = el.closest('.item'), base = getComputedStyle(row);
+    play(row, [{borderColor:base.borderColor,boxShadow:'inset 0 0 0px #69e5ff00',offset:0},{borderColor:'#a8f4ff',boxShadow:'inset 70px 0 60px -30px #69e5ff38, 0 0 14px #69e5ff24',offset:.2},{borderColor:'#47c8df',boxShadow:'inset 36px 0 40px -24px #69e5ff20, 0 0 8px #69e5ff12',offset:.55},{borderColor:base.borderColor,boxShadow:'inset 0 0 0px #69e5ff00'}]);
+  }
+}
 function buy(id) {
   const g = GEAR.find(x => x.id === id); if (!g) return;
   const l = lvl(id); if (g.max && l >= g.max) return;
   const n = g.max ? Math.min(state.qty || 1, g.max - l) : (state.qty || 1);
   const cost = gearCost(g, l, n); if (state.cash < cost) return;
   state.cash -= cost; state.gear[id] = l + n;
+  if (techIconsEnabled && l < iconRevealLevel(g) && l + n >= iconRevealLevel(g)) iconReveals.set(id, performance.now());
   if (l === 0 && g.zone != null) log('Bought <b>' + g.name + '</b>. Unlocked ' + ZONES[g.zone].name + '.');
   else if (l === 0) log('Bought <b>' + g.name + '</b>.');
   render();
@@ -1671,29 +1718,26 @@ function viewTarget(selector, copySelector, options = {}) {
   const first = document.querySelector(selector); if (!first) return;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!options.dialog) first.scrollIntoView({ behavior: reduced ? 'instant' : 'smooth', block: 'center' });
-  let frame = 0, target = first, chars = [], caret = null, revealed = 0;
+  let frame = 0, target = first, chars = [], caret = null, rabbit = null, revealed = 0;
   let started = null, previousTop = null, stillFrames = 0, message = null;
-  let dismissRabbit = () => {};
   const requested = performance.now();
   const restore = () => {
-    dismissRabbit();
     target.classList.remove('target-cinema', 'terminal-boot');
     target.querySelectorAll('.target-char').forEach(span => span.replaceWith(document.createTextNode(span.textContent)));
-    caret?.remove(); target.normalize();
+    caret?.remove(); rabbit?.remove(); target.normalize();
   };
   const stop = () => { cancelAnimationFrame(frame); restore(); cancelTargetCinema = () => {}; };
   cancelTargetCinema = stop;
   const draw = () => {
     const current = document.querySelector(selector);
     if (!current || (options.dialog ? $('modal').hidden : state.tab !== 'run')) return stop();
-    if (current !== target) { restore(); target = current; chars = []; caret = null; }
+    if (current !== target) { restore(); target = current; chars = []; caret = null; rabbit = null; }
     const rect = target.getBoundingClientRect(), time = performance.now();
     if (started == null) {
       stillFrames = previousTop != null && Math.abs(rect.top - previousTop) < .5 ? stillFrames + 1 : 0;
       previousTop = rect.top;
       if (options.dialog || (rect.top < innerHeight - 30 && rect.bottom > 30 && (reduced || (stillFrames >= 3 && time - requested > 100)))) {
         started = time;
-        if (options.rabbit) dismissRabbit = showWhiteRabbit(target);
       }
       else if (time - requested > 2500) return stop();
       else { frame = requestAnimationFrame(draw); return; }
@@ -1727,6 +1771,8 @@ function viewTarget(selector, copySelector, options = {}) {
     if (!chars.length) return stop();
     if (!caret?.isConnected) {
       caret = document.createElement('span'); caret.className = 'target-caret'; caret.setAttribute('aria-hidden', 'true'); target.appendChild(caret);
+      rabbit = document.createElement('span'); rabbit.className = 'target-rabbit'; rabbit.setAttribute('aria-hidden', 'true');
+      rabbit.innerHTML = `<svg viewBox="0 0 160 150" focusable="false">${whiteRabbitShape()}</svg>`; target.appendChild(rabbit);
     }
     const blinkTime = options.rabbit && !reduced ? 950 : options.fast ? 480 : 1260, typeTime = options.fast ? clamp(chars.length * 3, 700, 1800) : clamp(chars.length * 12, 1400, 4600);
     const count = Math.floor(clamp((elapsed - blinkTime) / typeTime, 0, 1) * chars.length);
@@ -1735,6 +1781,11 @@ function viewTarget(selector, copySelector, options = {}) {
     const blinking = elapsed < blinkTime, tail = clamp((elapsed - blinkTime - typeTime) / 700, 0, 1);
     const left = clamp(cursorRect.left - rect.left - target.clientLeft + target.scrollLeft, 0, target.clientWidth - 8);
     caret.style.cssText = `left:${left}px;top:${cursorRect.top - rect.top - target.clientTop + target.scrollTop}px;height:${cursorRect.height || 16}px;opacity:${blinking ? Math.floor(elapsed / (blinkTime / 6)) % 2 ? .05 : 1 : 1 - tail};filter:blur(${blinking ? 3.5 * (1 - elapsed / blinkTime) : 0}px)`;
+    // Two 65ms interruptions in the three-blink boot: same anchor, text-sized silhouette.
+    const rabbitFlash = blinking && [blinkTime * .22, blinkTime * .55].some(at => elapsed >= at && elapsed < at + 65);
+    const rabbitSize = Math.min(24, Math.max(16, cursorRect.height || 16));
+    rabbit.style.cssText = `left:${left + 4 - rabbitSize / 2}px;top:${cursorRect.top - rect.top - target.clientTop + target.scrollTop}px;width:${rabbitSize}px;height:${rabbitSize}px;opacity:${rabbitFlash ? 1 : 0}`;
+    if (rabbitFlash) caret.style.opacity = '0';
     if (tail >= 1) return stop();
     frame = requestAnimationFrame(draw);
   };
@@ -2207,6 +2258,8 @@ function renderLockdownDay(t) {
 }
 function render() {
   const c = calc(state), t = now();
+  $('techIconsToggle').textContent = 'Tech icons: ' + (techIconsEnabled ? 'on' : 'off');
+  $('techIconsToggle').setAttribute('aria-pressed', String(techIconsEnabled));
   renderLockdownDay(t);
   liveIncome = c.income;
   if (!tweening) $('cash').textContent = '₵' + fmtLive(state.cash, c.income);
@@ -2290,9 +2343,11 @@ function render() {
     const gain = projected ? projected.baseIncome - c.baseIncome : 0;
     const benefit = gain > 0 ? '<div class="gain-preview need">Adds ₵' + fmt(gain) + '/sec at base rate' + (n > 1 ? ' for ×' + n : '') + '</div>' : '';
     const dots = techDots(l);
-    return `<div class="item ${secret ? 'locked' : ''}"><div class="ico" data-ico="${g.id}" aria-hidden="true">${secret ? '?' : g.id.slice(0, 2).toUpperCase()}</div><div class="body"><div class="tech-heading"><span><b>${secret ? '???' : g.name}</b><span class="lvl">×${l}</span></span>${dots}</div><div class="d">${desc}</div>${benefit}</div>${rev}
+    return `<div class="item ${secret ? 'locked' : ''}">${techIcon(g, secret, l)}<div class="body"><div class="tech-heading"><span><b>${secret ? '???' : g.name}</b><span class="lvl">×${l}</span></span>${dots}</div><div class="d">${desc}</div>${benefit}</div>${rev}
       <button data-buy="${g.id}" ${maxed || state.cash < cost ? 'disabled' : ''}>${maxed ? 'MAX' : '₵' + fmt(cost) + (n > 1 ? ' ×' + n : '')}</button></div>`;
   }).join(''));
+
+  animateTechIcons();
 
   const avail = UPGRADES.filter(u => !state.upg[u.id] && u.unlock(state)).sort((a, b) => a.cost - b.cost).slice(0, 9);
   const bought = Object.keys(state.upg).length;
@@ -2472,6 +2527,12 @@ function render() {
 
 // ---------------- Wiring ----------------
 $('run').addEventListener('click', runDelivery);
+$('techIconsToggle').addEventListener('click', () => {
+  techIconsEnabled = !techIconsEnabled;
+  iconReveals.clear();
+  try { localStorage.setItem(TECH_ICONS_KEY, techIconsEnabled ? 'on' : 'off'); } catch (e) {}
+  render();
+});
 $('crate').addEventListener('click', collectCrate);
 $('protectionTab').addEventListener('click', openProtection);
 $('closeProtection').addEventListener('click', closeProtection);
@@ -2518,12 +2579,15 @@ function showOffline(o) {
   $('ok').onclick = () => { closeModal(); if (state.pendingRush) showFirstCrate(state.pendingRush.bonus); };
 }
 // A local vector transmission: no assets to fetch and no changes to the save.
+function whiteRabbitShape() {
+  return `<path fill="currentColor" d="M43 105C29 107 25 96 31 90C35 86 40 89 44 93C42 78 47 67 61 61C72 56 85 59 91 67L97 55C89 45 77 22 82 16C89 11 105 34 109 47C105 30 105 8 112 8C121 8 122 34 118 48C131 49 138 58 136 69L147 75L137 82L120 85L111 102L121 119L138 123C143 125 141 131 135 132L112 132L99 115L88 126L65 133L37 133C33 129 38 125 46 123L63 119C49 117 45 112 43 105Z"/><path d="M70 87C86 84 94 105 78 115" fill="none" stroke="#15372d" stroke-width="2.5" stroke-linecap="round"/><circle cx="125" cy="64" r="2.4" fill="#07130f"/>`;
+}
 function showWhiteRabbit(host) {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return () => {};
   host.querySelectorAll('.white-rabbit').forEach(el => el.remove());
   const layer = document.createElement('div');
   layer.className = 'white-rabbit'; layer.setAttribute('aria-hidden', 'true');
-  const shape = `<path fill="currentColor" d="M43 105C29 107 25 96 31 90C35 86 40 89 44 93C42 78 47 67 61 61C72 56 85 59 91 67L97 55C89 45 77 22 82 16C89 11 105 34 109 47C105 30 105 8 112 8C121 8 122 34 118 48C131 49 138 58 136 69L147 75L137 82L120 85L111 102L121 119L138 123C143 125 141 131 135 132L112 132L99 115L88 126L65 133L37 133C33 129 38 125 46 123L63 119C49 117 45 112 43 105Z"/><path d="M70 87C86 84 94 105 78 115" fill="none" stroke="#15372d" stroke-width="2.5" stroke-linecap="round"/><circle cx="125" cy="64" r="2.4" fill="#07130f"/>`;
+  const shape = whiteRabbitShape();
   layer.innerHTML = `<div class="rabbit-signal"><svg viewBox="0 0 160 150" focusable="false">${shape}</svg><svg class="rabbit-echo" viewBox="0 0 160 150" focusable="false">${shape}</svg></div>`;
   host.appendChild(layer);
   const timer = setTimeout(() => layer.remove(), 1050);
