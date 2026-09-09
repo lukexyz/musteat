@@ -14,7 +14,7 @@ The whole thing came out of one prompt, more or less:
 
 Everything after that was arguing about the numbers.
 
-Technology sits directly beneath the delivery controls; your next purchase follows the tech list. Portfolio shows your delivery operation and colleague earnings. Protection notices live in a side drawer (a bottom sheet on mobile). After 90 active seconds and ten taps or any technology purchase, claim a free Airlock Permit in Upgrades to unlock solo contracts. Complete delivery quotas for credits and earn +1% permanent income every three contracts, up to +20%.
+Technology sits directly beneath the delivery controls, followed by Upgrades and a quieter Your next milestone card. A short trainers hint disappears after your first technology purchase. Portfolio shows your delivery operation and colleague earnings. Protection notices live in a side drawer (a bottom sheet on mobile). After 90 active seconds and ten taps or any technology purchase, claim a free Airlock Permit in Upgrades to unlock solo contracts. Complete delivery quotas for credits and earn +1% permanent income every three contracts, up to +20%.
 
 High scores default to **same playtime**: choose an active minute and compare everyone's recorded lifetime earnings at that minute, including income earned while away. A player at minute 80 can compete using their saved minute-12 score. Gameplay keeps running normally. New snapshots start at the next full minute for existing saves; missing history is never guessed. Lifetime rankings remain available.
 

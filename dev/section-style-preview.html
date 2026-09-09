@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MUSTEAT / Section style preview</title>
+<style>
+:root{color-scheme:dark;--bg:#07090a;--panel:#0e1416;--line:#1e2a2e;--fg:#d6e0e2;--dim:#7d8b90;--green:#39ff14}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 ui-monospace,Consolas,"Courier New",monospace}
+main{max-width:720px;margin:auto;padding:24px 12px 48px}
+button{font:inherit;cursor:pointer;background:#131c1f;color:var(--fg);border:1px solid var(--line);padding:8px 12px;border-radius:3px}
+button:hover{border-color:var(--green);color:#fff}
+button:focus-visible,a:focus-visible{outline:2px solid var(--green);outline-offset:4px}
+button[aria-pressed="true"]{color:var(--green);border-color:#376632;background:#101e12}
+button:disabled{cursor:default;opacity:.45}
+p{margin:0 0 12px}p:last-child{margin-bottom:0}
+.dim{color:var(--dim)}.small{font-size:12px}.green{color:var(--green)}
+.preview-tools{padding:16px;border:1px dashed #354146;margin-bottom:26px;background:#0b1012}
+.preview-tools h1{font-size:13px;margin:0 0 8px;text-transform:uppercase;letter-spacing:2px}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.controls button{font-size:12px}
+.brand{font-size:28px;letter-spacing:3px;font-weight:bold;color:white;margin-bottom:4px}
+.brand span{color:var(--green)}
+.game-header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:24px}
+.game-header p{font-size:12px;color:var(--dim)}
+.neutral{margin-bottom:30px}
+h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;margin:0;color:var(--dim)}
+.neutral h2{padding-bottom:6px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.upgrade-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.upgrade{background:var(--panel);border:1px solid var(--line);padding:10px;font-size:12px}
+.upgrade p{color:var(--dim);margin:4px 0 14px}.upgrade button{width:100%;font-size:12px;color:var(--green)}
+.department{--accent:#80c9d9;--edge:#34565e;--wash:#74ddf312;position:relative;margin:30px 0}
+.operation{--accent:#c7ab71;--edge:#584c32;--wash:#d6b16b14}
+.network{--accent:#ad9ac9;--edge:#493e5b;--wash:#b098d814}
+.section-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:5px 12px;border-bottom:1px solid var(--edge);padding:0 0 8px;margin-bottom:8px}
+.section-head h2{color:var(--accent)}
+.section-head .sub{font-size:10px;letter-spacing:1px;color:var(--dim);text-transform:uppercase}
+.section-id{margin-left:auto;font-size:9px;letter-spacing:1px;color:var(--accent);opacity:.8;white-space:nowrap}
+.dispatch .section-head h2::before,.dispatch .section-head h2::after{color:var(--accent);opacity:.6}
+.dispatch .section-head h2::before{content:'[ ';}.dispatch .section-head h2::after{content:' ]';}
+.status-light{display:inline-block;width:5px;height:5px;margin:0 9px 2px 1px;background:var(--accent);box-shadow:0 0 7px #c7ab7140;border-radius:50%}
+.card{background:var(--panel);border:1px solid var(--line);padding:12px;position:relative}
+.dispatch .card{border-top-color:var(--accent)}
+.operation .card{border-left:2px solid var(--edge)}
+.card h3{margin:0 0 3px;font-size:15px;color:#f4f6f6}
+.contract-progress{height:9px;background:#090d0f;border:1px solid var(--line);margin:10px 0}
+.contract-progress span{display:block;height:100%;width:100%;background:#4cc9f0}
+.contract-detail{color:#4cc9f0;font-size:12px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.footnote{font-size:11px;color:var(--dim);margin-top:12px}
+.network .intro{font-size:12px;color:var(--dim);margin:0 0 14px}
+.chain{position:relative;padding-left:17px}
+.chain::before{content:'';position:absolute;left:4px;top:19px;bottom:24px;border-left:1px dotted var(--edge)}
+.chain .card{margin-bottom:10px}
+.chain .card::before{content:'';position:absolute;left:-17px;top:18px;width:7px;height:7px;border:1px solid var(--accent);background:var(--bg)}
+.corners{position:absolute;inset:-1px;pointer-events:none;background:linear-gradient(var(--edge),var(--edge)) left top/13px 1px no-repeat,linear-gradient(var(--edge),var(--edge)) left top/1px 13px no-repeat,linear-gradient(var(--edge),var(--edge)) right bottom/13px 1px no-repeat,linear-gradient(var(--edge),var(--edge)) right bottom/1px 13px no-repeat}
+.building{display:flex;align-items:center;gap:16px}.building .copy{flex:1;min-width:0}.building button{min-width:86px}
+.building .small{margin-bottom:7px;color:var(--dim)}
+.effect-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.event .effect-layer::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 35%,var(--wash) 48%,var(--accent) 50%,transparent 51%);opacity:0;animation:sweep 1.5s ease-out both}
+.operation.event .status-light{animation:arrival 1.8s ease-out}
+.event .card{animation:settle 2s ease-out}
+.event-note{color:var(--accent);font-size:11px;min-height:16px;margin-top:8px}
+@keyframes sweep{0%{transform:translateX(-110%);opacity:0}20%{opacity:.35}85%{opacity:.2}100%{transform:translateX(110%);opacity:0}}
+@keyframes settle{0%,100%{box-shadow:none}25%{box-shadow:inset 0 0 24px var(--wash),0 0 10px var(--wash)}}
+@keyframes arrival{0%,35%,65%{box-shadow:0 0 15px var(--accent);background:#fff0cd}20%,50%,100%{box-shadow:0 0 7px #c7ab7140;background:var(--accent)}}
+body.plain .section-head{border-color:var(--line)}
+body.plain .section-head h2{color:var(--dim)}
+body.plain .section-id,body.plain .status-light,body.plain .corners{visibility:hidden}
+body.plain .dispatch .section-head h2::before,body.plain .dispatch .section-head h2::after{visibility:hidden}
+body.plain .department .card{border-color:var(--line)}
+body.plain .chain::before,body.plain .chain .card::before{opacity:0}
+body.plain .effect-layer{display:none}
+footer{font-size:11px;color:var(--dim);border-top:1px solid var(--line);padding-top:14px}
+@media(max-width:480px){main{padding-top:12px}.section-id{margin-left:0;width:100%}.building{align-items:flex-start;flex-direction:column;gap:4px}.building button{width:100%}.upgrade-row{grid-template-columns:1fr}.upgrade{display:none}.upgrade:first-child{display:block}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important}.event .card{outline:1px solid var(--edge)}}
+</style>
+</head>
+<body>
+<main>
+<aside class="preview-tools" aria-label="Preview controls">
+  <h1>Section study / 2099</h1>
+  <p class="small dim">A separate visual mockup with sample figures. Your game and save are untouched. Toggle the accents, then try an event.</p>
+  <div class="controls" aria-label="Appearance">
+    <button id="accent" aria-pressed="true">Section colours</button>
+    <button id="plain" aria-pressed="false">Neutral comparison</button>
+  </div>
+  <div class="controls" aria-label="Preview an event">
+    <button data-event="dispatch">Payment ready</button>
+    <button data-event="operation">Runner joins</button>
+    <button data-event="network">Income arrives</button>
+  </div>
+</aside>
+<header class="game-header">
+  <div class="brand">MUST<span>EAT</span></div>
+  <p>Year 2099. Lockdown day 336,041. Going outside is illegal. Everyone must eat.</p>
+</header>
+<section class="neutral" aria-labelledby="upgrades-heading">
+  <h2 id="upgrades-heading">Upgrades</h2>
+  <div class="upgrade-row">
+    <div class="upgrade"><b>Carbon Soles</b><p>Hazmat Trainers output ×2.</p><button data-event="upgrade">₵6K</button></div>
+    <div class="upgrade"><b>Stolen Battery</b><p>Hoverbike output ×2.</p><button data-event="upgrade">₵6K</button></div>
+    <div class="upgrade"><b>Lids</b><p>All income +10%.</p><button data-event="upgrade">₵10K</button></div>
+  </div>
+</section>
+<section id="dispatch" class="department dispatch" aria-labelledby="dispatch-heading">
+  <div class="section-head"><h2 id="dispatch-heading">Airlock contracts</h2><span class="sub">Your own route up</span><span class="section-id">01 / DISPATCH</span></div>
+  <div class="card">
+    <h3>The night shift is hungry</h3>
+    <div class="contract-detail">1.49K / 1.49K deliveries · ₵3.57K on completion</div>
+    <div class="contract-progress"><span></span></div>
+    <button data-event="dispatch">Collect payment</button>
+    <p class="footnote">1 completed · permanent income +0%. 2 more for +1% (up to 20%). No deadline. No recruits required.</p>
+    <div class="effect-layer" aria-hidden="true"></div>
+  </div>
+  <div class="event-note" aria-live="polite"></div>
+</section>
+<section id="operation" class="department operation" aria-labelledby="operation-heading">
+  <div class="section-head"><h2 id="operation-heading"><span class="status-light" aria-hidden="true"></span>Your shop &amp; runners</h2><span class="section-id">02 / YOUR OPERATION</span></div>
+  <div class="card">
+    <h3>The Witness Protection Grill</h3>
+    <p class="small dim">2 runners (L1 2, L2 0, L3 0) · earned from runners: <b class="green">₵4.82K</b></p>
+    <div class="actions"><button data-event="invite">Copy your invite</button><button data-event="voucher">Ration voucher for a colleague (₵200)</button></div>
+    <p class="footnote">Recruit now: your direct runners pay you 10%. Vouchers give them ₵250 to start.</p>
+    <div class="effect-layer" aria-hidden="true"></div>
+  </div>
+  <div class="event-note" aria-live="polite"></div>
+</section>
+<section id="network" class="department network" aria-labelledby="network-heading">
+  <div class="section-head"><h2 id="network-heading">Supply chain</h2><span class="section-id">03 / THE NETWORK</span></div>
+  <p class="intro">Buildings. Credits buy them, but only people unlock them: each one needs runners under you. A building makes your runners earn more and makes your cut of it bigger. That is the whole trick.</p>
+  <div class="chain">
+    <div class="card building"><div class="copy"><h3>Local Food Depot</h3><p class="small">A garage, a freezer, a sign that says DEPOT in a font the Ministry dislikes.</p><div class="small">Your direct runners deliver +25% faster.</div><div class="small green">+5% extra on direct runner earnings.</div></div><span class="small dim">OWNED</span><i class="corners" aria-hidden="true"></i><div class="effect-layer" aria-hidden="true"></div></div>
+    <div class="card building"><div class="copy"><h3>Kitchen Plant</h3><p class="small">Industrial woks. Conveyor belts. A smell that is legally food.</p><div class="small">Everyone in your downline delivers one zone higher.</div><div class="small green">All runner cuts ×1.25.</div></div><button data-event="building">₵25K</button><i class="corners" aria-hidden="true"></i><div class="effect-layer" aria-hidden="true"></div></div>
+    <div class="card building"><div class="copy"><h3>Nutrient Factory</h3><p class="small">Makes the paste that the plants make into the meals that the runners run.</p><div class="small">Requires 3 runners and a Kitchen Plant.</div></div><button disabled>₵100K</button><i class="corners" aria-hidden="true"></i></div>
+  </div>
+  <div class="event-note" aria-live="polite"></div>
+</section>
+<footer id="preview-status" role="status">Preview only · Green for progress. Red for trouble. A little colour to find your way home.</footer>
+</main>
+<script>
+const timers = new Map();
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+function appearance(plain) {
+  document.body.classList.toggle('plain', plain);
+  document.getElementById('plain').setAttribute('aria-pressed', String(plain));
+  document.getElementById('accent').setAttribute('aria-pressed', String(!plain));
+}
+document.getElementById('plain').onclick = () => appearance(true);
+document.getElementById('accent').onclick = () => appearance(false);
+const messages = {dispatch:'PAYMENT READY / Someone ate. You get paid.', operation:'RUNNER CONNECTED / Another light on in the building.', network:'₵128 RECEIVED / The network remembers its cut.'};
+document.querySelectorAll('[data-event]').forEach(button => button.addEventListener('click', () => {
+  const id = button.dataset.event;
+  if (!messages[id]) {
+    document.getElementById('preview-status').textContent = 'Preview only — this control demonstrates layout; no purchase or clipboard action was made.';
+    return;
+  }
+  appearance(false);
+  const section = document.getElementById(id);
+  clearTimeout(timers.get(id));
+  section.classList.remove('event');
+  section.querySelector('.event-note').textContent = messages[id];
+  section.scrollIntoView({behavior:'instant', block:'center'});
+  void section.offsetWidth;
+  section.classList.add('event');
+  timers.set(id, setTimeout(() => {
+    section.classList.remove('event');
+    section.querySelector('.event-note').textContent = '';
+    timers.delete(id);
+  }, reduced.matches ? 1600 : 3200));
+}));
+</script>
+</body>
+</html>

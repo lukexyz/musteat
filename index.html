@@ -25,6 +25,14 @@ h1{margin:0;font-size:30px;letter-spacing:3px;color:#fff;line-height:1.2}
 h1 span{color:var(--acc)}
 h1 .logo{display:block;height:.72em;width:auto;mix-blend-mode:screen;margin:.24em 0}
 .tag{color:var(--dim);font-size:12px}
+#lockdownDay{white-space:nowrap;font-variant-numeric:tabular-nums}
+.lockdown-digit{display:inline-block;position:relative;vertical-align:bottom;overflow:hidden;width:1ch;height:1.45em}
+.lockdown-digit>span{display:block}
+.lockdown-digit.tick>span{animation:lockdown-in .7s cubic-bezier(.2,.7,.2,1) both}
+.lockdown-digit.tick::before{content:attr(data-before);position:absolute;inset:0;animation:lockdown-out .7s cubic-bezier(.2,.7,.2,1) both}
+@keyframes lockdown-in{0%{transform:translateY(100%);color:#ffd166;text-shadow:0 0 8px #ffd16699}55%{color:#ffd166;text-shadow:0 0 6px #ffd16666}100%{transform:translateY(0);color:inherit;text-shadow:none}}
+@keyframes lockdown-out{from{transform:translateY(0);opacity:1}to{transform:translateY(-100%);opacity:0}}
+@media(prefers-reduced-motion:reduce){.lockdown-digit.tick::before{display:none}}
 .rankbox{align-self:flex-start;text-align:left;font-size:12px;color:var(--dim)}
 .rankbox b{display:block;font-size:14px;color:var(--gold)}
 .banner{margin:10px 0 0;padding:8px 10px;border:1px dashed var(--warn);color:#ffb3c0;font-size:13px}
@@ -240,11 +248,13 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 @keyframes fill{to{width:100%}}
 @keyframes flicker{0%,88%,100%{opacity:1}90%{opacity:.35}93%{opacity:1}96%{opacity:.6}}
 @media(max-width:520px){.intro .lines{font-size:14px}.intro .yr{font-size:28px}.intro .big{font-size:20px}}
-.next-goal{border:1px solid #426133;background:linear-gradient(110deg,#172511,var(--panel));padding:12px;margin:0 0 12px;display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:center}
+.next-goal{border:1px solid #2b4034;background:var(--panel);padding:12px;margin:0 0 12px;display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:center}
 .next-goal[hidden]{display:none}
 .target-cinema{position:relative;border-color:#75db99;box-shadow:inset 0 0 32px #39ff140c,0 0 24px #39ff1424}
 .target-char{opacity:0;filter:blur(3px);transition:opacity 100ms ease-out,filter 180ms ease-out,color 350ms ease-out;text-shadow:0 0 10px #70ff88;color:#baffcb}
 .target-char.shown{opacity:1;filter:blur(0);color:inherit;text-shadow:none}
+.gang-name{color:#ff8495;background:linear-gradient(110deg,#45121f,#210c12);border-bottom:1px solid #ad344c;border-radius:3px;padding:1px 4px;text-shadow:0 0 8px #ff315255;box-shadow:inset 0 0 10px #a0142520;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.gang-name .target-char{color:inherit;text-shadow:inherit}
 .target-caret{position:absolute;z-index:2;width:7px;background:#baffcb;box-shadow:0 0 8px #39ff14,0 0 22px #39ff1470;pointer-events:none}
 .box.terminal-letter{position:relative;background-color:#0d1714;background-image:repeating-linear-gradient(0deg,transparent 0 3px,#a7ffc806 3px 4px),radial-gradient(ellipse at 50% 0,#45b86710,transparent 75%);border-color:#71d18d;box-shadow:inset 0 0 35px #0005,0 0 35px #39ff1426}
 .terminal-letter h3{text-shadow:0 0 12px #70ff8830}.terminal-letter .target-char{filter:none;transition:opacity 60ms ease-out;color:inherit;text-shadow:none}
@@ -267,6 +277,21 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .score-controls{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 0;font-size:12px}.score-controls button{font-size:11px}.score-controls .on{border-color:var(--acc);color:var(--acc)}.score-controls input{width:76px;background:#000;color:var(--fg);border:1px solid var(--line);padding:5px;font:inherit}.score-controls label{margin-left:auto}.score-note{font-size:11px;color:var(--dim)}
 #dispatch .bar i{background:var(--blue)}#dispatch .contract-name{color:#fff}#dispatch .contract-status{color:var(--blue);font-size:12px}
 .dispatch-shell{position:relative;isolation:isolate}
+/* Contract accents; shop and supply keep only their heading colours. */
+.department{--dept-accent:#80c9d9;--dept-edge:#34565e;--dept-wash:#74ddf312;position:relative;margin:26px 0}
+.dept-shop>h2{color:#c7ab71}
+.dept-supply>h2{color:#ad9ac9}
+.department>h2{display:flex;align-items:baseline;flex-wrap:wrap;gap:5px 12px;border-color:var(--dept-edge);color:var(--dept-accent);padding-bottom:8px}
+.dept-sub{font-size:10px;letter-spacing:1px;color:var(--dim)}
+.dept-id{margin-left:auto;font-size:9px;letter-spacing:1px;color:var(--dept-accent);opacity:.8;white-space:nowrap}
+.dept-dispatch .dept-title::before{content:'[ ';opacity:.6}.dept-dispatch .dept-title::after{content:' ]';opacity:.6}
+.dept-dispatch #dispatch{border-top-color:var(--dept-accent)}
+.department.dept-event::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(100deg,transparent 35%,var(--dept-wash) 48%,var(--dept-accent) 50%,transparent 51%);background-size:300% 100%;animation:dept-scan 1.5s ease-out both}
+.department.dept-event>h2{animation:dept-glow 2s ease-out}
+@keyframes dept-scan{0%{background-position:100% 0;opacity:0}20%{opacity:.35}85%{opacity:.2}100%{background-position:0 0;opacity:0}}
+@keyframes dept-glow{0%,100%{text-shadow:none}25%{text-shadow:0 0 10px var(--dept-accent)}}
+@media(max-width:480px){.dept-id{margin-left:0;width:100%}}
+@media(prefers-reduced-motion:reduce){.department.dept-event::after{display:none}.department.dept-event>h2{border-bottom-color:var(--dept-accent)}}
 .airlock-permit{display:flex;flex-direction:row;align-items:center;gap:18px;padding:18px;margin-bottom:12px;border:1px solid #4bc3df;background:linear-gradient(120deg,#102c36,#0c1519);box-shadow:inset 0 0 36px #48d8ff12,0 0 20px #48d8ff0c}
 .airlock-permit::before{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(transparent 45%,#78e9ff20 50%,transparent 55%),repeating-linear-gradient(0deg,transparent 0 5px,#70ddff08 5px 6px);background-size:100% 200%,100% 100%;animation:permit-scan 5s linear infinite}
 .airlock-permit>*{position:relative;min-width:0}.airlock-permit b{display:block;color:#d4f8ff;font-size:18px}.airlock-permit .d{max-width:620px;margin:6px 0 12px}.airlock-permit button{border-color:var(--blue);color:#c5f5ff}.permit-label{display:block;color:var(--blue);font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
@@ -293,7 +318,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 <body>
 <div class="wrap">
   <header>
-    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 2099. Lockdown day <span id="lockdownDay">336,041</span>. Going outside is illegal. Everyone must eat.</div></div>
+    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 2099. Lockdown day <span id="lockdownDay">336,041</span>. Going outside is illegal. The survivors must eat.</div></div>
     <div class="rankbox" id="rank"></div>
   </header>
   <div id="supply" class="banner good" hidden></div>
@@ -313,12 +338,12 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
     <div id="rushClock" class="rush-clock" hidden></div>
     <div id="ration" class="row" style="justify-content:center"></div>
   </section>
-  <section><h2>Technology <span class="qty" id="qty"></span></h2><div id="gearStage"><div id="gear"></div></div></section>
-  <div id="nextGoal" class="next-goal"></div>
+  <section><p id="firstTechHint" class="muted">Buy trainers to earn while you’re away.</p><h2>Technology <span class="qty" id="qty"></span></h2><div id="gearStage"><div id="gear"></div></div></section>
   <section><h2>Upgrades</h2><div id="contractUnlock" hidden></div><div id="upgrades"></div></section>
-  <section id="dispatchSection" hidden><h2>Airlock contracts <span class="muted">Your own route up</span></h2><div id="dispatchShell" class="dispatch-shell"><div id="dispatch" class="card"></div></div></section>
-  <section><h2>Your shop &amp; runners</h2><div id="shop" class="card"></div></section>
-  <section><h2>Supply chain</h2><div class="hint">Buildings. Credits buy them, but only people unlock them: each one needs runners under you. A building makes your runners earn more and makes your cut of it bigger. That is the whole trick.</div><div id="buildings"></div></section>
+  <div id="nextGoal" class="next-goal"></div>
+  <section id="dispatchSection" class="department dept-dispatch" hidden><h2><span class="dept-title">Airlock contracts</span><span class="dept-sub">Your own route up</span><span class="dept-id">01 / DISPATCH</span></h2><div id="dispatchShell" class="dispatch-shell"><div id="dispatch" class="card"></div></div></section>
+  <section id="shopSection" class="dept-shop"><h2>Your shop &amp; runners</h2><div id="shop" class="card"></div></section>
+  <section id="supplySection" class="dept-supply"><h2>Supply chain</h2><div class="hint">Buildings. Credits buy them, but only people unlock them: each one needs runners under you. A building makes your runners earn more and makes your cut of it bigger. That is the whole trick.</div><div id="buildings"></div></section>
   <section><h2>The Ministry</h2><div id="ministry" class="card"></div></section>
   <section><h2>Franchise</h2><div id="franchise" class="card"></div></section>
   <section><h2>Commendations</h2><div id="ach" class="card"></div></section>
@@ -333,12 +358,12 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <section><h2>Your runners' businesses</h2><div id="pfRunners"></div></section>
   <section><h2>Trophy cabinet</h2><div id="portfolio"></div></section>
   </div>
-  <footer>MustEat is a game. Please do not start an actual pyramid scheme. · <span id="mode"></span> · <a href="ledger.html" target="_blank">high scores</a> · <a href="#" data-act="saveInfo">your save</a> · <a href="#" data-act="replayIntro">replay intro</a> · <a href="#" id="reset">reset save</a> <span id="localtools"></span></footer>
+  <footer>MustEat is a game. Please do not start an actual pyramid scheme. · <span id="mode"></span> · <a href="ledger.html" target="_blank">high scores</a> · <a href="#" data-act="saveInfo">save game</a> · <a href="#" data-act="replayIntro">replay intro</a> · <a href="#" id="reset">reset game</a> <span id="localtools"></span></footer>
 </div>
 <button id="protectionTab" class="protection-tab" aria-controls="protectionDrawer" aria-expanded="false" hidden>Protection · −15%</button>
 <div id="drawerShade" class="drawer-shade" hidden></div>
 <aside id="protectionDrawer" class="protection-drawer" role="dialog" aria-modal="true" aria-labelledby="protectionTitle" hidden>
-  <div class="drawer-head"><h2 id="protectionTitle">The cost of doing business</h2><button id="closeProtection" aria-label="Close protection panel">✕</button></div>
+  <div class="drawer-head"><h2 id="protectionTitle">The city isn't safe</h2><button id="closeProtection" aria-label="Close protection panel">✕</button></div>
   <p id="protectionSummary" class="muted"></p>
   <details id="recruiter" class="banner" hidden><summary id="recruiterS"></summary><div class="more" id="recruiterM"></div></details>
   <details id="gang" class="banner" hidden><summary id="gangS"></summary><div class="more" id="gangM"></div></details>
@@ -374,7 +399,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 const CONFIG = {
   SHEET_API: 'https://script.google.com/macros/s/AKfycbxOJetGrJ2DQaaXUVJWdURPZDnkLWAuL5WxRXU3EUiAcdqb9czgCgUG6VY90YAGy7N_Qg/exec',
   SAVE_KEY: 'musteat_save',
-  LOCKDOWN_DAY: 336041,       // one fictional lockdown day per real minute since this save began
+  LOCKDOWN_DAY: 336041,       // one fictional lockdown day per five real seconds since this save began
   SHEET_KEY: 'musteat_sheet',
   SHOP_COST: 5000,
   DRONE_COST: 2500,
@@ -1483,7 +1508,7 @@ function unlockDispatch() {
   log('<b>Airlock Permit acquired.</b> The Ministry has authorised you to feed people. Try not to look pleased.');
   save(); render();
   viewContract(true);
-  toast('ROUTE ACCESS GRANTED · Airlock contracts unlocked.');
+  toast('There’s work after curfew. Airlock contracts unlocked.');
 }
 function acceptDispatch() {
   if (state.dispatch.active || !contractsUnlocked()) return;
@@ -1530,7 +1555,7 @@ function viewContract(unlocking = false) {
     if (visible && (reduced || (stillFrames >= 3 && performance.now() - started > 100))) {
       const burst = document.createElement('div'); burst.className = 'contract-burst'; burst.setAttribute('aria-hidden', 'true');
       if (unlocking && !reduced) {
-        const stamp = document.createElement('span'); stamp.className = 'permit-stamp'; stamp.textContent = 'ROUTE ACCESS GRANTED'; burst.appendChild(stamp);
+        const stamp = document.createElement('span'); stamp.className = 'permit-stamp'; stamp.textContent = 'THERE’S WORK AFTER CURFEW.'; burst.appendChild(stamp);
       }
       if (!reduced) {
         const echo = document.createElement('span'); echo.className = 'ripple-echo'; burst.appendChild(echo);
@@ -1630,11 +1655,12 @@ function pursueGoal() {
   const qty = state.qty; state.qty = 1; buy(g.id); state.qty = qty; render();
 }
 function renderFocus(c) {
+  $('firstTechHint').hidden = gearTotal(state) > 0 || state.retirements > 0;
   $('nextGoal').hidden = !!state.dispatch.active;
   const goal = nextGoal(c), g = goal.gear && GEAR.find(g => g.id === goal.gear);
   const cost = g ? gearCost(g, lvl(g.id), 1) : goal.cost || 0;
   const ready = cost && state.cash >= cost;
-  setHTML('nextGoal', `<div><span class="eyebrow">Your next move</span><strong>${esc(goal.title)}</strong></div><div id="goalDetail" class="goal-detail"></div><button id="pursueGoal">${goal.contract ? 'View contract' : ready ? goal.shop ? 'Open shop' : 'Buy now' : 'View target'}</button>${cost ? '<div class="bar"><i id="goalProgress"></i></div>' : ''}`);
+  setHTML('nextGoal', `<div><span class="eyebrow">Your next milestone</span><strong>${esc(goal.title)}</strong></div><div id="goalDetail" class="goal-detail"></div><button id="pursueGoal">${goal.contract ? 'View contract' : ready ? goal.shop ? 'Open shop' : 'Buy now' : 'View target'}</button>${cost ? '<div class="bar"><i id="goalProgress"></i></div>' : ''}`);
   const activeJob = state.dispatch.active;
   $('goalDetail').textContent = goal.contract ? activeJob ? Math.max(0, Math.ceil(activeJob.quota - (state.deliveries - activeJob.start))) + ' deliveries left · ₵' + fmt(activeJob.reward) + ' payment' : 'A paid delivery job. No colleagues required.' : '₵' + fmt(Math.min(state.cash, cost)) + ' / ₵' + fmt(cost) + (ready ? ' · Ready when you are.' : '');
   if ($('goalProgress')) $('goalProgress').style.width = clamp(100 * state.cash / cost, 0, 100) + '%';
@@ -2037,9 +2063,53 @@ function tween() {
   $('cash').textContent = '₵' + fmtLive(shownCash, liveIncome);
   requestAnimationFrame(tween);
 }
+// Observe real changes once; hold brief notices until their section comes into view.
+let departmentSnapshot = null;
+const departmentPending = new Map(), departmentTimers = new Map();
+function renderDepartmentEvents() {
+  const job = state.dispatch.active;
+  const snapshot = { id: state.id, ready: !!job && state.deliveries - job.start >= job.quota };
+  const previous = departmentSnapshot;
+  if (previous && previous.id === snapshot.id) {
+    const queue = id => departmentPending.set(id, performance.now() + 60000);
+    if (snapshot.ready && !previous.ready) queue('dispatchSection');
+  } else {
+    departmentPending.clear();
+    departmentTimers.forEach((timer, id) => { clearTimeout(timer); $(id).classList.remove('dept-event'); });
+    departmentTimers.clear();
+  }
+  departmentSnapshot = snapshot;
+  if (!snapshot.ready) departmentPending.delete('dispatchSection');
+  departmentPending.forEach((expires, id) => {
+    if (performance.now() > expires) { departmentPending.delete(id); return; }
+    if (document.hidden || state.tab !== 'run' || !$('modal').hidden) return;
+    const section = $(id), rect = section.getBoundingClientRect();
+    if (section.hidden || rect.bottom <= 0 || rect.top >= innerHeight || !rect.height) return;
+    departmentPending.delete(id);
+    // A second payment during an existing effect does not restart the scan.
+    if (departmentTimers.has(id)) return;
+    section.classList.add('dept-event');
+    departmentTimers.set(id, setTimeout(() => {
+      section.classList.remove('dept-event'); departmentTimers.delete(id);
+    }, 2200));
+  });
+}
+function renderLockdownDay(t) {
+  const el = $('lockdownDay');
+  const day = (CONFIG.LOCKDOWN_DAY + Math.max(0, Math.floor((t - (state.created || t)) / 5000))).toLocaleString('en-GB');
+  if (el.dataset.day === day) return;
+  const previous = el.dataset.day || '';
+  const animate = previous.length === day.length && !document.hidden && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  el.innerHTML = Array.from(day, (digit, i) => {
+    if (digit === ',') return ',';
+    const changed = animate && previous[i] !== digit;
+    return `<span class="lockdown-digit${changed ? ' tick' : ''}"${changed ? ` data-before="${previous[i]}"` : ''}><span>${digit}</span></span>`;
+  }).join('');
+  el.dataset.day = day;
+}
 function render() {
   const c = calc(state), t = now();
-  $('lockdownDay').textContent = (CONFIG.LOCKDOWN_DAY + Math.max(0, Math.floor((t - (state.created || t)) / 60000))).toLocaleString('en-GB');
+  renderLockdownDay(t);
   liveIncome = c.income;
   if (!tweening) $('cash').textContent = '₵' + fmtLive(state.cash, c.income);
   $('ips').textContent = '₵' + fmt(c.income);
@@ -2137,7 +2207,7 @@ function render() {
   if (!state.shop) {
     const boss = esc(state.recruiter || 'your recruiter');
     const pitch = c.tax ? `You’re paying <b>${Math.round(c.tax * 100)}% tax</b> to <b>${boss}</b>. Stop making them rich. Open a shop, end their cut, and <b>start your own fleet.</b>`
-      : c.gang ? `You’re paying <b>${Math.round(c.gang * 100)}% protection tax</b> to the <b>Sector 7 gang</b>. Recruit one runner to end it. Open a shop and <b>start your own fleet.</b>`
+      : c.gang ? `You’re paying <b>${Math.round(c.gang * 100)}% protection tax</b> to the <b class="gang-name">Sector 7 gang</b>. Recruit one runner to end it. Open a shop and <b>start your own fleet.</b>`
       : 'Nobody is taking a cut. Keep it that way. Open a shop and <b>start your own fleet.</b>';
     sh = `<p>${pitch}</p>
       <div class="row"><button data-act="shop" ${state.cash < CONFIG.SHOP_COST ? 'disabled' : ''}>Open a shop (₵${fmt(CONFIG.SHOP_COST)})</button>
@@ -2299,6 +2369,7 @@ function render() {
   setHTML('log', state.log.map(e => `<div>${e.text}</div>`).join(''));
   $('mode').textContent = CONFIG.SHEET_API ? 'connected to the company sheet' : 'local sheet (this browser only; invite links open as new players here)';
   setHTML('localtools', CONFIG.SHEET_API ? '' : ' · <a href="#" data-act="seed">seed demo company</a> · <a href="#" data-act="wipe">wipe company</a>');
+  renderDepartmentEvents();
 }
 
 // ---------------- Wiring ----------------
