@@ -48,6 +48,7 @@ start(0, async ({ srv, db, url }) => {
   await A.waitForFunction(() => /Bob/.test(document.getElementById('shop').textContent), null, { timeout: 8000 });
   ok('Bob in the runners table', /Bob/.test(await A.textContent('#shop')));
   ok('gang tax lifted for Ada', await A.evaluate(() => document.getElementById('gang').hidden) && /Extortion tax lifted/.test(await A.textContent('#log')), await A.textContent('#log'));
+  await A.click('[data-score="total"]');
   ok('high scores list both', /Ada/.test(await A.textContent('#board')) && /Bob/.test(await A.textContent('#board')));
   ok('company feed shows the recruitment', /Bob[\s\S]*was recruited by[\s\S]*Ada/.test(await A.textContent('#company')), await A.textContent('#company'));
   await A.click('[data-act="refresh"]'); await A.waitForTimeout(600); // the first sync queued the ledger row, the second sends it
@@ -55,7 +56,7 @@ start(0, async ({ srv, db, url }) => {
 
   console.log('the ledger page on laptop B reads the shared tables');
   const L = await B.context().newPage();
-  await L.goto(url + 'ledger.html');
+  await L.goto(url + 'ledger.html?order=total');
   await L.waitForFunction(() => /Ada/.test(document.getElementById('scores').textContent), null, { timeout: 8000 });
   ok('scores show Ada and Bob', /Ada/.test(await L.textContent('#scores')) && /Bob/.test(await L.textContent('#scores')));
   ok('top earner from runners is Ada', /Ada/.test(await L.textContent('#top')), await L.textContent('#top'));

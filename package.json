@@ -1,0 +1,9 @@
+{
+  "name": "musteat",
+  "private": true,
+  "description": "MustEat: a single-file idle game. No build step. `npm run dev` serves it with a local in-memory company.",
+  "scripts": {
+    "dev": "node test/sheetmock.js",
+    "test": "cd test && npm install && node smoke.js"
+  }
+}

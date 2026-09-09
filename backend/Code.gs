@@ -14,7 +14,7 @@
 
 const TABLES = ['players', 'events', 'ledger'];
 const HEADERS = {
-  players: ['id', 'code', 'name', 'ref', 'dept', 'total', 'meals', 'rank', 'shopName', 'buildings', 'stamps', 'sprint', 'played', 'lastSeen', 'offer', 'franchiseOf', 'franchiseName', 'claimedBy', 'claimedName', 'claimedAt', 'claimedOffer'],
+  players: ['id', 'code', 'name', 'ref', 'dept', 'total', 'meals', 'rank', 'shopName', 'buildings', 'stamps', 'sprint', 'played', 'paceVersion', 'pace0', 'lastSeen', 'offer', 'franchiseOf', 'franchiseName', 'claimedBy', 'claimedName', 'claimedAt', 'claimedOffer'],
   events: ['id', 'ts', 'pid', 'who', 'kind', 'arg', 'text', 'effect', 'amount', 'of'],
   ledger: ['id', 'ts', 'from', 'fromName', 'to', 'toName', 'level', 'kind', 'amount'],
 };

@@ -80,10 +80,12 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p1.click('#ok');
   await reveal(p1);
   ok('the gang knocks after two minutes, and logs it', /knock on the airlock/.test(await p1.textContent('#log')), await p1.textContent('#log'));
-  ok('gang banner shown collapsed as a one-line warning', !(await p1.evaluate(() => document.getElementById('gang').hidden || document.getElementById('gang').open)) && /Warning.*wants to talk to you/.test(await p1.textContent('#gangS')), await p1.textContent('#gangS'));
+  ok('gang notice stays collapsed inside the closed drawer', !(await p1.evaluate(() => document.getElementById('gang').hidden || document.getElementById('gang').open)) && /Sector 7 protection.*15%/.test(await p1.textContent('#gangS')), await p1.textContent('#gangS'));
+  await p1.click('#protectionTab');
   await p1.click('#gangS');
   ok('banner expands to the full text on click', await p1.evaluate(() => document.getElementById('gang').open) && /protection works/.test(await p1.textContent('#gangM')));
   ok('gang tax shown while you have no runners', !(await p1.evaluate(() => document.getElementById('gang').hidden)) && /\(−15%\)/.test(await p1.textContent('#cut')), await p1.textContent('#cut'));
+  await p1.click('#closeProtection');
   ok('order text rendered', /for /.test(await p1.textContent('#order')));
   await p1.click('[data-act="ration"]');
   await p1.waitForSelector('#ration .help');
@@ -95,6 +97,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   console.log('clicks on re-rendered buttons');
   const trainers = p1.locator('[data-buy="trainers"]');
   await p1.waitForFunction(() => !document.querySelector('[data-buy="trainers"]').disabled);
+  await trainers.scrollIntoViewIfNeeded();
   const box = await trainers.boundingBox();
   await p1.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await p1.mouse.down(); await p1.waitForTimeout(400); await p1.mouse.up();
@@ -147,7 +150,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   const ipsAfter = parseFloat((await p1.textContent('#ips')).replace(/[^0-9.]/g, ''));
   ok('upgrade raised income per second', ipsAfter > ipsBefore, [ipsBefore, ipsAfter]);
   ok('commendations card counts some', /\b[1-9]\d* of \d+ commendations/.test(await p1.textContent('#ach')), await p1.textContent('#ach'));
-  ok('no revenue readout before the bookkeeping upgrade', !(await p1.$('#gear .rev')) && !(await p1.isVisible('[data-upg="ledger"]')));
+  ok('basic purchase benefit shown before bookkeeping, detailed shares still locked', !!(await p1.$('#gear .gain-preview')) && !(await p1.$('#gear .rev')) && !(await p1.isVisible('[data-upg="ledger"]')));
   await patchSave(p1, '', 's.created = Date.now() - 4 * 60000');
   await p1.waitForSelector('[data-upg="ledger"]');
   ok('bookkeeping card carries the effect, gear rows do not', !!(await p1.$('#upgrades .up.ledger')) && !(await p1.$('#gear .ledger')));
@@ -240,7 +243,9 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok('owner sees Sam in runners table', /Sam/.test(await p1.textContent('#shop')));
   ok('owner log notes the arrival', /Sam.*joined as your runner/.test(await p1.textContent('#log')));
   ok('gang banner stays hidden with runners', await p1.evaluate(() => document.getElementById('gang').hidden));
+  await p1.click('[data-score="total"]');
   ok('leaderboard lists both', /Ada/.test(await p1.textContent('#board')) && /Sam/.test(await p1.textContent('#board')));
+  await p2.click('#protectionTab');
   await p2.click('#recruiterS'); // the complaint link lives in the expanded banner
   await p2.click('[data-act="complain"]');
   await p2.waitForSelector('.toast');
@@ -248,16 +253,17 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p1.waitForFunction(() => /recruited by/.test(document.getElementById('company').textContent), null, { timeout: 8000 }).catch(() => {});
   ok('feed renders structured join event', /Sam.*was recruited by.*Ada/s.test(await p1.textContent('#company')), await p1.textContent('#company'));
 
-  console.log('sprint score: locks at thirty minutes of play');
-  ok('sprint clock shown while it runs', /Sprint clock \d+ min/.test(await p1.textContent('#rank')), await p1.textContent('#rank'));
+  console.log('playtime scores: new checkpoints keep recording');
+  ok('active minutes shown in the rank box', /active minutes/.test(await p1.textContent('#rank')));
   await patchSave(p1, '', 's.played = 1799.9');
-  await p1.waitForFunction(() => /Sprint score/.test(document.getElementById('log').textContent), null, { timeout: 5000 });
-  await p1.waitForFunction(() => (JSON.parse(localStorage.musteat_save) || {}).sprint != null, null, { timeout: 8000 }); // the save runs every five seconds
+  await p1.waitForFunction(() => window.MUSTEAT.state.pace[30] != null);
+  await p1.evaluate(() => window.MUSTEAT.save());
   const sp = await save(p1, '');
-  ok('sprint score locked at lifetime total', sp.sprint > 0 && sp.sprint <= sp.total && sp.sprint >= sp.total * 0.99 && /* income keeps accruing until the save lands */ /Sprint score ₵/.test(await p1.textContent('#rank')), JSON.stringify([sp.sprint, sp.total]));
+  ok('minute 30 captured without stopping the clock', sp.pace[30] > 0 && sp.pace[30] <= sp.total && sp.played >= 1800);
   await p1.click('[data-act="refresh"]');
-  await p1.waitForFunction(() => /Sprint/.test(document.getElementById('board').textContent));
-  ok('board has a Sprint column with Ada locked and Sam still on the clock', /Sprint/.test(await p1.textContent('#board')) && /min in/.test(await p1.textContent('#board')), await p1.textContent('#board').then(t => t.slice(0, 300)));
+  await p1.click('[data-score="pace"]');
+  await p1.click('#myMinute');
+  ok('board compares recorded earnings at the selected minute', /Earned at minute 30/.test(await p1.textContent('#board')) && /Ada/.test(await p1.textContent('#board')));
 
   console.log('ledger: who paid whom');
   const led = await p1.evaluate(() => JSON.parse(localStorage.musteat_sheet).ledger || []);
@@ -271,15 +277,16 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok('every upgrade bought: top commendation first, name gilded, trophy pinned at the top of the cabinet', /^\s*Every Upgrade/.test(await p1.textContent('#ach .ach')) && !!(await p1.$('#rank b.gilded')) && /^\s*Every Upgrade/.test(await p1.textContent('#portfolio')) && /There is a trophy for that/.test(await p1.textContent('#upgrades')), await p1.textContent('#portfolio').then(t => t.slice(0, 200)));
   ok("portfolio lists Sam's business and the cut taken", /Sam/.test(await p1.textContent('#pfRunners')) && /L1/.test(await p1.textContent('#pfRunners')) && /You get/.test(await p1.textContent('#pfRunners')) && /Your cut, all time[\s\S]*₵[1-9]/.test(await p1.textContent('#pfRunners')), await p1.textContent('#pfRunners').then(t => t.slice(0, 300)));
   await p1.click('[data-tab="run"]');
-  ok('board shows From runners for Ada', /From runners/.test(await p1.textContent('#board')) && /Ada[\s\S]*?₵[\d.]+K?[\s\S]*?₵[\d.]+/.test(await p1.textContent('#board tr.me')));
+  ok('board keeps your own ranked row visible', /Ada/.test(await p1.textContent('#board tr.me')));
   const pl = await ctx.newPage();
   await pl.goto(url.replace('index.html', 'ledger.html'));
   await pl.waitForFunction(() => /Ada/.test(document.getElementById('top').textContent));
   ok('ledger page ranks Ada as top earner from runners', /1[\s\S]*Ada/.test(await pl.textContent('#top')));
   ok('ledger page lists Sam and Kim as contributors', /Sam/.test(await pl.textContent('#payers')) && /Kim/.test(await pl.textContent('#payers')));
   ok('ledger page shows who pays whom', /Ada[\s\S]*Sam[\s\S]*L1/.test(await pl.textContent('#pairs')));
-  await pl.click('[data-order="sprint"]');
-  ok('ledger page can rank by sprint', /Sprint/.test(await pl.textContent('#scores')) && (await pl.getAttribute('[data-order="sprint"]', 'class')) === 'on');
+  await pl.click('[data-order="pace"]');
+  await pl.waitForFunction(() => /At minute 30/.test(document.getElementById('scores').textContent));
+  ok('ledger page ranks by matching playtime', /At minute 30/.test(await pl.textContent('#scores')) && (await pl.getAttribute('[data-order="pace"]', 'class')) === 'on');
   ok('ledger page has recent entries and no overflow', (await pl.$$('#recent tr')).length >= 2 && await pl.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
   await pl.close();
 

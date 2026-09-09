@@ -1,6 +1,6 @@
 # MustEat
 
-Year 3019. Lockdown day 336,041. Going outside is illegal. Everyone must eat.
+Year 2099. Lockdown day 336,041. City access: restricted. Going outside is illegal. Food is as scarce as federation credits.
 
 A single-file idle game where every player starts as a delivery runner for whoever
 sent them the link, buys gear, opens a shop, recruits colleagues to run for them,
@@ -13,8 +13,8 @@ backend). `index.html` is the current one.
 
 ## First visit
 
-With no save in the browser the page opens on a splash: six lines of noir (2099, the money, the
-fever, the doors, 3019, everyone must eat) that fade in one at a time. It moves on to registration
+With no save in the browser the page opens on a splash: six lines of dystopian terminal fiction (2099, a city locked by a Ministry update,
+frozen accounts, subscribed hunger, and a leaked courier login) that fade in one at a time. It moves on to registration
 by itself after five seconds, or on a tap. `CONFIG.INTRO_S` sets the wait. Returning players never see it.
 
 ## Run it
@@ -93,7 +93,8 @@ on the client from the full `players` table, so the backend stores rows and noth
 | shopName | null until they open a shop |
 | buildings | comma list: `depot,plant,factory,ministry` |
 | stamps | Ration Stamps held, shown as ★ on the leaderboard |
-| sprint, played | sprint is lifetime credits at 30 minutes of open-tab play (until then, the current total); played is seconds with the tab open. The high-score table can rank by either |
+| played | Active seconds while the tab is visible, capped at one second per frame after suspension |
+| paceVersion, pace0…N | Version 1 minute history: JSON objects mapping complete active minute to lifetime credits, 500 minutes per column (`pace` + floor(minute / 500)). Includes offline earnings; never backfills missed history. Legacy `sprint` is ignored |
 | offer | JSON of a franchise offer while one is out: id, shop name, gear, upgrades, income |
 | franchiseOf, franchiseName | for a franchisee: the id and name of the player whose business they took |
 | claimedBy, claimedName, claimedAt, claimedOffer | written onto the franchisor's row by the colleague who claims the offer, never by the owner. The owner's client only ever upserts its own columns, so a merge-by-id upsert must leave unknown columns alone |
@@ -171,8 +172,8 @@ for moving to another database.
 - The Portfolio tab is also the trophy cabinet: every franchise with the gear and buildings it had, income at handover, live total earned, revenue per minute (from the last few syncs), royalty owed to you, and whether the franchisee is still open. Under the businesses is the Runners shelf: one card per downline member, in order of what has been taken from them, with their shop or "runs for you", direct or via whom, when they first appeared under you, taken all time (from your ledger, exact), taking now (rate over the last syncs), your rate and idle status. People as trophies.
 - Runners pay 10% to their shop owner until they open a shop (₵5,000).
 - Everyone with no runners pays 15% to the Sector 7 Provisional Gang on top. Recruit one runner and the gang moves on to them. This is the hook: the only way out of the tax is to send the link.
-- Neither cut is announced for the first two minutes of play (`CONFIG.REVEAL_S`, on the sprint clock, so only while the tab is open). Then a letter under the airlock door from the recruiter (from head office, for a franchisee), and a minute later a knock from the gang: one-shot modals with what has been paid so far, retroactively. After that each banner sits as a single "Warning ⚠ ..." line that expands on click (a native details element; the render only rewrites the text inside). Recruiting a runner before the knock marks the gang as met, so it never knocks about a threat that has already left.
-- The (−N%) beside Per second is a quiet button from minute one: click for where the cut goes (who, how much a second, how much all time), a closing line per case, and Open a shop / Copy invite. "Next ration in" gets the same treatment, explaining the daily ration. The pattern (`.help`) is a faint rounded highlight on hover and a modal on click, for anything on screen that is a mechanic in disguise.
+- Neither cut is announced for the first two minutes of play (`CONFIG.REVEAL_S`, on the active-play clock, so only while the tab is open). Then a letter under the airlock door from the recruiter (from head office, for a franchisee), and a minute later a knock from the gang: one-shot modals with what has been paid so far, retroactively. After that a quiet protection tab opens a side drawer, or a bottom sheet on phones. The expandable notices live inside it. Escape and backdrop clicks close it; focus is trapped and restored. It does not reopen on render or interrupt the delivery button. Recruiting a runner before the knock marks the gang as met, so it never knocks about a threat that has already left.
+- The (−N%) beside Per second is a quiet button from minute one: click for where the cut goes (who, how much a second, how much all time), a closing line per case, and Open a shop / Copy invite. "Next ration in" gets the same treatment, explaining the ration drop. The pattern (`.help`) is a faint rounded highlight on hover and a modal on click, for anything on screen that is a mechanic in disguise.
 - Shop owners get 10% / 5% / 2.5% of level 1 / 2 / 3 downline lifetime earnings, forever.
 - Buildings need a shop, the previous building, a company-wide citizen count, and people:
   Depot 1 direct runner, Kitchen Plant 2 downline, Nutrient Factory 3 downline, Ministry seat
@@ -185,9 +186,24 @@ for moving to another database.
   named colleague ₵250) and share messages are all copy-to-clipboard for Slack. "Copy invite" first opens a picker: three innocent favours about a Toqan app (Lawful neutral, Lawful evil, Chaotic evil), none of which mention the game or the cut, with the live total cut filled into the KPI one, plus the old rank line as a dimmed True neutral option. The alignment label is the only tell, and only the sender sees it. Where the
   clipboard is blocked (iframes, app shells) the text opens in a selectable box instead. No prompt() or confirm() anywhere.
 - The intro has a "who sent you" box for the referral code, for links that lost their query string. When the link carried a code the box is sealed (read-only): affiliate codes cannot be removed from invites. The copy suggests recruiting your own runner instead.
-- Daily ration pays 10 minutes of base income (minimum ₵50) once per 20h, only if you open the page. The countdown explains itself on click.
-- Sprint score: the clock runs only while the tab is visible (capped at one second per frame, so a sleeping tab does not count). At 30 minutes the lifetime total is frozen as `sprint` and shown on both high-score tables next to lifetime. The rank box shows the clock until then.
+- Ration drops pay 10 minutes of base income (minimum ₵50). Each claim draws a new 1–6 hour cooldown in whole hours; `rationDue` persists the deadline across reloads and recovery codes. Old 20-hour saves draw one new cooldown from the last claim time, so overdue drops become claimable. The countdown explains itself on click.
+- Playtime scores: the clock runs only while the tab is visible (capped at one second per frame). Each crossed full minute records immutable lifetime earnings, including offline income. Both leaderboards compare the same selected minute across everyone with that checkpoint, including players now further ahead. Missing checkpoints are unranked, ties share a place, and your own row remains visible outside the top 15/30. Existing saves begin recording at the next full minute; legacy sprint scores are not converted. Lifetime rankings remain a separate view.
+- Airlock contracts: unlock after 10 taps or any technology. Accepting fixes a quota of max(25, base deliveries/sec × 120) and reward of max(100, base income/sec × 45). All subsequent deliveries count, including offline work. Claim once, then accept another. Every three completions adds 1% income, capped at 20%; progress survives franchises and reloads. No deadlines or recruitment requirements.
+- The first crate pays credits immediately, but its 77-second rush starts only after TAKEN. The unstarted rush survives reloads. The active rush has a countdown beside the delivery button.
+- The next-goal card buys one unit regardless of bulk quantity. Basic net income gained from a technology purchase is always visible; bookkeeping unlocks the detailed revenue/share breakdown. The operation scene advances with owned technology and honours reduced motion.
 - Ministry seat holders issue one decree per day: Mandatory Feast (everyone ×2 for
   10 minutes) or Company-wide Audit (+25 suspicion for everyone outside their chain).
 - Ministry suspicion, inspections, acid rain, outbreaks, JustBreathe, bribes, Compliance
   Drone and Exclusive Contracts are unchanged from v1.
+
+## Citizen identity and recovery
+
+New citizens use 128 random bits from `crypto.getRandomValues` for their ID. Existing IDs and saves are preserved. Names and public invite codes are not login credentials. `musteat_save` belongs to the current browser profile and origin, with optional test-slot suffixes; the company sheet is shared across all clients. A local file and the HTTPS site have separate personal saves. File URL storage is browser-dependent, so regular play should use a hosted address.
+
+The **your save** panel shows the loaded citizen and provides a self-contained recovery string. `MUSTEAT1G.<base64url>.<sha256>` contains a gzip-compressed UTF-8 JSON snapshot; `MUSTEAT1J` is the uncompressed fallback when compression is unavailable. The payload includes the original ID, referral code, purchases, progress, contracts, franchise portfolio and minute histories. The checksum detects corruption; it is not encryption or proof of ownership. The code is private because anyone holding it can read or restore the game. It is not an automatically updating cloud save.
+
+Decoding is local and bounded to 4 MiB of expanded JSON. The state is validated before a preview asks the player to confirm replacement. Imported logs become safe text. Restore removes referral/voucher/franchise parameters from the current URL, keeps test-slot selection, and retains the replaced local save under `musteat_save_before_restore` (or its slot equivalent); **your save** can recover that backup too. Startup then applies ordinary offline earnings and syncs the existing citizen. Close the previous browser's game when switching: simultaneous copies share one ID and can overwrite the public row.
+
+Reset, wipe and restore suppress the old page's closing autosave so it cannot resurrect or overwrite the save being removed/replaced. `test/recovery.js` covers separate browser IDs, return visits, self-contained cross-browser recovery, malformed codes, preserved identity, safe imported text, reset and the five-second intro.
+
+The header lockdown counter starts at 336,041 and adds one fictional day per real minute since the saved `created` timestamp. It includes time away and survives reloads and recovery; it does not change the active-minute leaderboard or advance the displayed year.

@@ -59,12 +59,15 @@ function serve() {
       window.__t = start + sec * 1000;
       M.frame();
       const crate = document.getElementById('crate');
-      if (!crate.hidden && Math.random() < 0.5) { M.collectCrate(); crates++; } // a person misses half of them
+      if (!crate.hidden && Math.random() < 0.5) { const before = s.crates; M.collectCrate(); crates += s.crates - before; } // count collections, not clicks during the closing animation
+      const acknowledge = document.querySelector('#modal:not([hidden]) #ok');
+      if (acknowledge) acknowledge.click(); // read/close the first crate before its rush clock starts
       for (let i = 0; i < tps; i++) { M.runDelivery(); tapsDone++; }
       if (!s.drone && s.cash >= 2500) document.querySelector('[data-act="drone"]').click(); // any human buys this once fined
       let bought = 0;
       // An idle player is not staring at the shop: they check in and buy every 10 minutes. A tapper buys as they go.
       if (!tps && sec % 600 !== 0) continue;
+      if (s.dispatch.active) M.claimDispatch(); else M.acceptDispatch();
       for (;;) {
         const p = best(); if (!p) break;
         if (s.cash < p.cost) { if (idleSince == null && bought === 0) idleSince = sec; break; }
@@ -76,7 +79,7 @@ function serve() {
       chain.forEach(g => { if (!firsts[g.id] && s.gear[g.id]) firsts[g.id] = sec; });
       if (sec % 60 === 0 && (every ? (sec / 60) % every === 0 : [1, 2, 5, 10, 15, 20, 30, 45, 60, 90, 120, 180, 240, 360, 480, 720, 1440, 2880].includes(sec / 60))) samples.push({ min: sec / 60, cash: fmt(s.cash), ips: fmt(M.calc(s).income), value: fmt(M.calc(s).value), dps: fmt(M.calc(s).dps), tier: chain.filter(g => s.gear[g.id]).length, log: (s.log[0] || {}).text.replace(/<[^>]*>/g, '').slice(0, 60), gear: Object.entries(s.gear).map(([k, v]) => k + ':' + v).join(' '), upg: Object.keys(s.upg).length, ach: Object.keys(s.ach).length, heat: Math.round(s.heat) });
     }
-    return { firsts, waits: waits.filter(w => w.len >= 60).sort((a, b) => b.len - a.len).slice(0, 8), samples, crates, tapsDone, upgradesBought, total: fmt(s.total), fines: s.fines, stampsNow: Math.floor(Math.cbrt(s.total / 1e5)) };
+    return { firsts, waits: waits.filter(w => w.len >= 60).sort((a, b) => b.len - a.len).slice(0, 8), samples, crates, tapsDone, upgradesBought, total: fmt(s.total), fines: s.fines, stampsNow: Math.floor(Math.cbrt(s.total / 1e7)) };
   }, [MINUTES, TPS, +process.env.EVERY || 0]);
 
   console.log(`\n${MINUTES} minutes, ${TPS} taps/s\n`);

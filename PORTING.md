@@ -20,7 +20,7 @@ Column meanings are in `NOTES.md` under "The sheet". The columns that matter for
 
 - `players.id` is the primary key. `players.code` is the referral code and must stay unique.
 - `players.ref` is the code of the recruiter. The whole pyramid is this one column.
-- `players.sprint` and `players.played` are the 30-minute sprint score and the seconds of play behind it.
+- `players.played` counts visible-tab seconds. `paceVersion: 1` and dynamic `pace0`, `pace1`, … columns carry minute snapshots as JSON strings, e.g. `pace0: {"1":120,"2":310}` (stringified on the wire). Column number is floor(minute / 500), limiting each cell to 500 scores. Preserve these strings and allow new columns as playtime grows. Legacy `sprint` is ignored. Missing historical minutes stay missing; do not infer scores from current totals.
 - `players.claimedBy / claimedName / claimedAt / claimedOffer` are written onto a row by a
   *different* player than the row's owner. See "merge semantics" below.
 - `events.kind` and `events.arg` are what the feed renders from. `events.text` is a plain-text
@@ -82,7 +82,7 @@ document `$set`) is what the local mock does and what the port must do.
 
 Local mode caps `events` at 300 rows and `ledger` at 3,000 to fit localStorage. A real database
 does not need the cap, but `ledger` grows by one row per (payer, sync) whenever anything is owed,
-so it is the only table that gets large. Fifty players syncing every 30 seconds for a week is
+so it is the fastest-growing table. Player minute histories also grow with active playtime, in 500-minute JSON column chunks. Fifty players syncing every 30 seconds for a week is
 roughly 100K rows if everyone always has runners earning. Reading it in full on every sync is what
 the code does today; if that gets slow, the two readers only need `ledger` for sums per `to`
 (the "From runners" column) and the latest 10 rows, so a server-side aggregate would replace it.

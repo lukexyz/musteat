@@ -30,6 +30,7 @@ td.r,th.r{text-align:right;white-space:nowrap}
 .order{float:right;letter-spacing:0;text-transform:none}
 .order button{font:inherit;font-size:11px;cursor:pointer;background:#131c1f;color:var(--fg);border:1px solid var(--line);padding:2px 8px;margin-left:4px}
 .order button.on{border-color:var(--acc);color:var(--acc)}
+.score-controls{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 0;font-size:12px}.score-controls button{font:inherit;font-size:11px;cursor:pointer;background:#131c1f;color:var(--fg);border:1px solid var(--line);padding:5px 8px}.score-controls button.on{border-color:var(--acc);color:var(--acc)}.score-controls input{width:80px;font:inherit;background:#000;color:var(--fg);border:1px solid var(--line);padding:5px}.me{color:var(--acc)}
 .gold{color:var(--gold)}
 .blue{color:var(--blue)}
 .bar{height:6px;background:#111;border:1px solid var(--line);margin-top:3px;max-width:220px}
@@ -56,7 +57,8 @@ footer{margin-top:24px;font-size:12px;color:var(--dim);border-top:1px solid var(
     <div class="stat"><div class="k">Of which royalties</div><div class="v" id="sumRoy">₵0</div></div>
     <div class="stat"><div class="k">Citizens paying up</div><div class="v" id="nPayers">0</div></div>
   </section>
-  <h2>High scores <span class="order" id="order"><button data-order="total" class="on">Lifetime</button><button data-order="sprint">Sprint (30 min)</button></span></h2>
+  <h2>High scores</h2>
+  <div class="score-controls" id="order"><button data-order="pace" class="on">Same playtime</button><button data-order="total">Lifetime</button><label id="minuteLabel">At minute <input id="scoreMinute" type="number" min="1" step="1" value="1" aria-label="Compare scores at active minute"></label><button id="myMinute">My minute</button></div>
   <div class="card" id="scores"></div>
   <h2>Latest 10 transactions</h2>
   <div class="card" id="recent"></div>
@@ -85,9 +87,37 @@ function fmt(n) {
 }
 const ago = ts => { const s = Math.max(0, (Date.now() - ts) / 1000); return s < 90 ? 'just now' : s < 3600 ? Math.round(s / 60) + 'm ago' : s < 86400 ? Math.round(s / 3600) + 'h ago' : Math.round(s / 86400) + 'd ago'; };
 const RANKS = ['Runner', 'Shop Owner', 'District Overlord', 'Regional Nutrient Baron', 'Supreme Ministry of Eating'];
-const SPRINT_S = 1800;
-let order = 'total'; // or 'sprint': lifetime credits at thirty minutes of play, the same clock for everyone
-document.getElementById('order').addEventListener('click', e => { const b = e.target.closest('[data-order]'); if (!b) return; order = b.dataset.order; [...document.querySelectorAll('[data-order]')].forEach(x => x.classList.toggle('on', x === b)); render(); });
+const qs = new URLSearchParams(location.search);
+let order = qs.get('order') === 'total' ? 'total' : 'pace';
+let minute = Number(qs.get('minute'));
+function mySave() { try { return JSON.parse(localStorage.getItem('musteat_save' + (qs.get('slot') ? '_' + qs.get('slot') : ''))) || {}; } catch (e) { return {}; } }
+function myMinute() { const s = mySave(); return Object.keys(s.pace || {}).map(Number).sort((a, b) => b - a)[0] || Math.max(1, Math.floor((s.played || 0) / 60)); }
+if (!Number.isSafeInteger(minute) || minute < 1) minute = myMinute();
+$('order').addEventListener('click', e => { const b = e.target.closest('[data-order]'); if (!b) return; order = b.dataset.order; render(); });
+$('scoreMinute').addEventListener('change', e => { const n = Number(e.target.value); if (Number.isSafeInteger(n) && n > 0) minute = n; e.target.value = minute; render(); });
+$('myMinute').addEventListener('click', () => { minute = myMinute(); render(); });
+// Playtime scores. Keep this read/rank block identical in ledger.html (both pages work standalone).
+function readPace(row) {
+  const out = {};
+  Object.keys(row).filter(k => /^pace\d+$/.test(k)).forEach(k => {
+    try {
+      const page = JSON.parse(row[k]);
+      if (!page || typeof page !== 'object' || Array.isArray(page)) return;
+      Object.keys(page).forEach(m => {
+        const minute = Number(m), score = page[m];
+        if (Number.isSafeInteger(minute) && minute > 0 && String(minute) === m && Math.floor(minute / 500) === Number(k.slice(4)) && typeof score === 'number' && Number.isFinite(score) && score >= 0) out[m] = score;
+      });
+    } catch (e) {} // Old clients and missing/malformed history have no score, never a fabricated zero.
+  });
+  return out;
+}
+function rankedScores(players, mode, minute) {
+  const rows = players.map(p => ({ p, score: mode === 'total' ? Number(p.total) || 0 : readPace(p)[minute] }))
+    .filter(r => Number.isFinite(r.score)).sort((a, b) => b.score - a.score || String(a.p.name || '').localeCompare(String(b.p.name || '')) || String(a.p.id).localeCompare(String(b.p.id)));
+  rows.forEach((r, i) => { r.place = i && r.score === rows[i - 1].score ? rows[i - 1].place : i + 1; });
+  return rows;
+}
+// End shared playtime scores.
 async function read(table) {
   if (CONFIG.SHEET_API) { try { const r = await fetch(CONFIG.SHEET_API + (CONFIG.SHEET_API.includes('?') ? '&' : '?') + 'table=' + table + '&t=' + Date.now()); if (r.ok) return await r.json(); } catch (e) {} return []; }
   try { return (JSON.parse(localStorage.getItem(CONFIG.SHEET_KEY)) || {})[table] || []; } catch (e) { return []; }
@@ -96,8 +126,14 @@ const sum = (arr, f) => arr.reduce((a, r) => a + (f(r) || 0), 0);
 const groupSum = (arr, key) => { const m = {}; arr.forEach(r => { const k = r[key]; if (!m[k]) m[k] = { id: k, total: 0, n: 0, rows: [] }; m[k].total += Number(r.amount) || 0; m[k].n++; m[k].rows.push(r); }); return Object.values(m).sort((a, b) => b.total - a.total); };
 const nameOf = (players, id, fallback) => { const p = players.find(x => x.id === id); return p ? p.name : fallback || 'someone'; };
 
+let generation = 0;
 async function render() {
+  const thisGeneration = ++generation;
+  document.querySelectorAll('[data-order]').forEach(b => b.classList.toggle('on', b.dataset.order === order));
+  $('minuteLabel').hidden = order !== 'pace'; $('myMinute').hidden = order !== 'pace';
+  if (document.activeElement !== $('scoreMinute')) $('scoreMinute').value = minute;
   const [players, ledger] = await Promise.all([read('players'), read('ledger')]);
+  if (thisGeneration !== generation) return;
   const rows = (ledger || []).map(r => Object.assign({}, r, { amount: Number(r.amount) || 0, ts: Number(r.ts) || 0 }));
   $('mode').textContent = (CONFIG.SHEET_API ? 'connected to the company sheet' : 'local sheet (this browser only)') + ' · refreshes every ' + (CONFIG.SHEET_API ? 30 : 10) + 's';
   $('nRows').textContent = rows.length.toLocaleString();
@@ -123,9 +159,14 @@ async function render() {
   }).join('') : '<div class="empty">Nothing to show.</div>';
 
   const fromRunners = {}; earners.forEach(e => { fromRunners[e.id] = e.total; });
-  const scores = players.map(p => ({ p, total: Number(p.total) || 0, sprint: Number(p.sprint) || 0, played: Number(p.played) || 0, fr: fromRunners[p.id] || 0, runners: players.filter(q => q.ref === p.code).length })).sort((a, b) => b[order] - a[order] || b.total - a.total);
-  $('scores').innerHTML = scores.length ? `<table><tr><th>#</th><th>Citizen</th><th>Shop</th><th class="r ${order === 'total' ? 'gold' : ''}">Earned</th><th class="r ${order === 'sprint' ? 'gold' : ''}" title="Lifetime credits at thirty minutes of play. Same clock for everyone.">Sprint</th><th class="r">From runners</th><th class="r">Share</th><th class="r">Runners</th><th class="r">Seen</th></tr>` +
-    scores.slice(0, 30).map((s, i) => `<tr><td>${i + 1}</td><td>${esc(s.p.name)}${s.p.stamps ? ' <span class="gold">★' + esc(s.p.stamps) + '</span>' : ''}<div class="muted">${RANKS[Number(s.p.rank) || 0]}${s.p.dept ? ' · ' + esc(s.p.dept) : ''}</div></td><td>${esc(s.p.shopName || '—')}</td><td class="r">₵${fmt(s.total)}</td><td class="r">₵${fmt(s.sprint)}${s.played < SPRINT_S ? '<div class="muted">' + Math.floor(s.played / 60) + ' min in</div>' : ''}</td><td class="r gold">${s.fr ? '₵' + fmt(s.fr) : '—'}</td><td class="r muted">${s.total && s.fr ? Math.round(100 * s.fr / s.total) + '%' : ''}</td><td class="r">${s.runners}</td><td class="r muted">${s.p.lastSeen ? ago(Number(s.p.lastSeen)) : ''}</td></tr>`).join('') + `</table><p class="muted">Sprint: lifetime credits at thirty minutes with the tab open. Everyone gets the same thirty minutes. Lifetime is the long con.</p>` : '<div class="empty">No citizens yet.</div>';
+  const scores = rankedScores(players, order, minute);
+  const shown = scores.slice(0, 30), ownId = mySave().id;
+  const me = scores.find(r => r.p.id === ownId);
+  if (me && !shown.includes(me)) shown.push(me);
+  const label = order === 'pace' ? 'At minute ' + minute : 'Lifetime';
+  const note = order === 'pace' ? 'Total earnings at exactly ' + minute + ' active minute(s), including income earned while away. Players further ahead use their saved score at this minute. ' + (players.length - scores.length) + ' citizen(s) have no recorded score here yet. Existing saves begin at their next full minute; earlier scores are not reconstructed.' : 'All lifetime earnings. The economy keeps running while you are away.';
+  $('scores').innerHTML = (scores.length ? `<table><tr><th>#</th><th>Citizen</th><th>Shop</th><th class="r gold">${label}</th><th class="r">Active now</th><th class="r">From runners now</th><th class="r">Runners now</th></tr>` +
+    shown.map(({ p, score, place }) => `<tr class="${p.id === ownId ? 'me' : ''}"><td>${place}</td><td>${esc(p.name)}${p.stamps ? ' <span class="gold">★' + esc(p.stamps) + '</span>' : ''}<div class="muted">${RANKS[Number(p.rank) || 0]}${p.dept ? ' · ' + esc(p.dept) : ''}</div></td><td>${esc(p.shopName || '—')}</td><td class="r">₵${fmt(score)}</td><td class="r">${Math.floor((Number(p.played) || 0) / 60)} min</td><td class="r gold">${fromRunners[p.id] ? '₵' + fmt(fromRunners[p.id]) : '—'}</td><td class="r">${players.filter(q => q.ref === p.code).length}</td></tr>`).join('') + '</table>' : '<div class="empty">No recorded scores at this minute yet. Choose another minute, or keep running. Lifetime scores are available above.</div>') + '<p class="muted">' + note + '</p>' + (order === 'pace' && ownId && !me ? '<p class="muted">You have no saved score at this minute yet.</p>' : '');
 
   const recent = rows.slice().sort((a, b) => b.ts - a.ts).slice(0, 10);
   $('recent').innerHTML = recent.length ? `<table><tr><th>When</th><th>From</th><th></th><th>To</th><th class="r">Level</th><th class="r">Amount</th></tr>` +

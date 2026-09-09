@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MustEat — Year 3019</title>
+<title>MustEat — Year 2099</title>
 <meta name="description" content="Going outside is illegal. Everyone must eat. Run deliveries, open a shop, recruit colleagues and take 10% of everything they earn. Forever.">
-<meta property="og:title" content="MustEat — Year 3019">
+<meta property="og:title" content="MustEat — Year 2099">
 <meta property="og:description" content="Going outside is illegal. Everyone must eat. Run deliveries, open a shop, recruit colleagues and take 10% of everything they earn. Forever.">
 <meta property="og:type" content="website">
 <!-- Slack only unfurls absolute image URLs. Replace with https://<host>/<path>/og.png once the app has a home. -->
@@ -65,9 +65,8 @@ h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);m
 .item .need{font-size:11px;color:var(--gold)}
 .item button{min-width:96px;white-space:nowrap}
 .item .body{flex:1;min-width:0}
-/* Icon slot on every technology line. Empty on purpose: drop an image at media/icons/<id>.png and add
-   .ico[data-ico="trainers"]{background-image:url(media/icons/trainers.png)} for each one. */
-.item .ico{flex:0 0 40px;width:40px;height:40px;border:1px dashed #2c3b40;border-radius:4px;background:#000 center/contain no-repeat;align-self:center}
+/* Compact technology identifiers keep every row recognisable without external icon assets. */
+.item .ico{flex:0 0 36px;width:36px;height:36px;border:1px solid #2c3b40;border-radius:4px;background:#000;align-self:center;display:grid;place-items:center;color:var(--blue);font-size:11px;letter-spacing:1px}
 .item.locked .ico{border-style:dotted}
 .rev{text-align:right;min-width:92px;font-size:10px;color:var(--dim);white-space:nowrap;letter-spacing:.3px}
 .rev b{display:block;font-size:12px;font-weight:600;color:var(--fg)}
@@ -118,6 +117,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .box{background:var(--panel);border:1px solid var(--acc);padding:18px;max-width:460px;width:100%;box-shadow:0 0 40px rgba(57,255,20,.2)}
 .box h3{margin:0 0 8px;color:#fff;letter-spacing:1px}
 .box textarea{width:100%;font:inherit;font-size:13px;padding:8px;background:#000;color:#fff;border:1px solid var(--line);margin:8px 0;resize:vertical}
+.box .recovery-code{font-size:11px;overflow-wrap:anywhere;word-break:break-all}.box .error{color:#ffb3c0;font-size:12px}.box{max-height:90vh;overflow-y:auto}
 .box input,.box select{width:100%;font:inherit;padding:8px;background:#000;color:#fff;border:1px solid var(--line);margin:8px 0}
 .box input[readonly]{color:var(--acc);border-style:dashed;cursor:not-allowed}
 .box .big2{width:100%;padding:12px;font-weight:bold;background:var(--acc);color:#000;border:none;margin-top:6px}
@@ -217,6 +217,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .intro .lines p:nth-child(1){animation-delay:.1s}.intro .lines p:nth-child(2){animation-delay:.5s}.intro .lines p:nth-child(3){animation-delay:1.1s}
 .intro .lines p:nth-child(4){animation-delay:1.8s}.intro .lines p:nth-child(5){animation-delay:2.3s}.intro .lines p:nth-child(6){animation-delay:2.9s}
 .intro .yr{font-size:34px;letter-spacing:8px;color:#fff;text-shadow:0 0 14px rgba(255,255,255,.35)}
+.intro .sys{font-size:20px;letter-spacing:3px;color:var(--warn);text-shadow:0 0 12px #ff3b5c44}
 .intro .big{font-size:24px;letter-spacing:5px;color:var(--acc);text-shadow:0 0 10px var(--acc),0 0 30px var(--acc);animation:fadeup .6s ease-out forwards,flicker 2.2s 3.6s infinite}
 .intro .skip{position:absolute;left:0;right:0;bottom:34px;text-align:center;font-size:10px;color:var(--dim);letter-spacing:3px;text-transform:uppercase}
 .intro .skip i{display:block;height:2px;width:200px;margin:0 auto 8px;background:#101617;position:relative;overflow:hidden}
@@ -226,16 +227,44 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 @keyframes fill{to{width:100%}}
 @keyframes flicker{0%,88%,100%{opacity:1}90%{opacity:.35}93%{opacity:1}96%{opacity:.6}}
 @media(max-width:520px){.intro .lines{font-size:14px}.intro .yr{font-size:28px}.intro .big{font-size:20px}}
+.next-goal{border:1px solid #426133;background:linear-gradient(110deg,#172511,var(--panel));padding:12px;margin:0 0 12px;display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:center}
+.next-goal .eyebrow,.operation .eyebrow,.empire-live .eyebrow{display:block;color:var(--dim);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
+.next-goal strong{color:#fff;font-size:16px}.next-goal .bar{grid-column:1/-1;margin:4px 0 0;height:5px}.next-goal .bar i{background:var(--acc)}
+.next-goal .goal-detail{color:var(--dim);font-size:11px}.next-goal button{grid-column:2;grid-row:1/4;max-width:150px;font-size:12px}
+.focus-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.focus-grid .operation,.focus-grid .empire-live{margin-bottom:0;min-width:0}.focus-grid .empire-live{display:block}.focus-grid .empire-live button{margin-top:6px}
+.operation{position:relative;border:1px solid var(--line);background:linear-gradient(#0e191e,#080d0f);height:135px;overflow:hidden;margin-bottom:12px;padding:10px 12px}
+.operation .scene-name{font-size:12px;color:var(--blue)}.operation .district{position:absolute;bottom:28px;left:0;right:0;height:43px;background:repeating-linear-gradient(90deg,transparent 0 30px,#15252b 30px 58px,transparent 58px 65px);opacity:.7}
+.operation .route{position:absolute;bottom:24px;left:0;right:0;border-top:1px dashed #35533d}.operation .airlock{position:absolute;right:14px;bottom:25px;height:50px;width:35px;border:2px solid #466a50;border-bottom:none;background:#0b1310;box-shadow:inset 0 0 12px #39ff1420}.operation .airlock::after{content:'';position:absolute;left:14px;top:5px;bottom:0;border-left:1px solid #466a50}
+.operation .courier{position:absolute;bottom:24px;left:-50px;width:40px;height:32px;color:var(--acc);animation:delivery-route 8s linear infinite}.operation .courier.second{animation-delay:-4s;opacity:.5}.operation .courier.air{bottom:42px;color:var(--blue)}
+.operation .scene-foot{position:absolute;bottom:4px;left:12px;right:12px;display:flex;justify-content:space-between;font-size:9px;letter-spacing:1px;color:var(--dim)}
+@keyframes delivery-route{0%{left:-50px;opacity:0}8%{opacity:1}85%{opacity:1}100%{left:calc(100% - 35px);opacity:0}}
+.empire-live{border-left:2px solid var(--gold);background:var(--panel);padding:10px 12px;margin-bottom:14px;display:flex;align-items:center;gap:14px}.empire-live .body{flex:1;min-width:0}.empire-live p{font-size:12px;margin:3px 0}.empire-live .nodes{display:flex;flex-wrap:wrap;gap:4px;margin:7px 0 0}.empire-live .nodes span{font-size:10px;border:1px solid var(--line);padding:2px 5px;color:var(--gold)}.empire-live button{font-size:11px}
+.rush-clock{color:var(--gold);border:1px solid #76602d;background:#211e10;padding:7px 10px;margin:8px auto 0;max-width:440px;font-size:13px}.rush-clock b{font-size:18px;color:#fff}
+.protection-tab{position:fixed;right:0;top:42%;z-index:8;padding:12px 10px;background:#151b1d;border:1px solid #4b3b40;border-right:0;border-radius:6px 0 0 6px;writing-mode:vertical-rl;color:#d1a5ad;font-size:11px;letter-spacing:1px}.protection-tab[hidden]{display:none}
+.drawer-shade{position:fixed;inset:0;background:#0009;z-index:11}.protection-drawer{position:fixed;right:0;top:0;bottom:0;width:min(380px,100%);z-index:12;background:var(--panel);border-left:1px solid #554047;padding:20px;overflow-y:auto;box-shadow:-12px 0 50px #0008}.drawer-head{display:flex;gap:12px;align-items:center;justify-content:space-between}.drawer-head h2{border:0;margin:0;color:#fff}.protection-drawer .banner{margin-top:16px}.protection-drawer .banner summary{padding:10px 0}.protection-drawer .banner .more{padding:0 0 12px}.protection-drawer details.banner[open]{border-color:transparent;border-bottom-color:var(--line)}
+.score-controls{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 0;font-size:12px}.score-controls button{font-size:11px}.score-controls .on{border-color:var(--acc);color:var(--acc)}.score-controls input{width:76px;background:#000;color:var(--fg);border:1px solid var(--line);padding:5px;font:inherit}.score-controls label{margin-left:auto}.score-note{font-size:11px;color:var(--dim)}
+#dispatch .bar i{background:var(--blue)}#dispatch .contract-name{color:#fff}#dispatch .contract-status{color:var(--blue);font-size:12px}
+.dispatch-shell{position:relative;isolation:isolate}
+.contract-burst{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;border:1px solid transparent;animation:contract-afterglow 1450ms ease-out both}
+.contract-burst::before{content:'';position:absolute;inset:-60% -40%;background:linear-gradient(110deg,transparent 35%,#4cc9f01a 43%,#c5f8ff88 49%,#ffffffa6 50%,#4cc9f033 54%,transparent 63%);transform:translateX(-85%);animation:contract-sweep 440ms cubic-bezier(.16,.65,.3,1) both}
+.contract-burst::after{content:'';position:absolute;left:22%;top:45%;width:110px;height:110px;border:1px solid #b9f6ffb3;border-radius:50%;background:radial-gradient(circle,transparent 58%,#4cc9f026 68%,transparent 72%);box-shadow:0 0 15px #4cc9f044,inset 0 0 12px #4cc9f026;animation:contract-ripple 580ms cubic-bezier(.1,.55,.2,1) both}
+.contract-burst i{position:absolute;left:var(--x);top:var(--y);width:var(--size);height:2px;background:#a9efff;box-shadow:0 0 5px #4cc9f0;opacity:0;animation:contract-mote var(--life) var(--delay) ease-out both}
+@keyframes contract-sweep{0%{transform:translateX(-85%);opacity:0}15%{opacity:.9}100%{transform:translateX(85%);opacity:0}}
+@keyframes contract-ripple{0%{transform:translate(-50%,-50%) scale(.08);opacity:0}12%{opacity:.8}100%{transform:translate(-50%,-50%) scale(7);opacity:0}}
+@keyframes contract-afterglow{0%{border-color:#a9efff99;box-shadow:0 0 18px #4cc9f035,inset 0 0 30px #4cc9f01f}32%{border-color:#4cc9f055;box-shadow:0 0 10px #4cc9f018,inset 0 0 16px #4cc9f00d}100%{border-color:transparent;box-shadow:0 0 0 transparent,inset 0 0 0 transparent}}
+@keyframes contract-mote{0%{opacity:0;transform:translate(0,0) scaleX(.3)}12%{opacity:.55}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scaleX(.25)}}
+@media(prefers-reduced-motion:reduce){.contract-burst{border-color:#4cc9f066}.contract-burst::before,.contract-burst::after,.contract-burst i{display:none}}
+@media(max-width:800px){.protection-tab{top:auto;bottom:14px;right:10px;writing-mode:horizontal-tb;border:1px solid #4b3b40;border-radius:20px;padding:8px 12px;letter-spacing:0}.wrap{padding-bottom:70px}}
+@media(max-width:520px){.focus-grid{grid-template-columns:1fr}.focus-grid .operation{height:115px}.focus-grid .empire-live{display:flex}.focus-grid .empire-live button{margin-top:0}.protection-drawer{top:auto;left:0;width:100%;max-height:82vh;border-left:0;border-top:1px solid #554047;border-radius:14px 14px 0 0;padding:16px 16px 30px}.next-goal{gap:5px 8px}.next-goal strong{font-size:14px}.next-goal button{max-width:108px;padding:6px 8px}.empire-live{gap:8px}.score-controls label{margin-left:0}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.operation .courier{left:38%;opacity:1}.operation .courier.second{left:62%;opacity:.5}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 3019. Lockdown day 336,041. Going outside is illegal. Everyone must eat.</div></div>
+    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 2099. Lockdown day <span id="lockdownDay">336,041</span>. City access: restricted. Going outside is illegal. Food is as scarce as federation credits.</div></div>
     <div class="rankbox" id="rank"></div>
   </header>
-  <details id="recruiter" class="banner" hidden><summary id="recruiterS"></summary><div class="more" id="recruiterM"></div></details>
-  <details id="gang" class="banner" hidden><summary id="gangS"></summary><div class="more" id="gangM"></div></details>
   <div id="supply" class="banner good" hidden></div>
   <section class="stats">
     <div class="stat"><div class="k">Credits</div><div class="v" id="cash">0</div></div>
@@ -250,10 +279,14 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
     <div id="order" class="order">Tap to run your first delivery. Mind the acid rain.</div>
     <div id="loot" class="loot" hidden></div>
     <div id="fx" class="fx"></div>
+    <div id="rushClock" class="rush-clock" hidden></div>
     <div id="ration" class="row" style="justify-content:center"></div>
   </section>
+  <div id="nextGoal" class="next-goal"></div>
+  <div class="focus-grid"><div id="operation" class="operation"></div><div id="empireLive" class="empire-live"></div></div>
   <section><h2>Technology <span class="qty" id="qty"></span></h2><div id="gear"></div></section>
   <section><h2>Upgrades</h2><div id="upgrades"></div></section>
+  <section id="dispatchSection" hidden><h2>Airlock contracts <span class="muted">Your own route up</span></h2><div id="dispatchShell" class="dispatch-shell"><div id="dispatch" class="card"></div></div></section>
   <section><h2>Your shop &amp; runners</h2><div id="shop" class="card"></div></section>
   <section><h2>Supply chain</h2><div class="hint">Buildings. Credits buy them, but only people unlock them: each one needs runners under you. A building makes your runners earn more and makes your cut of it bigger. That is the whole trick.</div><div id="buildings"></div></section>
   <section><h2>The Ministry</h2><div id="ministry" class="card"></div></section>
@@ -261,7 +294,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <section><h2>Commendations</h2><div id="ach" class="card"></div></section>
   <section><h2>The company</h2><div id="company" class="card"></div></section>
   <section><h2>Sectors by department</h2><div id="sectors" class="card"></div></section>
-  <section><h2>High scores</h2><div id="board" class="card"></div></section>
+  <section><h2>High scores</h2><div class="score-controls"><button data-score="pace" class="on">Same playtime</button><button data-score="total">Lifetime</button><label id="minuteLabel">At minute <input id="scoreMinute" type="number" min="1" step="1" value="1" aria-label="Compare scores at active minute"></label><button id="myMinute">My minute</button></div><div id="board" class="card"></div></section>
   <section><h2>Log</h2><div id="log" class="log"></div></section>
   </div>
   <div id="tab-portfolio" hidden>
@@ -269,17 +302,27 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <section><h2>Your runners' businesses</h2><div id="pfRunners"></div></section>
   <section><h2>Trophy cabinet</h2><div id="portfolio"></div></section>
   </div>
-  <footer>MustEat is a game. Please do not start an actual pyramid scheme. · <span id="mode"></span> · <a href="ledger.html" target="_blank">high scores</a> · <a href="#" id="reset">reset save</a> <span id="localtools"></span></footer>
+  <footer>MustEat is a game. Please do not start an actual pyramid scheme. · <span id="mode"></span> · <a href="ledger.html" target="_blank">high scores</a> · <a href="#" data-act="saveInfo">your save</a> · <a href="#" data-act="replayIntro">replay intro</a> · <a href="#" id="reset">reset save</a> <span id="localtools"></span></footer>
 </div>
+<button id="protectionTab" class="protection-tab" aria-controls="protectionDrawer" aria-expanded="false" hidden>Protection · −15%</button>
+<div id="drawerShade" class="drawer-shade" hidden></div>
+<aside id="protectionDrawer" class="protection-drawer" role="dialog" aria-modal="true" aria-labelledby="protectionTitle" hidden>
+  <div class="drawer-head"><h2 id="protectionTitle">The cost of doing business</h2><button id="closeProtection" aria-label="Close protection panel">✕</button></div>
+  <p id="protectionSummary" class="muted"></p>
+  <details id="recruiter" class="banner" hidden><summary id="recruiterS"></summary><div class="more" id="recruiterM"></div></details>
+  <details id="gang" class="banner" hidden><summary id="gangS"></summary><div class="more" id="gangM"></div></details>
+  <div class="row"><button data-act="share">Recruit a runner</button></div>
+  <p class="muted">The gang leaves when your first runner joins. Opening a shop removes the recruiter deduction. Franchise royalties continue.</p>
+</aside>
 <div id="crate" class="crate" title="Unmarked ration crate. Take it." hidden>📦</div>
 <div id="intro" class="intro" hidden>
   <div class="rainbg"></div><div class="vignette"></div>
   <div class="lines">
     <p class="yr">2099.</p>
-    <p>The money stopped being worth anything. Then the air did.</p>
-    <p>A fever came in through the vents. The Ministry sealed the doors and called it Tuesday.</p>
-    <p class="yr">3019.</p>
-    <p>The doors are still sealed. Going outside is illegal, unless you are carrying food.</p>
+    <p>The Ministry patched the city overnight. Doors locked. Accounts frozen. Cameras stayed on.</p>
+    <p>Your name is a number now. Your hunger is a subscription.</p>
+    <p class="sys">ACCESS DENIED.</p>
+    <p>One loophole survived the update: food couriers can go outside. Someone leaked you a login.</p>
     <p class="big">EVERYONE MUST EAT.</p>
   </div>
   <div class="skip"><i></i><span>tap anywhere</span></div>
@@ -300,13 +343,15 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 const CONFIG = {
   SHEET_API: 'https://script.google.com/macros/s/AKfycbxOJetGrJ2DQaaXUVJWdURPZDnkLWAuL5WxRXU3EUiAcdqb9czgCgUG6VY90YAGy7N_Qg/exec',
   SAVE_KEY: 'musteat_save',
+  LOCKDOWN_DAY: 336041,       // one fictional lockdown day per real minute since this save began
   SHEET_KEY: 'musteat_sheet',
   SHOP_COST: 5000,
   DRONE_COST: 2500,
   CONTRACTS_COST: 4000,
   VOUCHER_COST: 200,
   VOUCHER_BONUS: 250,
-  RATION_H: 20,               // hours between daily ration claims
+  RATION_MIN_H: 1,            // each claim draws a fixed next wait in whole hours
+  RATION_MAX_H: 6,
   DECREE_H: 24,               // hours between Ministry decrees
   DECREE_MIN: 10,             // minutes a decree lasts
   OFFLINE_FULL_H: 8,
@@ -316,7 +361,6 @@ const CONFIG = {
   GANG_TAX: 0.15,             // the local gang's cut of everyone with no runners. Recruit one and they move on to them
   REVEAL_S: 120,              // seconds of play before the recruiter and the gang introduce themselves. The cut was always there
   SYNC_S: 30,
-  SPRINT_S: 1800,             // seconds of open-tab play after which the sprint score locks
   INTRO_S: 5,                 // seconds the first-visit splash stays before it moves on by itself
   CRATE_MIN_S: 300,           // unmarked ration crates: seconds between them, plus up to CRATE_RANGE_S
   CRATE_RANGE_S: 600,
@@ -338,6 +382,7 @@ const now = () => Date.now();
 const rnd = a => a[Math.floor(Math.random() * a.length)];
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const uid = p => (p || '') + Math.random().toString(36).slice(2, 10);
+const playerId = () => 'p' + [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join('');
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const H = 3600000;
 
@@ -532,7 +577,7 @@ const DECREES = {
 };
 const DEPTS = ['Engineering', 'Product', 'Design', 'Sales', 'Marketing', 'Finance', 'People', 'Operations', 'Legal', 'Leadership', 'Other'];
 const SHARE = [
-  "I'm running food deliveries in MustEat (it's the year 3019, it's a whole thing). Join as my runner and I get 10% of everything you earn. Forever. {link}",
+  "I'm running food deliveries in MustEat (it's the year 2099, it's a whole thing). Join as my runner and I get 10% of everything you earn. Forever. {link}",
   "I've opened a shop in MustEat and I need runners. It's legal. Probably. {link}",
   "I now control a district in MustEat. I need 4 runners to become Regional Nutrient Baron. Don't ask questions. {link}",
   "Regional Nutrient Baron here. The Ministry is watching. I need bodies. Warm ones, ideally. {link}",
@@ -560,7 +605,7 @@ const ORDERS = [
   '1x Nutrient Paste (Chicken Flavour). Leave at airlock.',
   '2x Reconstituted Pizza. Do not make eye contact.',
   'Family bucket of Synthetic Wings. Family unconfirmed.',
-  '1x Soup. Customer has been waiting since 2987.',
+  '1x Soup. Customer has been waiting since 2087.',
   'Emergency Kebab. Code Red. Extra chilli.',
   '1x Salad. Nobody knows why.',
   'Birthday cake for Unit 4471-B. Candles confiscated.',
@@ -577,7 +622,7 @@ const ORDERS = [
   'Chips. Just chips. Customer is crying on the intercom.',
 ];
 const CUSTOMERS = ['Unit 4471-B', 'Citizen 90210', 'someone called "Dave"', 'The Ministry (unofficially)', 'a hungry drone', 'Flat 9, The Dome', 'Bunker 12', 'the night shift at Vat Farm 3', 'your old manager', 'a suspiciously large child'];
-const SHOP_NAMES = ['Kebabsolute Zero', 'Sushi Containment Unit 7', 'Pizza Quarantine', 'The Nutrient Hut', 'Wok of Ages', 'Curry Bunker', 'Burger Dome (Sealed)', 'Noodle Perimeter', 'Fry Sector', 'Soup Ration Station', 'Taco Isolation Ward', 'Biryani Airlock', 'Chip Shop 3019', 'Falafel Fortress', 'Gyros Exclusion Zone', 'Bao Bunker', 'Doner Decontamination', 'Pho Shelter Nine', 'Ramen Redoubt', 'Wing Command', 'Pasta La Vista (Closed 2099, Reopened)', 'The Hungry Variant'];
+const SHOP_NAMES = ['Kebabsolute Zero', 'Sushi Containment Unit 7', 'Pizza Quarantine', 'The Nutrient Hut', 'Wok of Ages', 'Curry Bunker', 'Burger Dome (Sealed)', 'Noodle Perimeter', 'Fry Sector', 'Soup Ration Station', 'Taco Isolation Ward', 'Biryani Airlock', 'Chip Shop 2099', 'Falafel Fortress', 'Gyros Exclusion Zone', 'Bao Bunker', 'Doner Decontamination', 'Pho Shelter Nine', 'Ramen Redoubt', 'Wing Command', 'Pasta La Vista (Closed 2099, Reopened)', 'The Hungry Variant'];
 const FAKE_NAMES = ['Priya', 'Dave', 'Tomasz', 'Aisha', 'Marco', 'Ingrid', 'Kwame', 'Sofia', 'Liam', 'Yuki', 'Fatima', 'Ben', 'Chloe', 'Rafael', 'Nadia', 'Olu', 'Hannah', 'Sven', 'Mei', 'Jorge', 'Zara', 'Pat', 'Anika', 'Diego', 'Lena', 'Ravi', 'Greta', 'Sam', 'Noor', 'Felix', 'Ida', 'Kofi', 'Elena', 'Tariq', 'Maja'];
 
 // ---------------- State ----------------
@@ -590,9 +635,10 @@ function fresh() {
     portfolio: [], offer: null, franchiseOf: null, franchiseName: null, tab: 'run', msSeen: 0,
     heat: 0, fx: {}, nextEvent: now() + 45000,
     down: { list: [], credited: 0, at: 0, paid: {} }, up: [], known: {},
-    ration: 0, lastDecree: 0, decreesSeen: [], rankSeen: 0,
+    ration: 0, rationDue: 0, lastDecree: 0, decreesSeen: [], rankSeen: 0,
     log: [], lastSeen: now(), created: now(), lastOrder: null,
-    played: 0, sprint: null,   // seconds with the tab open; lifetime credits when that hit SPRINT_S
+    played: 0, pace: {},       // active seconds; immutable lifetime-earnings snapshots at each complete minute
+    dispatch: { done: 0, active: null }, lastSocial: null, pendingRush: null,
     told: {},                  // when the recruiter (rec) and the gang (gang) were revealed, so it happens once
   };
 }
@@ -604,10 +650,14 @@ function load() {
     // v2 stamps came from a runaway economy (₵100K base, +10% each, linear). Recompute under the current rule and cap.
     if (s.v < 3) s.stamps = Math.min(s.stamps || 0, Math.floor(Math.cbrt(Math.max(0, s.total || 0) / CONFIG.STAMP_BASE)));
     const m = Object.assign(fresh(), s); m.v = 3;
+    if (!m.pace || typeof m.pace !== 'object' || Array.isArray(m.pace)) m.pace = {};
+    if (!m.dispatch || typeof m.dispatch !== 'object') m.dispatch = { done: 0, active: null };
     return m;
   } catch (e) { return null; }
 }
+let replacingSave = false;
 function save() {
+  if (replacingSave) return;
   state.lastSeen = now();
   try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
 }
@@ -626,7 +676,7 @@ function log(text) {
 // tables, and this object is the only place that talks to storage. To move to another backend
 // (Toqan, a REST sheet, anything) replace the bodies of read, upsert and append and set
 // CONFIG.SHEET_API to anything non-empty. PORTING.md has the contract; NOTES.md has the columns.
-// players: id, code, name, ref, dept, total, meals, rank, shopName, buildings, stamps, sprint, played, lastSeen (+ claimed* written by a claimer)
+// players: id, code, name, ref, dept, total, meals, rank, shopName, buildings, stamps, played, paceVersion, pace0..N, lastSeen (+ claimed* written by a claimer)
 // events:  id, ts, pid, who, kind, arg, text, effect, amount, of
 // ledger:  id, ts, from, fromName, to, toName, level, kind, amount   (one row per credited cut or royalty)
 const Sheet = {
@@ -705,8 +755,8 @@ function buildWorld(rows) {
   rows.forEach(r => { w.byId[r.id] = r; w.dl[r.id] = downlineOf(rows, r); });
   w.citizens = rows.length;
   w.meals = rows.reduce((a, r) => a + (Number(r.meals) || 0), 0);
-  w.board = rows.map(p => ({ id: p.id, name: p.name, total: Number(p.total) || 0, sprint: Number(p.sprint) || 0, played: Number(p.played) || 0, stamps: Number(p.stamps) || 0, shopName: p.shopName || null, rank: Number(p.rank) || 0, dept: p.dept, buildings: p.buildings, runners: rows.filter(q => q.ref === p.code).length }))
-    .sort((a, b) => b.total - a.total).slice(0, 20);
+  w.board = rows.map(p => Object.assign({}, p, { total: Number(p.total) || 0, played: Number(p.played) || 0, runners: rows.filter(q => q.ref === p.code).length }))
+    .sort((a, b) => b.total - a.total);
   const depts = [...new Set(rows.map(r => r.dept || 'Unassigned'))];
   const shops = rows.filter(r => r.shopName);
   w.sectors = depts.map(d => {
@@ -718,10 +768,42 @@ function buildWorld(rows) {
   return w;
 }
 function rowOf(s) {
-  return { id: s.id, code: s.code, name: s.name, ref: s.ref, dept: s.dept, total: Math.floor(s.total), meals: Math.floor(s.deliveries), rank: rankOf(s), shopName: s.shop ? s.shop.name : null, buildings: bstr(s), stamps: s.stamps || 0, lastSeen: now(),
-    sprint: s.sprint != null ? s.sprint : Math.floor(s.total), played: Math.floor(s.played || 0),
-    offer: s.offer ? JSON.stringify(s.offer) : '', franchiseOf: s.franchiseOf || '', franchiseName: s.franchiseName || '' };
+  return Object.assign({ id: s.id, code: s.code, name: s.name, ref: s.ref, dept: s.dept, total: Math.floor(s.total), meals: Math.floor(s.deliveries), rank: rankOf(s), shopName: s.shop ? s.shop.name : null, buildings: bstr(s), stamps: s.stamps || 0, lastSeen: now(),
+    played: Math.floor(s.played || 0), paceVersion: 1,
+    offer: s.offer ? JSON.stringify(s.offer) : '', franchiseOf: s.franchiseOf || '', franchiseName: s.franchiseName || '' }, paceColumns(s.pace));
   // claimedBy / claimedName / claimedAt / claimedOffer are written onto this row by the colleague who takes a franchise; never by its owner.
+}
+// Playtime scores. Keep this read/rank block identical in ledger.html (both pages work standalone).
+function readPace(row) {
+  const out = {};
+  Object.keys(row).filter(k => /^pace\d+$/.test(k)).forEach(k => {
+    try {
+      const page = JSON.parse(row[k]);
+      if (!page || typeof page !== 'object' || Array.isArray(page)) return;
+      Object.keys(page).forEach(m => {
+        const minute = Number(m), score = page[m];
+        if (Number.isSafeInteger(minute) && minute > 0 && String(minute) === m && Math.floor(minute / 500) === Number(k.slice(4)) && typeof score === 'number' && Number.isFinite(score) && score >= 0) out[m] = score;
+      });
+    } catch (e) {} // Old clients and missing/malformed history have no score, never a fabricated zero.
+  });
+  return out;
+}
+function rankedScores(players, mode, minute) {
+  const rows = players.map(p => ({ p, score: mode === 'total' ? Number(p.total) || 0 : readPace(p)[minute] }))
+    .filter(r => Number.isFinite(r.score)).sort((a, b) => b.score - a.score || String(a.p.name || '').localeCompare(String(b.p.name || '')) || String(a.p.id).localeCompare(String(b.p.id)));
+  rows.forEach((r, i) => { r.place = i && r.score === rows[i - 1].score ? rows[i - 1].place : i + 1; });
+  return rows;
+}
+// End shared playtime scores.
+function paceColumns(history) {
+  const pages = {}, cols = {};
+  Object.entries(history || {}).forEach(([m, score]) => {
+    if (!Number.isSafeInteger(+m) || +m < 1 || !Number.isFinite(score) || score < 0) return;
+    const key = 'pace' + Math.floor(+m / 500);
+    (pages[key] || (pages[key] = {}))[m] = score;
+  });
+  Object.keys(pages).forEach(k => { cols[k] = JSON.stringify(pages[k]); });
+  return cols; // 500 snapshots per cell keeps long games below the spreadsheet cell-size limit.
 }
 // Events carry a kind and one plain-text argument. The feed renders them from templates, so nothing
 // anyone writes to the shared table is ever shown as HTML. text is a plain-text copy for other readers of the sheet.
@@ -796,7 +878,7 @@ function calc(s) {
   let value = 4 * ZONES[zone].mul * (1 + 0.10 * g('pod')) * RANKS[rank].mul;
   if (supply.factory) value *= 1.25;
   // Cookie Clicker layer: global upgrades, commendations, Ration Stamps.
-  value *= Math.pow(1.1, upgCount(s, u => u.glob)) * (1 + 0.02 * Object.keys(s.ach || {}).length) * stampMult(s.stamps);
+  value *= Math.pow(1.1, upgCount(s, u => u.glob)) * (1 + 0.02 * Object.keys(s.ach || {}).length) * stampMult(s.stamps) * (1 + contractBonus(s));
   let dpsMul = 1, valMul = 1;
   if ((s.fx.rain || 0) > t) { valMul *= 2; dpsMul *= 0.5; }
   if ((s.fx.viral || 0) > t) { dpsMul *= 2; }
@@ -821,19 +903,18 @@ function earn(amount, meals) {
 // ---------------- Tick ----------------
 let last = now();
 function frame() {
+  if (replacingSave) return;
   const t = now();
   const dt = (t - last) / 1000;
   last = t;
   if (dt <= 0) return;
   const c = calc(state);
   earn(c.income * dt, c.dps * dt);
-  if (!document.hidden) { // the sprint clock only runs while you are actually here
+  if (!document.hidden) {
+    const beforeMinute = Math.floor((state.played || 0) / 60);
     state.played = (state.played || 0) + Math.min(dt, 1);
-    if (state.sprint == null && state.played >= CONFIG.SPRINT_S) {
-      state.sprint = Math.floor(state.total);
-      log('<b>Thirty minutes on the clock.</b> Sprint score ₵' + fmt(state.sprint) + ', on the record. Lifetime keeps counting.');
-      toast('Sprint score locked: ₵' + fmt(state.sprint));
-    }
+    const minute = Math.floor(state.played / 60);
+    if (minute > beforeMinute && state.pace[minute] == null) state.pace[minute] = Math.floor(state.total);
   }
   state.heat = clamp(state.heat + dt * (0.03 + 0.01 * downCount() + 0.01 * Math.log10(1 + c.baseIncome)), 0, 100);
   crateTick(t);
@@ -880,7 +961,7 @@ function collectCrate() {
   let big, text, bonus = 0;
   if (first) { // always cash, enough for the first piece of tech, plus a rush, plus the explanation
     bonus = Math.max(60, Math.floor(c.value * 15 + c.income * 120));
-    earn(bonus, 0); state.fx.rush = t + 77000;
+    earn(bonus, 0); state.pendingRush = { bonus }; // Persist the unstarted reward if the player reloads while reading.
     log('<b>Unmarked ration crate:</b> ₵' + fmt(bonus) + ', a LUNCH RUSH (income ×7 for 77 seconds), and a note that said "eat".');
     big = '+₵' + fmt(bonus); text = '+₵' + fmt(bonus) + ' and a LUNCH RUSH: income ×7 for 77 seconds';
   } else if (r < 0.45) { state.fx.rush = t + 77000; log('<b>Unmarked ration crate:</b> LUNCH RUSH. Income ×7 for 77 seconds.'); big = '×7'; text = 'LUNCH RUSH: income ×7 for 77 seconds. Buy things now.'; }
@@ -908,18 +989,17 @@ function crateOpen(el, x, y, big, text) {
 function showFirstCrate(bonus) {
   modal(`<h3>📦 Unmarked ration crate</h3>
     <p>It was sitting in the airlock. No label, no sender, no questions. Inside: <b>₵${fmt(bonus)}</b> and a note. The note says <b>eat</b>.</p>
-    <p>Also, somehow, a <b>Lunch Rush</b>: income ×7 for the next 77 seconds. Spend the credits now.</p>
+    <p>Also, somehow, a <b>Lunch Rush</b>: income ×7 for 77 seconds. The clock starts when you press TAKEN. Buy tech, then watch it work.</p>
     <p class="muted">Crates like this fall every few minutes while the tab is open. Cash, lunch rushes, panic buying. Nobody is watching. Take them.</p>
     <button id="ok" class="big2">TAKEN</button>`);
-  $('ok').onclick = closeModal;
+  $('ok').onclick = () => { state.pendingRush = null; state.fx.rush = now() + 77000; closeModal(); save(); render(); };
 }
 
 // ---------------- The reveal ----------------
 // Both cuts apply from the first delivery. Nobody is told for two minutes, by which time they have worked out how to
 // run, earn and buy, and the news lands as news. Recruiter first, the gang a minute later. Never over another dialog.
-const WARN = '\u26a0';
 function checkReveal(c) {
-  if (!$('modal').hidden) return;
+  if (!$('modal').hidden || !$('protectionDrawer').hidden) return;
   const told = state.told || (state.told = {}), played = state.played || 0;
   const hasRec = !!state.franchiseOf || !!(state.ref && !state.shop);
   if (hasRec && !told.rec && played >= CONFIG.REVEAL_S) { told.rec = now(); revealRecruiter(c); return; }
@@ -1049,8 +1129,8 @@ function applyDownline(list) {
   const first = !state.down.at; // first ever sync: don't announce everyone who was already there
   list.forEach(m => {
     const prev = known[m.id];
-    if (prev === undefined) { if (!first && m.level === 1) log('<b>' + esc(m.name) + '</b> joined as your runner. 10% of everything they make is yours.'); }
-    else if (!prev && m.shopName) log('<b>' + esc(m.name) + '</b> opened ' + esc(m.shopName) + '. Betrayal. You still get your cut.');
+    if (prev === undefined) { if (!first && m.level === 1) { log('<b>' + esc(m.name) + '</b> joined as your runner. 10% of everything they make is yours.'); state.lastSocial = { text: m.name + ' joined your pyramid. The org chart has consequences.', at: now() }; } }
+    else if (!prev && m.shopName) { log('<b>' + esc(m.name) + '</b> opened ' + esc(m.shopName) + '. Betrayal. You still get your cut.'); state.lastSocial = { text: m.name + ' opened ' + m.shopName + '. You still get a cut. Entrepreneurship is relative.', at: now() }; }
     known[m.id] = m.shopName || '';
   });
   state.known = known;
@@ -1090,6 +1170,10 @@ function applyDownline(list) {
     rows.forEach(r => Sheet.append('ledger', r));
     world.fromRunners[state.id] = (world.fromRunners[state.id] || 0) + delta; // the board shows it now, not after the next sync
     log('Your runners earned you <b>₵' + fmt(delta) + '</b>. You did nothing. This is the dream.');
+    if (!state.lastSocial || now() - state.lastSocial.at > 60000) {
+      const best = rows.slice().sort((a, b) => b.amount - a.amount)[0];
+      state.lastSocial = { text: best.fromName + ' earned you ₵' + fmt(best.amount) + '. You contributed nothing.', at: now() };
+    }
   }
 }
 function applyDecrees(events) {
@@ -1106,7 +1190,7 @@ function applyDecrees(events) {
 }
 let syncing = false, syncAgain = false;
 async function sync() {
-  if (!state.id) return;
+  if (!state.id || replacingSave) return;
   if (syncing) { syncAgain = true; return; }
   syncing = true;
   try {
@@ -1225,22 +1309,29 @@ function cutInfo() {
   $('ok').onclick = closeModal;
   if ($('toShop')) $('toShop').onclick = () => { closeModal(); $('shop').scrollIntoView({ block: 'center', behavior: 'smooth' }); };
 }
+function rationWait() { return (CONFIG.RATION_MIN_H + Math.floor(Math.random() * (CONFIG.RATION_MAX_H - CONFIG.RATION_MIN_H + 1))) * H; }
+function nextRationAt(s = state) {
+  if (!s.ration) return 0;
+  // Old saves held only the last claim time. Give them a single new 1–6 hour wait.
+  if (!s.rationDue) s.rationDue = s.ration + rationWait();
+  return s.rationDue;
+}
 function rationInfo() {
   const c = calc(state), worth = Math.max(50, Math.floor(c.baseIncome * 600));
-  const left = state.ration + CONFIG.RATION_H * H - now();
-  modal(`<h3>The daily ration</h3>
-    <p>The Ministry issues one every <b>${CONFIG.RATION_H} hours</b> to anyone still alive. It is not food. It is credits, because the Ministry stopped pretending some time ago.</p>
+  const left = nextRationAt() - now();
+  modal(`<h3>The ration drop</h3>
+    <p>The Ministry issues one every <b>${CONFIG.RATION_MIN_H}–${CONFIG.RATION_MAX_H} hours</b> to anyone still alive. It is not food. It is credits, because the Ministry stopped pretending some time ago.</p>
     <p>It is worth about <b>ten minutes of your base income</b>, minimum ₵50. Right now that would be <b>₵${fmt(worth)}</b>, so the better your operation is when you claim it, the bigger it is.</p>
-    <p class="muted">Why ${CONFIG.RATION_H} hours and not 24: so tomorrow's is always ready when you get in. ${left > 0 ? 'Next one in ' + dur(left / 1000) + '.' : 'One is ready now.'} Do not question the colour.</p>
+    <p class="muted">The Ministry redraws the schedule after every claim. This timer stays fixed until the next drop. ${left > 0 ? 'Next one in ' + dur(left / 1000) + '.' : 'One is ready now.'} Do not question the colour.</p>
     <button id="ok" class="big2">UNDERSTOOD</button>`);
   $('ok').onclick = closeModal;
 }
 function claimRation() {
-  if (now() - state.ration < CONFIG.RATION_H * H) return;
+  if (now() < nextRationAt()) return;
   const c = calc(state); const gain = Math.max(50, Math.floor(c.baseIncome * 600));
-  earn(gain, 0); state.ration = now();
-  log('Collected your <b>daily ration</b>: ₵' + fmt(gain) + '. Nutrient Paste, Ration Grade, do not question the colour.');
-  render();
+  earn(gain, 0); state.ration = now(); state.rationDue = state.ration + rationWait();
+  log('Collected your <b>ration drop</b>: ₵' + fmt(gain) + '. Nutrient Paste, Ration Grade, do not question the colour.');
+  save(); render();
 }
 function openShopDialog() {
   if (state.cash < CONFIG.SHOP_COST) return;
@@ -1256,7 +1347,7 @@ function openShopDialog() {
     if (state.cash < CONFIG.SHOP_COST) return closeModal();
     state.cash -= CONFIG.SHOP_COST;
     state.shop = { name: ($('shopName').value.trim() || name).slice(0, 40), at: now() };
-    log('<b>You opened ' + esc(state.shop.name) + '.</b> You no longer pay anyone. Now you need runners.');
+    log('<b>You opened ' + esc(state.shop.name) + '.</b> Recruiter deduction removed.' + (calc(state).gang ? ' Protection still costs 15% until your first runner joins.' : '') + ' Now you need runners.');
     post('shop', state.shop.name);
     closeModal(); save(); sync(); render();
   };
@@ -1293,6 +1384,116 @@ function buyUpgrade(id) {
   state.cash -= u.cost; state.upg[u.id] = true;
   log('Bought <b>' + u.name + '</b>. ' + u.desc);
   if (u.id === 'ledger') revealLedger(); else render();
+}
+// Contracts have no deadline and need no recruits. Accepting fixes the quota and reward;
+// deliveries from taps, tech and offline work all count. Every three jobs adds 1%, capped at 20%.
+function contractBonus(s) { return Math.min(20, Math.floor(((s.dispatch || {}).done || 0) / 3)) / 100; }
+function acceptDispatch() {
+  if (state.dispatch.active || (!gearTotal(state) && state.taps < 10)) return;
+  const c = calc(state);
+  state.dispatch.active = { start: state.deliveries, quota: Math.max(25, Math.ceil(c.baseDps * 120)), reward: Math.max(100, Math.floor(c.baseIncome * 45)), name: ['Feed Bunker 12', 'The night shift is hungry', 'Emergency kebabs for Sector 7', 'Lunch for the Ministry (unofficially)'][state.dispatch.done % 4] };
+  save(); render();
+}
+function claimDispatch() {
+  const job = state.dispatch.active;
+  if (!job || state.deliveries - job.start < job.quota) return;
+  state.dispatch.active = null;
+  state.dispatch.done++;
+  earn(job.reward, 0);
+  log('<b>Contract complete:</b> ' + esc(job.name) + '. ₵' + fmt(job.reward) + ' paid. ' + state.dispatch.done + ' jobs on the books.');
+  toast('Contract paid: ₵' + fmt(job.reward) + (state.dispatch.done % 3 === 0 && state.dispatch.done <= 60 ? ' · permanent income +1%' : ''));
+  save(); render();
+}
+function nextGoal(c) {
+  if (!lvl('trainers')) return { gear: 'trainers', title: 'Let the trainers do the running' };
+  if (!lvl('hover')) return { gear: 'hover', title: 'Your first Hoverbike' };
+  if (!state.shop) return { shop: true, title: 'Put your name above a shop', cost: CONFIG.SHOP_COST };
+  if (!downCount() && !state.dispatch.done) return { contract: true, title: 'Land your first airlock contract' };
+  const next = GEAR.find(g => g.dps && !lvl(g.id));
+  if (next) return { gear: next.id, title: 'Next stop: ' + next.name };
+  const up = UPGRADES.filter(u => !state.upg[u.id] && u.unlock(state)).sort((a, b) => a.cost - b.cost)[0];
+  return up ? { upgrade: up.id, cost: up.cost, title: up.name } : { contract: true, title: 'Keep the airlocks fed' };
+}
+let contractFocusFrame = 0, contractFocusTimer = 0;
+function viewContract() {
+  cancelAnimationFrame(contractFocusFrame); clearTimeout(contractFocusTimer);
+  const shell = $('dispatchShell'); shell.querySelector('.contract-burst')?.remove();
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  $('dispatchSection').scrollIntoView({ behavior: reduced ? 'instant' : 'smooth', block: 'center' });
+  const started = performance.now(); let previousTop = null, stillFrames = 0;
+  const arrive = () => {
+    const rect = shell.getBoundingClientRect();
+    const visible = rect.top < innerHeight - 30 && rect.bottom > 30;
+    stillFrames = previousTop != null && Math.abs(rect.top - previousTop) < .5 ? stillFrames + 1 : 0;
+    previousTop = rect.top;
+    // Wait for the scroll to settle so the little payoff lands where the player can see it.
+    if (visible && (reduced || (stillFrames >= 3 && performance.now() - started > 100))) {
+      const burst = document.createElement('div'); burst.className = 'contract-burst'; burst.setAttribute('aria-hidden', 'true');
+      if (!reduced) for (let i = 0; i < 9; i++) {
+        const mote = document.createElement('i');
+        mote.style.cssText = `--x:${10 + i * 9}%;--y:${20 + (i * 31 % 65)}%;--size:${2 + i % 3 * 2}px;--dx:${12 + i * 3}px;--dy:${-8 - i % 4 * 5}px;--delay:${80 + i * 22}ms;--life:${700 + i % 4 * 180}ms`;
+        burst.appendChild(mote);
+      }
+      shell.appendChild(burst);
+      contractFocusTimer = setTimeout(() => burst.remove(), reduced ? 350 : 1600);
+      contractFocusFrame = 0;
+      return;
+    }
+    if (performance.now() - started < 2500) contractFocusFrame = requestAnimationFrame(arrive);
+    else contractFocusFrame = 0;
+  };
+  contractFocusFrame = requestAnimationFrame(arrive);
+}
+function pursueGoal() {
+  const goal = nextGoal(calc(state));
+  if (goal.contract) return viewContract();
+  if (goal.shop) { if (state.cash >= goal.cost) openShopDialog(); else $('shop').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  if (goal.upgrade) return buyUpgrade(goal.upgrade);
+  const g = GEAR.find(g => g.id === goal.gear), cost = gearCost(g, lvl(g.id), 1);
+  if (state.cash < cost) return $('gear').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const qty = state.qty; state.qty = 1; buy(g.id); state.qty = qty; render();
+}
+function renderFocus(c) {
+  const goal = nextGoal(c), g = goal.gear && GEAR.find(g => g.id === goal.gear);
+  const cost = g ? gearCost(g, lvl(g.id), 1) : goal.cost || 0;
+  const ready = cost && state.cash >= cost;
+  setHTML('nextGoal', `<div><span class="eyebrow">Your next move</span><strong>${esc(goal.title)}</strong></div><div id="goalDetail" class="goal-detail"></div><button id="pursueGoal">${goal.contract ? 'View contract' : ready ? goal.shop ? 'Open shop' : 'Buy now' : 'View target'}</button>${cost ? '<div class="bar"><i id="goalProgress"></i></div>' : ''}`);
+  $('goalDetail').textContent = goal.contract ? 'A paid delivery job. No colleagues required.' : '₵' + fmt(Math.min(state.cash, cost)) + ' / ₵' + fmt(cost) + (ready ? ' · Ready when you are.' : '');
+  if ($('goalProgress')) $('goalProgress').style.width = clamp(100 * state.cash / cost, 0, 100) + '%';
+  const chain = GEAR.filter(g => g.dps), top = chain.filter(g => lvl(g.id)).pop();
+  const tier = top ? chain.indexOf(top) : -1;
+  const shapes = [
+    '<circle cx="21" cy="5" r="3"/><path d="M21 10l-5 9 8 4 3 8M16 19l-6 11M20 12l7 5h7M19 12l-8 5"/>',
+    '<path d="M5 23h28l-5-9H16l-5 9m10-9 3-6h6M3 28h11m11 0h12"/><circle cx="10" cy="25" r="3"/><circle cx="30" cy="25" r="3"/>',
+    '<path d="M7 8h26M12 8l4 8h9l4-8M20 16v7M3 5h9m17 0h9M7 3v5m26-5v5"/><rect x="15" y="23" width="11" height="7"/>',
+    '<ellipse cx="20" cy="17" rx="9" ry="14"/><ellipse cx="20" cy="17" rx="4" ry="10"/><path d="M3 17h8m18 0h8"/>',
+    '<path d="M7 8h26v19H7zM11 4v4m7-4v4m7-4v4m-14 8h18M16 16v11m10-11v11"/>',
+    '<path d="M2 22h11V10h14v12h11M2 28h17V16h2v12h17"/>',
+    '<path d="M7 26l5-9 10 4 7-12 6 3-8 16H7zM29 9l3-5m2 8 5-2"/>',
+    '<circle cx="13" cy="8" r="3"/><circle cx="28" cy="8" r="3"/><path d="M13 12v12m15-12v12M7 17h12m3 0h12M13 24l-5 6m5-6 5 6m10-6-5 6m5-6 5 6"/>',
+    '<circle cx="20" cy="17" r="12"/><path d="M20 8v10l7 4M4 10l2-7 7 2"/>',
+    '<path d="M6 30V4h28v26M12 30V10h16v20M20 14v10m-4-5h8"/>'
+  ];
+  const shape = shapes[Math.max(0, tier)];
+  const courier = cls => `<svg class="courier ${cls}" viewBox="0 0 40 34" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">${shape}</svg>`;
+  setHTML('operation', `<span class="eyebrow">${esc(state.shop ? state.shop.name : 'One citizen. One delivery bag.')}</span><div class="scene-name">${esc(top ? top.name + ' on the route' : 'You are the entire operation')}</div><div class="district" aria-hidden="true"></div><div class="route" aria-hidden="true"></div><div class="airlock" aria-hidden="true"></div>${courier(tier >= 2 ? 'air' : '')}${tier >= 1 ? courier('second ' + (tier >= 2 ? 'air' : '')) : ''}<div class="scene-foot"><span>${esc(ZONES[c.zone].name)}</span><span>${tier < 0 ? 'MANUAL LABOUR' : 'AUTOMATION AUTHORISED'}</span></div>`);
+  const latest = state.lastSocial;
+  const sector = world.sectors.find(s => s.dept === state.dept);
+  let challenge = '';
+  if (sector && sector.shop && sector.shop.id !== state.id) {
+    const yours = state.down.list.filter(m => m.dept === state.dept).length;
+    const gap = Math.max(1, sector.n - yours + 1);
+    challenge = (state.shop ? gap + ' more ' + state.dept + ' runner' + (gap === 1 ? '' : 's') + ' to take the sector from ' + sector.shop.name + '.' : 'Open a shop to contest ' + state.dept + '.');
+  } else if (sector && sector.shop && sector.shop.id === state.id) challenge = 'You control ' + state.dept + '. The other departments are still out there.';
+  const social = latest ? latest.text : downCount() ? downCount() + ' colleagues in your pyramid. Your cut so far: ₵' + fmt(state.down.credited) + '.' : 'Your first runner lifts the 15% protection tax and earns you a cut. Somebody has to be middle management.';
+  setHTML('empireLive', `<div class="body"><span class="eyebrow">${downCount() ? 'Other people’s work' : 'Your first accomplice'}</span><p>${esc(social)}</p>${challenge ? '<p class="muted">' + esc(challenge) + '</p>' : ''}${downCount() ? '<div class="nodes"><span>YOU</span>' + state.down.list.slice(0, 3).map(m => '<span>↳ ' + esc(m.name) + '</span>').join('') + (downCount() > 3 ? '<span>+' + (downCount() - 3) + '</span>' : '') + '</div>' : ''}</div><button ${downCount() ? 'data-tab="portfolio"' : 'data-act="share"'}>${downCount() ? 'View empire' : 'Recruit'}</button>`);
+  $('dispatchSection').hidden = !gearTotal(state) && state.taps < 10;
+  const job = state.dispatch.active, done = state.dispatch.done;
+  const progress = job ? clamp(Math.floor(state.deliveries - job.start), 0, job.quota) : 0;
+  setHTML('dispatch', `${job ? '<b class="contract-name">' + esc(job.name) + '</b><div class="contract-status">' + fmt(progress) + ' / ' + fmt(job.quota) + ' deliveries · ₵' + fmt(job.reward) + ' on completion</div><div class="bar"><i style="width:' + (100 * progress / job.quota) + '%"></i></div><button data-act="claimDispatch" ' + (progress < job.quota ? 'disabled' : '') + '>Collect payment</button>' : '<p>Someone behind an airlock needs feeding. Your taps and automated deliveries count, even while you are away.</p><button data-act="acceptDispatch">Accept delivery contract</button>'}<p class="muted">${done} completed · permanent income +${Math.round(contractBonus(state) * 100)}%. ${done >= 60 ? 'Full route bonus earned. Contracts still pay credits.' : (3 - done % 3) + ' more for +1% (up to 20%).'} No deadline. No recruits required.</p>`);
+  const until = c.panic ? state.fx.panic : state.fx.rush;
+  $('rushClock').hidden = !until || until <= now();
+  if (until > now()) setHTML('rushClock', `${c.panic ? 'PANIC BUYING · taps ×777' : 'LUNCH RUSH · automated income ×7'} · <b>${Math.ceil((until - now()) / 1000)}s</b> ${c.panic ? '— RUN!' : '— put your tech to work'}`);
 }
 // The bookkeeping reveal: scroll to the gear list, run the digit rain down it, and let each readout blink on as the front passes.
 let revealAt = 0;
@@ -1398,7 +1599,10 @@ function seedDemo() {
     const row = { id: uid('p'), code: name.slice(0, 4).toUpperCase() + uid().slice(0, 3).toUpperCase(), name, ref, dept: o.dept || rnd(DEPTS.slice(0, 9)),
       total: Math.floor(o.total || 200 + Math.random() * 6000), meals: Math.floor(50 + Math.random() * 900), rank: o.shop ? 1 : 0,
       shopName: o.shop ? rnd(SHOP_NAMES) : null, buildings: o.b || '', lastSeen: t - Math.random() * (o.idle ? 4 : 1) * 86400000 };
-    row.sprint = Math.floor(row.total * (0.3 + Math.random() * 0.5)); row.played = 1800 + Math.floor(Math.random() * 20000); // they all did their thirty minutes
+    row.played = 1800 + Math.floor(Math.random() * 20000);
+    // Demo citizens have synthetic minute histories; real saves only ever record observed checkpoints.
+    const history = {}; for (let minute = 1; minute <= Math.floor(row.played / 60); minute++) history[minute] = Math.floor(row.total * minute * 60 / row.played);
+    Object.assign(row, paceColumns(history), { paceVersion: 1 });
     db.players.push(row); db.events.push({ id: uid('e'), ts: t - Math.random() * 3 * 86400000, pid: row.id, who: name, kind: 'join', arg: parent, text: parent ? 'was recruited by ' + parent : 'joined. Nobody recruited them. Suspicious.' });
     if (row.shopName) db.events.push({ id: uid('e'), ts: t - Math.random() * 2 * 86400000, pid: row.id, who: name, kind: 'shop', arg: row.shopName, text: 'opened ' + row.shopName });
     return row;
@@ -1436,16 +1640,178 @@ function seedDemo() {
 function wipeCompany() {
   if (CONFIG.SHEET_API) return;
   ask('Wipe the company?', 'This clears the local sheet: every player in this browser, and your save.', 'WIPE', () => {
-    localStorage.removeItem(CONFIG.SHEET_KEY); localStorage.removeItem(KEY); location.href = location.pathname;
+    localStorage.removeItem(CONFIG.SHEET_KEY); localStorage.removeItem(KEY); replacingSave = true; location.href = location.pathname;
   });
 }
 
 // ---------------- UI ----------------
 const lastHTML = {};
 function setHTML(id, html) { if (lastHTML[id] !== html) { lastHTML[id] = html; $(id).innerHTML = html; } }
-function modal(html) { $('modalBox').innerHTML = html; $('modal').hidden = false; }
+function modal(html) { if (!$('protectionDrawer').hidden) closeProtection(); $('modalBox').innerHTML = html; $('modal').hidden = false; }
 function closeModal() { $('modal').hidden = true; }
+function saveInfo() {
+  let hasPrevious = false; try { hasPrevious = !!localStorage.getItem(KEY + '_before_restore'); } catch (e) {}
+  modal(`<h3>Your citizen record</h3>
+    <p>Playing as <b>${esc(state.name || 'Unregistered')}</b>${state.shop ? ' of <b>' + esc(state.shop.name) + '</b>' : ''}.</p>
+    <p class="muted">Citizen ID: <b style="overflow-wrap:anywhere">${esc(state.id || 'Assigned when you register')}</b></p>
+    <p>Your progress resumes automatically when you return to this address in this browser profile. The company and leaderboard are shared; your credits, technology and purchases belong to this citizen.</p>
+    <p class="muted">${location.protocol === 'file:' ? 'You opened a local file. Its save is separate from the live website, and file saves depend on browser behaviour. Use the hosted game for regular play.' : 'Saved for ' + esc(location.origin) + (SLOT ? ' · test slot ' + esc(SLOT) : '') + '.'} A different browser, device or website address has its own save. Clearing browser data removes this copy.</p>
+    <p class="muted">Your citizen ID and invite code identify you; they are not recovery passwords.</p>
+    <div class="row"><button data-act="recoveryCode" ${state.id ? '' : 'disabled'}>Create recovery code</button><button data-act="restoreCode">Restore from code</button></div>
+    ${hasPrevious ? '<button class="help" data-act="previousRecovery">Recover the local save replaced last time</button>' : ''}
+    <button id="ok" class="big2">BACK TO WORK</button>`);
+  $('ok').onclick = closeModal;
+}
+function replayIntro() { closeModal(); showSplash(); }
+// Recovery is a self-contained snapshot, never a public player ID or a server lookup.
+const RECOVERY_LIMIT = 4 * 1024 * 1024;
+async function recoveryDigest(bytes) {
+  if (!crypto.subtle) throw new Error('Use the HTTPS game or localhost to create or restore a recovery code.');
+  return [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+async function encodeRecovery(s) {
+  const plain = new TextEncoder().encode(JSON.stringify({ game: 'MustEat', version: 1, savedAt: s.lastSeen, state: s }));
+  if (plain.length > RECOVERY_LIMIT) throw new Error('This save is too large for a recovery code.');
+  const compressed = typeof CompressionStream === 'function';
+  const bytes = compressed ? new Uint8Array(await new Response(new Blob([plain]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer()) : plain;
+  let binary = ''; for (let i = 0; i < bytes.length; i += 8192) binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
+  return 'MUSTEAT1' + (compressed ? 'G' : 'J') + '.' + btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '') + '.' + await recoveryDigest(bytes);
+}
+function validateRecovery(s) {
+  const bad = () => { throw new Error('The code does not contain a valid MustEat save.'); };
+  const obj = x => { if (!x || typeof x !== 'object' || Array.isArray(x)) bad(); return x; };
+  const num = (x, fallback = 0) => { if (x == null) return fallback; if (typeof x !== 'number' || !Number.isFinite(x) || x < 0) bad(); return x; };
+  const str = (x, max = 200, fallback = '') => { if (x == null) return fallback; if (typeof x !== 'string' || x.length > max) bad(); return x; };
+  const arr = x => { if (!Array.isArray(x)) bad(); return x; };
+  const tree = (x, depth = 0) => { if (depth > 15) bad(); if (x && typeof x === 'object') Object.keys(x).forEach(k => { if (['__proto__', 'constructor', 'prototype'].includes(k)) bad(); tree(x[k], depth + 1); }); };
+  tree(s); obj(s);
+  if (s.v !== 3 || !/^p[a-zA-Z0-9-]{8,80}$/.test(str(s.id)) || !/^[A-Z0-9]{3,12}$/.test(str(s.code)) || !str(s.name, 40).trim()) bad();
+  const out = fresh();
+  Object.keys(out).forEach(k => { if (typeof out[k] === 'number') out[k] = num(s[k], out[k]); if (typeof out[k] === 'boolean' && s[k] != null) { if (typeof s[k] !== 'boolean') bad(); out[k] = s[k]; } });
+  ['id', 'code', 'name', 'dept', 'ref', 'recruiter', 'franchiseOf', 'franchiseName'].forEach(k => { out[k] = str(s[k], 200, null); });
+  const map = (x, allowed, flags = false) => { const o = {}; Object.entries(obj(x || {})).forEach(([k, v]) => { if (allowed && !allowed.includes(k)) return; o[k] = flags && typeof v === 'boolean' ? v : num(v); }); return o; };
+  const gear = x => map(x, GEAR.map(g => g.id));
+  const upg = x => map(x, UPGRADES.map(u => u.id), true);
+  out.gear = gear(s.gear); out.upg = upg(s.upg); out.ach = map(s.ach, ACH.map(a => a.id), true);
+  out.buildings = map(s.buildings, BUILDINGS.map(b => b.id), true); out.fx = map(s.fx); out.told = map(s.told);
+  out.pace = {}; Object.entries(obj(s.pace || {})).forEach(([m, value]) => { if (!Number.isSafeInteger(+m) || +m <= 0 || +m > Math.floor(out.played / 60)) bad(); out.pace[m] = num(value); });
+  out.qty = [1, 10, 100].includes(s.qty) ? s.qty : 1; out.tab = s.tab === 'portfolio' ? 'portfolio' : 'run';
+  if (s.shop) out.shop = { name: str(obj(s.shop).name, 48), at: num(s.shop.at) };
+  const samples = a => arr(a || []).map(e => ({ t: num(obj(e).t), total: num(e.total) }));
+  const person = r => { obj(r); const p = {}; ['id', 'code', 'name', 'ref', 'dept', 'shopName', 'buildings', 'franchiseOf'].forEach(k => { p[k] = str(r[k], 200); }); ['total', 'meals', 'lastSeen', 'rank', 'level', 'stamps'].forEach(k => { p[k] = num(r[k]); }); if (p.rank >= RANKS.length || !Number.isInteger(p.rank) || p.level > 3) bad(); return p; };
+  out.up = arr(s.up || []).map(person);
+  const d = obj(s.down || {});
+  out.down = { list: arr(d.list || []).map(person), credited: num(d.credited), at: num(d.at), paid: map(d.paid), seen: map(d.seen), samples: {} };
+  Object.entries(obj(d.samples || {})).forEach(([id, a]) => { out.down.samples[id] = samples(a); });
+  out.known = {}; Object.entries(obj(s.known || {})).forEach(([id, name]) => { out.known[id] = str(name); });
+  out.portfolio = arr(s.portfolio || []).map(e => { obj(e); return { id: str(e.id), name: str(e.name), to: str(e.to), toId: str(e.toId, 200, null), at: num(e.at), gear: gear(e.gear), upg: num(e.upg), buildings: str(e.buildings), income: num(e.income), stamps: num(e.stamps), ministry: e.ministry === true, samples: samples(e.samples) }; });
+  if (s.offer) { const o = obj(s.offer); out.offer = { id: str(o.id), at: num(o.at), shopName: str(o.shopName, 80), gear: gear(o.gear), upg: upg(o.upg), income: num(o.income) }; }
+  const dispatch = obj(s.dispatch || {}); out.dispatch = { done: num(dispatch.done), active: null };
+  if (dispatch.active) { const j = obj(dispatch.active); out.dispatch.active = { name: str(j.name), start: num(j.start), quota: num(j.quota), reward: num(j.reward) }; if (!out.dispatch.active.quota) bad(); }
+  if (s.pendingRush) out.pendingRush = { bonus: num(obj(s.pendingRush).bonus) };
+  out.decreesSeen = arr(s.decreesSeen || []).map(x => str(x));
+  // Imported text is never trusted as HTML, including the otherwise internal event log.
+  out.log = arr(s.log || []).slice(0, 10).map(e => ({ t: num(obj(e).t), text: esc(unesc(str(e.text, 10000).replace(/<[^>]*>/g, ''))) }));
+  if (out.rankSeen >= RANKS.length || !Number.isFinite(calc(out).baseIncome)) bad();
+  return out;
+}
+async function decodeRecovery(code) {
+  code = String(code).replace(/\s/g, '');
+  if (code.length > RECOVERY_LIMIT * 1.5) throw new Error('That recovery code is too large.');
+  const match = /^MUSTEAT1([GJ])\.([A-Za-z0-9_-]+)\.([a-f0-9]{64})$/.exec(code);
+  if (!match) throw new Error('Paste the complete code, starting with MUSTEAT1.');
+  let bytes;
+  try { bytes = Uint8Array.from(atob(match[2].replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0)); } catch (e) { throw new Error('The recovery code is incomplete or damaged.'); }
+  if (await recoveryDigest(bytes) !== match[3]) throw new Error('The recovery code is incomplete or damaged. Copy it again.');
+  if (match[1] === 'G') {
+    if (typeof DecompressionStream !== 'function') throw new Error('This code needs a browser that supports compressed saves. Try an up-to-date browser.');
+    const reader = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip')).getReader();
+    const chunks = []; let length = 0;
+    for (;;) { const { value, done } = await reader.read(); if (done) break; length += value.length; if (length > RECOVERY_LIMIT) { await reader.cancel(); throw new Error('That recovery code expands beyond the save limit.'); } chunks.push(value); }
+    bytes = new Uint8Array(length); let offset = 0; chunks.forEach(c => { bytes.set(c, offset); offset += c.length; });
+  }
+  let data; try { data = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)); } catch (e) { throw new Error('The code does not contain a readable save.'); }
+  if (!data || data.game !== 'MustEat' || data.version !== 1) throw new Error('This recovery code uses an unsupported save version.');
+  return validateRecovery(data.state);
+}
+async function recoveryCode() {
+  if (!state.id) return;
+  save();
+  const snapshot = JSON.parse(JSON.stringify(state));
+  modal('<h3>Your recovery code</h3><p id="recoveryMessage">Packing your citizen record…</p><textarea id="recoveryOut" class="recovery-code" rows="5" readonly aria-label="Your recovery code"></textarea><p class="muted">Keep this private. It contains your game and lets someone resume as you. It is a snapshot; create a fresh code after more progress.</p><div class="row"><button id="copyRecovery" disabled>Copy code</button><button id="ok">Close</button></div>');
+  const box = $('recoveryOut'), message = $('recoveryMessage'), button = $('copyRecovery');
+  $('ok').onclick = closeModal;
+  try {
+    const code = await encodeRecovery(snapshot);
+    if (!box.isConnected) return;
+    box.value = code; message.textContent = 'Saved ' + new Date(snapshot.lastSeen).toLocaleString() + ' · ' + snapshot.name + ' · ₵' + fmt(snapshot.cash) + '.'; button.disabled = false;
+    button.onclick = async () => { try { await navigator.clipboard.writeText(code); toast('Recovery code copied. Keep it somewhere private.'); } catch (e) { box.focus(); box.select(); message.textContent = 'Code selected. Copy it with Ctrl+C or your browser’s Copy action.'; } };
+  } catch (e) { if (message.isConnected) message.textContent = e.message; }
+}
+function restoreCode() {
+  modal('<h3>Restore your citizen</h3><p>Paste your recovery code to preview the saved game.</p><textarea id="recoveryIn" class="recovery-code" rows="5" spellcheck="false" autocomplete="off" aria-label="Paste recovery code"></textarea><p id="recoveryError" class="error" role="status"></p><div class="row"><button id="readRecovery">Read code</button><button id="cancel">Cancel</button></div>');
+  $('cancel').onclick = () => { closeModal(); if (!state.name) showIntro(); };
+  const input = $('recoveryIn'), error = $('recoveryError'), button = $('readRecovery'); input.focus();
+  button.onclick = async () => {
+    button.disabled = true; error.textContent = 'Reading…';
+    try {
+      const restored = await decodeRecovery(input.value);
+      if (!input.isConnected) return;
+      modal(`<h3>Resume ${esc(restored.name)}?</h3><p>${restored.shop ? '<b>' + esc(restored.shop.name) + '</b> · ' : ''}₵${fmt(restored.cash)} · ${Math.floor(restored.played / 60)} active minutes · ${gearTotal(restored)} pieces of tech.</p><p class="muted">Saved ${new Date(restored.lastSeen).toLocaleString()}. Citizen ID: ${esc(restored.id)}.</p><p>${state.id ? 'This replaces the game loaded in this browser. A local backup of the current save is kept.' : 'This resumes the original citizen, including their invite code and progress.'} Offline earnings are calculated when it resumes.</p><p class="muted">Close the game in the previous browser when you switch. Both copies would otherwise be playing as the same citizen.</p><p id="restoreError" class="error" role="status"></p><div class="row"><button id="confirmRestore" class="big2">RESTORE THIS GAME</button><button id="cancel">Cancel</button></div>`);
+      $('cancel').onclick = () => { closeModal(); if (!state.name) showIntro(); };
+      $('confirmRestore').onclick = () => {
+        try {
+          const previous = localStorage.getItem(KEY);
+          if (previous) localStorage.setItem(KEY + '_before_restore', previous);
+          localStorage.setItem(KEY, JSON.stringify(restored));
+          replacingSave = true;
+          const url = new URL(location.href); ['ref', 'fr', 'v'].forEach(k => url.searchParams.delete(k));
+          location.replace(url.href);
+        } catch (e) { $('restoreError').textContent = 'This browser could not store the restored game. Your current game is still loaded.'; }
+      };
+    } catch (e) { if (error.isConnected) { error.textContent = e.message; button.disabled = false; } }
+  };
+}
+async function previousRecovery() {
+  try {
+    const previous = JSON.parse(localStorage.getItem(KEY + '_before_restore'));
+    const code = await encodeRecovery(validateRecovery(previous));
+    restoreCode(); $('recoveryIn').value = code; $('readRecovery').click();
+  } catch (e) { toast('The previous local save could not be read.'); }
+}
 function toast(text) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = text; document.body.appendChild(t); setTimeout(() => t.remove(), 2600); }
+let drawerReturnFocus = null, drawerInert = [];
+function openProtection() {
+  if (!$('protectionDrawer').hidden) return;
+  drawerReturnFocus = document.activeElement;
+  $('protectionDrawer').hidden = false; $('drawerShade').hidden = false;
+  $('protectionTab').setAttribute('aria-expanded', 'true');
+  drawerInert = [...document.body.children].filter(el => !['protectionDrawer', 'drawerShade'].includes(el.id) && !el.inert);
+  drawerInert.forEach(el => { el.inert = true; });
+  $('closeProtection').focus();
+}
+function closeProtection() {
+  $('protectionDrawer').hidden = true; $('drawerShade').hidden = true;
+  $('protectionTab').setAttribute('aria-expanded', 'false');
+  drawerInert.forEach(el => { el.inert = false; }); drawerInert = [];
+  if (drawerReturnFocus && drawerReturnFocus.isConnected && !drawerReturnFocus.hidden) drawerReturnFocus.focus();
+}
+let scoreMode = 'pace', scoreMinute = null;
+function renderScores() {
+  const mine = Object.keys(state.pace).map(Number).sort((a, b) => b - a)[0] || Math.max(1, Math.floor(state.played / 60));
+  const minute = scoreMinute || mine;
+  if (document.activeElement !== $('scoreMinute')) $('scoreMinute').value = minute;
+  $('minuteLabel').hidden = scoreMode !== 'pace'; $('myMinute').hidden = scoreMode !== 'pace';
+  document.querySelectorAll('[data-score]').forEach(b => b.classList.toggle('on', b.dataset.score === scoreMode));
+  const players = world.board.filter(p => p.id !== state.id);
+  if (state.id) players.push(Object.assign(rowOf(state), { runners: state.down.list.filter(m => m.level === 1).length }));
+  const ranked = rankedScores(players, scoreMode, minute), shown = ranked.slice(0, 15);
+  const me = ranked.find(r => r.p.id === state.id);
+  if (me && !shown.includes(me)) shown.push(me);
+  const label = scoreMode === 'pace' ? 'Earned at minute ' + minute : 'Lifetime earned';
+  const note = scoreMode === 'pace' ? `Total earnings at exactly ${minute} active minute${minute === 1 ? '' : 's'}, including income earned while away. Players further ahead compete using their saved score at this minute. ${players.length - ranked.length} citizen(s) have no recorded score here yet. Existing saves start at their next full minute.` : 'All lifetime earnings. Active playtime is shown for context; the economy keeps running while you are away.';
+  setHTML('board', (ranked.length ? `<table><tr><th>#</th><th>Citizen / shop</th><th class="r">${label}</th><th class="r">Active now</th></tr>` + shown.map(({ p, score, place }) => `<tr class="${p.id === state.id ? 'me' : ''}"><td>${place}</td><td>${esc(p.name)}<div class="muted">${esc(p.shopName || (RANKS[Number(p.rank) || 0] || RANKS[0]).name)}</div></td><td class="r">₵${fmt(score)}</td><td class="r">${Math.floor(p.played / 60)} min</td></tr>`).join('') + '</table>' : '<p>No recorded scores at this minute yet. Your first comparison appears after a full active minute.</p>') + '<p class="score-note">' + note + '</p>' + (scoreMode === 'pace' && state.id && !me ? '<p class="muted">You have no saved score at minute ' + minute + ' yet. Try My minute or keep running.</p>' : '') + `<a class="muted" href="ledger.html?minute=${minute}&order=${scoreMode}${SLOT ? '&slot=' + encodeURIComponent(SLOT) : ''}" target="_blank">Full high scores and the ledger →</a>`);
+}
 
 // Credits tween towards the real value at 60fps; render() only sets it directly where there is no animation frame.
 let shownCash = null, tweening = false, liveIncome = 0;
@@ -1458,6 +1824,7 @@ function tween() {
 }
 function render() {
   const c = calc(state), t = now();
+  $('lockdownDay').textContent = (CONFIG.LOCKDOWN_DAY + Math.max(0, Math.floor((t - (state.created || t)) / 60000))).toLocaleString('en-GB');
   liveIncome = c.income;
   if (!tweening) $('cash').textContent = '₵' + fmtLive(state.cash, c.income);
   $('ips').textContent = '₵' + fmt(c.income);
@@ -1468,26 +1835,30 @@ function render() {
   const r = RANKS[c.rank]; const next = RANKS[c.rank + 1];
   setHTML('rank', `<b class="${state.ach.complete ? 'gilded' : ''}" ${state.ach.complete ? 'title="Every upgrade. Every single one. The name is gold now."' : ''}>${esc(state.name || 'Unknown Citizen')} <a href="#" data-act="rename" title="Rename yourself or your shop. Your code and runners stay.">✎</a></b>${r.name}${state.dept ? ' · ' + esc(state.dept) : ''} · ×${r.mul} income` +
     (next ? `<br>${state.shop ? downCount() + '/' + next.need + ' runners to ' + next.name : 'Open a shop to rank up'}` : '<br>There is nothing above you.') +
-    (state.sprint != null ? `<br><span title="Lifetime credits at thirty minutes of play">Sprint score ₵${fmt(state.sprint)}</span>` : `<br><span title="Your lifetime credits when this hits zero become your sprint score, the fair one on the high-score table">Sprint clock ${Math.max(0, Math.ceil((CONFIG.SPRINT_S - (state.played || 0)) / 60))} min</span>`));
+    `<br><span title="Active time advances while this tab is visible. Your total earnings are recorded at each full minute.">${Math.floor((state.played || 0) / 60)} active minutes · compare your pace below</span>`);
 
-  // The warning banners wait for the reveal (checkReveal), then sit collapsed to one line. The details element keeps its
+  // The notices wait for the reveal (checkReveal), then live in the side drawer. The details element keeps its
   // own open/closed state; only the text inside is rewritten, so a render tick never snaps it shut.
   const told = state.told || {}, rb = $('recruiter');
   if (state.franchiseOf && told.rec) {
     rb.hidden = false;
-    setHTML('recruiterS', `<b>Warning ${WARN}</b> Head office keeps 25% of everything you make...`);
+    setHTML('recruiterS', '<b>Head office · 25% royalty</b>');
     setHTML('recruiterM', `You run <b>${esc(state.shop ? state.shop.name : 'a franchise')}</b>, a franchise of <b>${esc(state.franchiseName || 'someone')}</b>. They keep 25% of everything you make. The tech was theirs. The debt is yours.`);
   } else if (state.ref && !state.shop && told.rec) {
     rb.hidden = false;
-    setHTML('recruiterS', `<b>Warning ${WARN}</b> Someone is taking 10% of everything you make...`);
+    setHTML('recruiterS', '<b>Recruiter · −10%</b>');
     setHTML('recruiterM', `You are running for <b>${esc(state.recruiter || 'someone with the code ' + state.ref + ' (not in this company yet)')}</b>. They take 10% of everything you make. Open your own shop to take it back, or <a href="#" data-act="complain">file a complaint</a> where everyone can see it. Or think it through: "maybe I should recruit my own runner instead of paying tax to ${esc(state.recruiter || 'them')}... they would never know." They would not. <a href="#" data-act="share">Copy your invite</a>.`);
   } else rb.hidden = true;
   const gb = $('gang');
   if (c.gang && told.gang) {
     gb.hidden = false;
-    setHTML('gangS', `<b>Warning ${WARN}</b> The Sector 7 Provisional Gang wants to talk to you...`);
+    setHTML('gangS', '<b>Sector 7 protection · −15%</b>');
     setHTML('gangM', `<b>The Sector 7 Provisional Gang</b> takes ${Math.round(CONFIG.GANG_TAX * 100)}% of everything you make. They call it protection. Recruit one runner with your invite link and they leave you alone. They go after your runner instead. That is how protection works. <a href="#" data-act="share">Copy invite</a>`);
   } else gb.hidden = true;
+  $('protectionTab').hidden = rb.hidden && gb.hidden;
+  $('protectionTab').textContent = c.gang ? 'Protection · −' + Math.round((1 - c.keep) * 100) + '%' : c.tax ? 'Recruiter · −10%' : 'Head office · 25%';
+  $('protectionSummary').textContent = c.keep < 1 ? 'You keep ' + Math.round(c.keep * 100) + '% of delivery earnings. Current deductions: ₵' + fmt(c.income / c.keep - c.income) + '/sec.' : 'No delivery deductions. Head office still receives its franchise royalty.';
+  renderFocus(c);
   const sb = $('supply'); const perks = [];
   if (c.supply.depot) perks.push('Depot: +25% deliveries');
   if (c.supply.plant) perks.push('Kitchen Plant: +1 zone');
@@ -1509,8 +1880,8 @@ function render() {
   if ((state.fx.rush || 0) > t) chip('🍜 Lunch Rush ×7', state.fx.rush, 's', 'From an unmarked ration crate: all income ×7 for 77 seconds. Buy things now.');
   if ((state.fx.panic || 0) > t) chip('🛒 Panic buying ×777', state.fx.panic, 's', 'From an unmarked ration crate: every tap on RUN DELIVERY pays ×777 for 13 seconds. Tap. TAP.');
   setHTML('fx', fx.join(' · '));
-  const rationReady = now() - state.ration >= CONFIG.RATION_H * H;
-  setHTML('ration', rationReady ? `<button data-act="ration">Claim daily ration (₵${fmt(Math.max(50, Math.floor(c.baseIncome * 600)))})</button>` : `<button class="help" data-act="rationInfo" title="What is a daily ration?">Next ration in ${dur((state.ration + CONFIG.RATION_H * H - now()) / 1000)}</button>`);
+  const rationReady = now() >= nextRationAt();
+  setHTML('ration', rationReady ? `<button data-act="ration">Claim ration (₵${fmt(Math.max(50, Math.floor(c.baseIncome * 600)))})</button>` : `<button class="help" data-act="rationInfo" title="When is the next ration drop?">Next ration in ${dur((nextRationAt() - now()) / 1000)}</button>`);
 
   const qty = state.qty || 1;
   setHTML('qty', [1, 10, 100].map(n => `<button class="${qty === n ? 'on' : ''}" data-qty="${n}">×${n}</button>`).join(''));
@@ -1527,13 +1898,16 @@ function render() {
     const neon = now() - revealAt < 3500 ? ` neon" style="--d:${(0.35 + gi * 0.14).toFixed(2)}s"` : '"';
     if (secret || !ledger) rev = '';
     else if (g.dps) {
-      const share = c.baseDps > 0 ? (g.dps * l * mult) / c.baseDps : 0, inc = c.income * share, pct = share * 100;
+      const share = c.baseDps > 0 ? (g.dps * l * mult * (c.supply.depot ? 1.25 : 1)) / c.baseDps : 0, inc = c.income * share, pct = share * 100;
       const pctText = pct >= 10 ? Math.round(pct) + '%' : pct >= 0.1 ? pct.toFixed(1) + '%' : pct > 0 ? '<0.1%' : '0%';
       rev = `<div class="rev ${l ? '' : 'off'}${neon}><b>₵${fmt(inc)}/s</b><span>${l ? pctText + ' of income' : 'not yet'}</span><i style="--w:${Math.round(pct)}%"></i></div>`;
     } else if (g.valueMul) rev = `<div class="rev val ${l ? '' : 'off'}${neon}><b>×${(1 + g.valueMul * l).toFixed(1)} value</b><span>on every order</span><i style="--w:${Math.round(100 * l / g.max)}%"></i></div>`;
     else if (g.id === 'mask') rev = `<div class="rev val ${l ? '' : 'off'}${neon}><b>−${25 * l}% trouble</b><span>inspections, rain, rivals</span><i style="--w:${Math.round(100 * l / g.max)}%"></i></div>`;
-    const desc = secret ? 'Classified. Buy the thing above it first.' : g.desc + (g.dps ? ' +' + fmt(g.dps * mult) + '/s each.' : '') + (g.zone != null && l === 0 ? ' Unlocks ' + ZONES[g.zone].name + '.' : '') + (g.id === 'hover' && world.citizens >= HOVER_SUBSIDY_AT ? ' <span class="need">Subsidised.</span>' : '');
-    return `<div class="item ${secret ? 'locked' : ''}"><div class="ico" data-ico="${g.id}"></div><div class="body"><b>${secret ? '???' : g.name}</b><span class="lvl">×${l}</span><div class="d">${desc}</div></div>${rev}
+    const desc = secret ? 'Classified. Buy the thing above it first.' : g.desc + (g.dps ? ' +' + fmt(g.dps * mult) + ' deliveries/s each.' : '') + (g.zone != null && l === 0 ? ' Unlocks ' + ZONES[g.zone].name + '.' : '') + (g.id === 'hover' && world.citizens >= HOVER_SUBSIDY_AT ? ' <span class="need">Subsidised.</span>' : '');
+    const projected = !secret && !maxed ? calc(Object.assign({}, state, { gear: Object.assign({}, state.gear, { [g.id]: l + n }) })) : null;
+    const gain = projected ? projected.baseIncome - c.baseIncome : 0;
+    const benefit = gain > 0 ? '<div class="gain-preview need">Adds ₵' + fmt(gain) + '/sec at base rate' + (n > 1 ? ' for ×' + n : '') + '</div>' : '';
+    return `<div class="item ${secret ? 'locked' : ''}"><div class="ico" data-ico="${g.id}" aria-hidden="true">${secret ? '?' : g.id.slice(0, 2).toUpperCase()}</div><div class="body"><b>${secret ? '???' : g.name}</b><span class="lvl">×${l}</span><div class="d">${desc}</div>${benefit}</div>${rev}
       <button data-buy="${g.id}" ${maxed || state.cash < cost ? 'disabled' : ''}>${maxed ? 'MAX' : '₵' + fmt(cost) + (n > 1 ? ' ×' + n : '')}</button></div>`;
   }).join(''));
 
@@ -1546,7 +1920,7 @@ function render() {
   let sh;
   const vbtn = `<button data-act="voucher" ${state.cash < CONFIG.VOUCHER_COST ? 'disabled' : ''}>Ration voucher for a colleague (₵${CONFIG.VOUCHER_COST})</button>`;
   if (!state.shop) {
-    sh = `<p>You are a runner. ${state.ref ? 'Runners pay 10% to their shop owner.' : 'Nobody sent you here. Impressive. Or sad.'} Open your own shop to keep everything and recruit runners of your own.</p>
+    sh = `<p>You are a runner. ${state.ref ? 'Runners pay 10% to their shop owner.' : 'Nobody sent you here. Impressive. Or sad.'} Open your own shop to remove the recruiter deduction and rank up. ${c.gang ? 'The 15% protection tax stays until your first runner joins.' : ''}</p>
       <div class="row"><button data-act="shop" ${state.cash < CONFIG.SHOP_COST ? 'disabled' : ''}>Open a shop (₵${fmt(CONFIG.SHOP_COST)})</button>
       <button data-act="share">Copy invite for Slack</button>${vbtn}</div>
       <p class="muted">You can recruit before you have a shop. Anyone who joins through your link pays you 10% of their earnings. A voucher gives a named colleague ₵${CONFIG.VOUCHER_BONUS} to start with, which makes them feel special, which makes them click.</p>`;
@@ -1701,16 +2075,7 @@ function render() {
     world.sectors.map(s => `<tr class="${s.dept === state.dept ? 'me' : ''}"><td>${esc(s.dept)}</td><td class="r">${s.citizens}</td><td class="r">₵${fmt(s.total)}</td><td>${s.shop ? esc(s.shop.shopName) + ' <span class="muted">(' + esc(s.shop.name) + ', ' + s.n + ' runners there)</span>' : '<span class="muted">Unclaimed. Nobody has recruited here.</span>'}</td></tr>`).join('') +
     `</table><p class="muted">A sector belongs to the shop with the most runners from that department. Your own department is the easy one. Other departments are the funny one.</p>` : '<p class="muted">No departments yet.</p>');
 
-  const board = world.board;
-  if (board.length) {
-    const shame = board.filter(p => !p.shopName && p.total > 500).slice(0, 3).map(p => esc(p.name));
-    const TOP = 15, meAt = board.findIndex(p => p.id === state.id);
-    const shown = board.slice(0, TOP).map((p, i) => [p, i]);
-    if (meAt >= TOP) shown.unshift([board[meAt], meAt]); // you are always on the board, even from the cheap seats
-    setHTML('board', `<table><tr><th>#</th><th>Citizen</th><th>Shop</th><th class="r">Earned</th><th class="r" title="Lifetime credits at thirty minutes of play. Same clock for everyone.">Sprint</th><th class="r" title="Credited from runners and franchisees, from the ledger">From runners</th><th class="r">Runners</th></tr>` +
-      shown.map(([p, i]) => `<tr class="${p.id === state.id ? 'me' : ''}"><td>${i + 1}</td><td>${esc(p.name)}${p.stamps ? ' <span class="need" title="Ration Stamps">★' + p.stamps + '</span>' : ''}<div class="muted">${RANKS[p.rank || 0].name}${p.dept ? ' · ' + esc(p.dept) : ''}</div></td><td>${esc(p.shopName || '—')}${p.buildings ? '<div class="muted">' + esc(bnames(p.buildings)) + '</div>' : ''}</td><td class="r">₵${fmt(p.total)}</td><td class="r">₵${fmt(p.sprint)}${p.played < CONFIG.SPRINT_S ? '<div class="muted">' + Math.floor(p.played / 60) + ' min in</div>' : ''}</td><td class="r">${world.fromRunners[p.id] ? '₵' + fmt(world.fromRunners[p.id]) : '—'}</td><td class="r">${p.runners || 0}</td></tr>`).join('') +
-      `</table><p class="muted">Everyone who has ever registered, company-wide. Sprint is lifetime credits at thirty minutes with the tab open, the same clock for everyone. <a href="ledger.html" target="_blank">Full high scores and the ledger</a>: every cut and royalty ever credited, who paid whom.</p>` + (board.length > TOP ? `<p class="muted">${board.length - TOP} more citizens below the fold.</p>` : '') + (shame.length ? `<p class="muted">Still running for someone else despite the money: ${shame.join(', ')}. Open a shop. Have some dignity.</p>` : ''));
-  } else setHTML('board', '<p class="muted">Nobody else is here yet. Or the sheet is loading. Either way: recruit.</p>');
+  renderScores();
 
   setHTML('log', state.log.map(e => `<div>${e.text}</div>`).join(''));
   $('mode').textContent = CONFIG.SHEET_API ? 'connected to the company sheet' : 'local sheet (this browser only; invite links open as new players here)';
@@ -1720,7 +2085,24 @@ function render() {
 // ---------------- Wiring ----------------
 $('run').addEventListener('click', runDelivery);
 $('crate').addEventListener('click', collectCrate);
+$('protectionTab').addEventListener('click', openProtection);
+$('closeProtection').addEventListener('click', closeProtection);
+$('drawerShade').addEventListener('click', closeProtection);
+$('scoreMinute').addEventListener('change', e => { const minute = Number(e.target.value); if (Number.isSafeInteger(minute) && minute >= 1) scoreMinute = minute; else e.target.value = scoreMinute || Object.keys(state.pace).map(Number).sort((a, b) => b - a)[0] || Math.max(1, Math.floor(state.played / 60)); renderScores(); });
+$('myMinute').addEventListener('click', () => { scoreMinute = null; renderScores(); });
+document.addEventListener('keydown', e => {
+  if ($('protectionDrawer').hidden) return;
+  if (e.key === 'Escape') { e.preventDefault(); closeProtection(); }
+  if (e.key === 'Tab') {
+    const focusable = [...$('protectionDrawer').querySelectorAll('button,a,summary')].filter(el => el.getClientRects().length && !el.disabled);
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+});
 document.addEventListener('click', e => {
+  if (e.target.closest('#pursueGoal')) return pursueGoal();
+  const sc = e.target.closest('[data-score]'); if (sc) { scoreMode = sc.dataset.score; return renderScores(); }
   const buyB = e.target.closest('[data-buy]'); if (buyB) return buy(buyB.dataset.buy);
   const bl = e.target.closest('[data-build]'); if (bl) return build(bl.dataset.build);
   const ug = e.target.closest('[data-upg]'); if (ug) return buyUpgrade(ug.dataset.upg);
@@ -1731,13 +2113,13 @@ document.addEventListener('click', e => {
   const dc = e.target.closest('[data-decree]'); if (dc) return decree(dc.dataset.decree);
   const b = e.target.closest('[data-act]'); if (!b) return;
   e.preventDefault();
-  const act = { shop: openShopDialog, share, voucher, complain, ration: claimRation, rationInfo, cutInfo, refresh: sync, bribe, drone: buyDrone, contracts: buyContracts, seed: seedDemo, wipe: wipeCompany, franchise, withdraw: withdrawOffer, ministry: ministryDialog, rename: renameDialog }[b.dataset.act];
+  const act = { shop: openShopDialog, share, voucher, complain, ration: claimRation, rationInfo, cutInfo, refresh: sync, bribe, drone: buyDrone, contracts: buyContracts, seed: seedDemo, wipe: wipeCompany, franchise, withdraw: withdrawOffer, ministry: ministryDialog, rename: renameDialog, acceptDispatch, claimDispatch, saveInfo, replayIntro, recoveryCode, restoreCode, previousRecovery }[b.dataset.act];
   if (act) act();
 });
-$('reset').addEventListener('click', e => { e.preventDefault(); ask('Delete your save?', 'The Ministry will not remember you.', 'DELETE', () => { localStorage.removeItem(KEY); location.href = location.pathname; }); });
-document.addEventListener('visibilitychange', () => { if (document.hidden) { save(); Sheet.flush(); } });
-if (qs.has('dev')) window.MUSTEAT = { get state() { return state; }, calc, GEAR, UPGRADES, ACH, gearCost, buy, buyUpgrade, runDelivery, collectCrate, frame, save, sync, franchise, render };
-window.addEventListener('beforeunload', () => { save(); Sheet.flush(); });
+$('reset').addEventListener('click', e => { e.preventDefault(); ask('Delete your save?', 'This removes the save in this browser. Keep a recovery code first if you want to return to this citizen.', 'DELETE', () => { localStorage.removeItem(KEY); replacingSave = true; location.href = location.pathname; }); });
+document.addEventListener('visibilitychange', () => { if (document.hidden && !replacingSave) { save(); Sheet.flush(); } });
+if (qs.has('dev')) window.MUSTEAT = { get state() { return state; }, calc, GEAR, UPGRADES, ACH, gearCost, buy, buyUpgrade, runDelivery, collectCrate, frame, save, sync, franchise, render, rowOf, readPace, rankedScores, paceColumns, acceptDispatch, claimDispatch, offline, encodeRecovery, decodeRecovery, claimRation, nextRationAt };
+window.addEventListener('beforeunload', () => { if (!replacingSave) { save(); Sheet.flush(); } });
 
 function showOffline(o) {
   modal(`<h3>Welcome back, citizen</h3>
@@ -1745,16 +2127,16 @@ function showOffline(o) {
     <p>${o.meals >= 1 ? 'Your tech delivered <b>' + fmt(Math.floor(o.meals)) + ' meals</b> and earned <b>₵' + fmt(o.gain) + '</b>.' : 'Nothing was delivered. You have no tech. The town went hungry.'}</p>
     <p class="muted">Full rate for the first ${CONFIG.OFFLINE_FULL_H}h away, half rate up to ${CONFIG.OFFLINE_HALF_H}h. After that the drones get bored.</p>
     <button id="ok" class="big2">BACK TO WORK</button>`);
-  $('ok').onclick = closeModal;
+  $('ok').onclick = () => { closeModal(); if (state.pendingRush) showFirstCrate(state.pendingRush.bonus); };
 }
 // First visit: the splash, then registration. Five seconds or a tap.
 function showSplash() {
   return new Promise(res => {
     const el = $('intro'); el.hidden = false;
     let done = false;
-    const end = () => { if (done) return; done = true; el.hidden = true; res(); };
+    const end = () => { if (done) return; done = true; clearTimeout(timer); el.removeEventListener('click', end); el.hidden = true; res(); };
     el.addEventListener('click', end);
-    setTimeout(end, CONFIG.INTRO_S * 1000);
+    const timer = setTimeout(end, CONFIG.INTRO_S * 1000);
   });
 }
 async function showIntro() {
@@ -1765,7 +2147,7 @@ async function showIntro() {
   if (qs.get('fr')) { const owner = rows.find(r => r.code === qs.get('fr')); const o = parseOffer(owner); if (owner) fr = { owner, offer: o, open: !!o && owner.claimedOffer !== o.id }; }
   if (ref) { const r = rows.find(x => x.code === ref); recName = r ? r.name : null; }
   modal(`<h3>MUSTEAT — Citizen registration</h3>
-    <p class="muted">Year 3019. The doors have been sealed since 2099. Going outside is illegal, unless you are carrying food. Congratulations: you are now carrying food.</p>
+    <p class="muted">Year 2099. The Ministry owns the doors, the cameras and your credit score. Going outside is illegal, unless you are carrying food. Your courier login just cleared. Try not to get revoked.</p>
     ${v ? '<p><b>' + esc(v) + '</b>, someone bought you a ration voucher worth <b>₵' + CONFIG.VOUCHER_BONUS + '</b>. They want something. They want you to run.</p>' : ''}
     ${fr && fr.open ? '<p>🏆 <b>' + esc(fr.owner.name) + '</b> is handing you <b>' + esc(fr.offer.shopName) + '</b>: ' + esc(gearSummary(fr.offer.gear)) + ', ₵' + fmt(fr.offer.income) + '/s, ready to run. They keep 25% of everything you make. Sign here before someone else does.</p>'
       : fr ? '<p><b>' + esc(fr.owner.name) + '</b> offered their business, but ' + (fr.owner.claimedName ? '<b>' + esc(fr.owner.claimedName) + '</b> got there first' : 'the offer is gone') + '. You can still run for them.</p>'
@@ -1774,7 +2156,8 @@ async function showIntro() {
     <select id="dept">${DEPTS.map(d => '<option>' + d + '</option>').join('')}</select>
     <input id="refIn" placeholder="Who sent you? Their code, if the link lost it (optional)" maxlength="12" value="${esc(ref || '')}" style="text-transform:uppercase" autocomplete="off" spellcheck="false" ${sealed ? 'readonly title="Sealed. The code stays on the invite."' : ''}>
     <div class="hint">${sealed ? 'Recruiter code, sealed by the Ministry. It cannot be removed from an invite. Thinking "maybe I should recruit my own runner instead of paying tax to ' + esc(recName || 'them') + '... they would never know"? They would not. You will have your own link in a minute.' : 'The code is at the end of the invite link, after ?ref=. Without it your recruiter gets nothing, which they will mention.'}</div>
-    <button id="go" class="big2">${fr && fr.open ? 'TAKE THE BUSINESS' : 'START RUNNING'}</button>`);
+    <button id="go" class="big2">${fr && fr.open ? 'TAKE THE BUSINESS' : 'START RUNNING'}</button>
+    <button class="help" data-act="restoreCode">Already a citizen? Restore with a recovery code</button>`);
   // Whatever is typed in the code box wins, including clearing it. Untouched, it keeps what the link carried.
   let refEdited = false;
   $('refIn').addEventListener('input', () => { refEdited = true; });
@@ -1792,7 +2175,7 @@ async function showIntro() {
 async function register() {
   const rows = await Sheet.read('players');
   const rec = rows.find(r => r.code === state.ref);
-  state.id = uid('p');
+  state.id = playerId();
   state.code = (state.name.replace(/[^a-z0-9]/gi, '').slice(0, 4).toUpperCase() || 'RUN') + uid().slice(0, 3).toUpperCase();
   state.recruiter = rec ? rec.name : null;
   if (qs.get('v')) { earn(CONFIG.VOUCHER_BONUS, 0); log('Ration voucher redeemed: <b>₵' + CONFIG.VOUCHER_BONUS + '</b>. Do not tell the Ministry.'); }
@@ -1815,6 +2198,7 @@ async function start(returning) {
   if (!state.id) await register();
   save();
   if (off) showOffline(off);
+  else if (state.pendingRush) showFirstCrate(state.pendingRush.bonus);
   last = now();
   setInterval(frame, 250);
   if (typeof requestAnimationFrame === 'function' && !tweening) { tweening = true; requestAnimationFrame(tween); }
