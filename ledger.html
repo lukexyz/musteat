@@ -8,6 +8,10 @@
 <style>
 :root{--bg:#07090a;--panel:#0e1416;--line:#1e2a2e;--fg:#d6e0e2;--dim:#7d8b90;--acc:#39ff14;--warn:#ff3b5c;--gold:#ffd166;--blue:#4cc9f0}
 *{box-sizing:border-box}
+/* Keep rapid taps steady while preserving scrolling and pinch zoom. */
+html{touch-action:manipulation}
+/* Prevent mobile focus zoom on the playtime field. */
+@media(any-pointer:coarse),(max-width:600px){input,select,textarea{font-size:16px!important}}
 body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 ui-monospace,Consolas,"Courier New",monospace}
 a{color:var(--acc)}
 .wrap{max-width:860px;margin:0 auto;padding:12px 12px 40px}

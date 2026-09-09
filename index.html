@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>M U S T E A T - 2099</title>
 <meta name="description" content="Going outside is illegal. Everyone must eat. Run deliveries, open a shop, recruit colleagues and take 10% of everything they earn. Forever.">
-<meta property="og:title" content="MustEat — Year 2099">
+<meta property="og:title" content="M U S T E A T - Y E AR 2099">
 <meta property="og:description" content="Going outside is illegal. Everyone must eat. Run deliveries, open a shop, recruit colleagues and take 10% of everything they earn. Forever.">
 <meta property="og:type" content="website">
 <!-- Slack only unfurls absolute image URLs. Replace with https://<host>/<path>/og.png once the app has a home. -->
@@ -13,10 +13,15 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="M U S T E A T - Y E AR 2099">
 <meta name="theme-color" content="#07090a">
 <style>
 :root{--bg:#07090a;--panel:#0e1416;--line:#1e2a2e;--fg:#d6e0e2;--dim:#7d8b90;--acc:#39ff14;--warn:#ff3b5c;--gold:#ffd166;--blue:#4cc9f0}
 *{box-sizing:border-box}
+/* Keep rapid taps from zooming the game; scrolling and pinch zoom still work. */
+html{touch-action:manipulation}
+/* Small form text triggers iPhone focus zoom, including readonly copy fields. */
+@media(any-pointer:coarse),(max-width:600px){input,select,textarea{font-size:16px!important}}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 ui-monospace,Consolas,"Courier New",monospace}
 a{color:var(--acc)}
 .wrap{max-width:720px;margin:0 auto;padding:12px 12px 40px}
@@ -430,8 +435,8 @@ const CONFIG = {
   CONTRACTS_COST: 4000,
   VOUCHER_COST: 200,
   VOUCHER_BONUS: 250,
-  RATION_MIN_H: 1,            // each claim draws a fixed next wait in whole hours
-  RATION_MAX_H: 6,
+  RATION_MIN_M: 3,            // each claim draws a fixed next wait in whole minutes
+  RATION_MAX_M: 15,
   DECREE_H: 24,               // hours between Ministry decrees
   DECREE_MIN: 10,             // minutes a decree lasts
   OFFLINE_FULL_H: 8,
@@ -704,58 +709,106 @@ const ORDERS = [
 ];
 const CUSTOMERS = ['Unit 4471-B', 'Citizen 90210', 'someone called "Dave"', 'The Ministry (unofficially)', 'a hungry drone', 'Flat 9, The Dome', 'Bunker 12', 'the night shift at Vat Farm 3', 'your old manager', 'a suspiciously large child'];
 const SHOP_NAMES = [
-  'Ministry of Acceptable Portions',
-  'Department of Alleged Chicken',
-  'Your Hunger Has Been Escalated',
-  'The Right to Remain Hungry',
-  'Nothing to Declare But Soup',
-  'Bureau of Missing Ingredients',
-  'Office of Unauthorised Flavour',
-  'The Mandatory Happy Meal',
-  'Consent Is in the Sauce',
-  'The Cameras Recommend the Soup',
-  'Big Brother Is Wokking You',
-  'Kentucky Classified Chicken',
-  'Five Guys (Three Unaccounted For)',
-  'Pret A Comply',
-  'Nineteen Eighty Fries',
-  'Brave New Wok',
-  'The Ministry Took the Biscuit',
-  'No Country for Old Hens',
-  'Eat Now. Appeal Later.',
-  'Hunger Is a Performance Issue',
-  'Your Lunch Is Under Review',
-  'Please Hold for Nourishment',
-  'Thank You for Your Starvation',
-  'Serving Suggestion: Obedience',
-  'Two Minutes Hate, Thirty for Lunch',
-  'Soup Pending Security Clearance',
-  'Meal Deal & Non-Disclosure',
-  'Terms & Condiments Apply',
-  'Proof of Wok Required',
-  'The Last Supper (Subscription)',
-  'Congratulations, It Is Edible',
-  'Legally Distinct from Nutrition',
-  'Meat Adjacent',
-  'Probably Not Your Supervisor',
-  'Formerly a Pet Shop',
-  'Locally Sourced. Details Classified.',
-  'Farm to Table to Evidence Locker',
-  'The Witness Protection Grill',
-  'The Whistleblower Is the Special',
-  'The Unmarked Gravy',
-  'Dissident Dippers',
-  'Re-Education While You Wait',
-  'Enhanced Interrogation BBQ',
-  'The Queue Is the Restaurant',
-  'The Exit Is Decorative',
-  'Independent (Ministry Owned)',
-  'Employee of the Month Was Delicious',
-  'Zero Hours, One Calorie',
-  'Your Daily Bread, Subject to Status',
-  'Airlock Fried Chicken',
-  'Ration Impossible',
-  'Kebabsolute Zero'
+  'The Meat Queue',
+  'Last Ration',
+  'Hatch 19',
+  'Unclaimed Meat',
+  'The Thin Soup',
+  'Basement Kitchen',
+  'No Windows',
+  'The Holding Pen',
+  'Cold Portions',
+  'Block 6',
+  'The Hunger Office',
+  'After Curfew',
+  'Missing Persons',
+  'The Processing Room',
+  'Grey Broth',
+  'The Back Stair',
+  'Emergency Protein',
+  'The Quiet Room',
+  'Left Behind',
+  'Second Burial',
+  'Unmarked Tins',
+  'The Feeding Slot',
+  'Below Ground',
+  'Warm Remains',
+  'Closed District',
+  'The Ninth Door',
+  'Salvage Kitchen',
+  'Daily Allowance',
+  'The Long Queue',
+  'No Questions',
+  'Approved Flesh',
+  'The Old Clinic',
+  'Lower Ward',
+  'The Dead Shift',
+  'Hunger Relief',
+  'Nothing Fresh',
+  'The Spare Room',
+  'Brown Water',
+  'The Last Tenant',
+  'Civilian Portions',
+  'No Visitors',
+  'Intake',
+  'The Culling Floor',
+  'Municipal Meat',
+  'The Drain',
+  'Mouth Count',
+  'The Waiting Room',
+  'Night Allocation',
+  'The Sealed Floor',
+  'Cheap Cuts',
+  'The Collection Point',
+  'Unfit Stock',
+  'The Other Meat',
+  'Public Feeding',
+  'The Locked Kitchen',
+  'Under the Stairs',
+  'The Empty Flat',
+  'Surplus Citizens',
+  'The Disposal Unit',
+  'Wet Concrete',
+  'The Former School',
+  'Hunger Ward',
+  'Cold Storage',
+  'The Ration Office',
+  'Below Standard',
+  'Unregistered',
+  'The Boiler Room',
+  'Restricted Stock',
+  'What Remains',
+  'The Family Portion',
+  'The Last Animal',
+  'No Records',
+  'The Service Door',
+  'Ash Kitchen',
+  'The Sump',
+  'Low Priority',
+  'The Old Shelter',
+  'Meat Substitute',
+  'The Collection Van',
+  'Remaining Stock',
+  'End of Shift',
+  'The Blackout',
+  'Beneath the Clinic',
+  'The Penalty Queue',
+  'Unnamed Supplier',
+  'The Overflow',
+  'Restricted Diet',
+  'The South Wall',
+  'Hunger Debt',
+  'The Unclaimed',
+  'The Night Window',
+  'Residual Heat',
+  'Human Allocation',
+  'The Closed Canteen',
+  'Recovered Goods',
+  'The Small Portion',
+  'Fit for Labour',
+  'The Last Mouth',
+  'Tomorrow’s Meat',
+  'While Stocks Last'
 ];
 const FAKE_NAMES = ['Priya', 'Dave', 'Tomasz', 'Aisha', 'Marco', 'Ingrid', 'Kwame', 'Sofia', 'Liam', 'Yuki', 'Fatima', 'Ben', 'Chloe', 'Rafael', 'Nadia', 'Olu', 'Hannah', 'Sven', 'Mei', 'Jorge', 'Zara', 'Pat', 'Anika', 'Diego', 'Lena', 'Ravi', 'Greta', 'Sam', 'Noor', 'Felix', 'Ida', 'Kofi', 'Elena', 'Tariq', 'Maja'];
 
@@ -1445,18 +1498,18 @@ function cutInfo() {
   $('ok').onclick = closeModal;
   if ($('toShop')) $('toShop').onclick = () => { closeModal(); $('shop').scrollIntoView({ block: 'center', behavior: 'smooth' }); };
 }
-function rationWait() { return (CONFIG.RATION_MIN_H + Math.floor(Math.random() * (CONFIG.RATION_MAX_H - CONFIG.RATION_MIN_H + 1))) * H; }
+function rationWait() { return (CONFIG.RATION_MIN_M + Math.floor(Math.random() * (CONFIG.RATION_MAX_M - CONFIG.RATION_MIN_M + 1))) * 60000; }
 function nextRationAt(s = state) {
   if (!s.ration) return 0;
-  // Old saves held only the last claim time. Give them a single new 1–6 hour wait.
-  if (!s.rationDue) s.rationDue = s.ration + rationWait();
+  // Migrate missing deadlines and old hour-long schedules once, from the last claim.
+  if (!s.rationDue || s.rationDue - s.ration > CONFIG.RATION_MAX_M * 60000) s.rationDue = s.ration + rationWait();
   return s.rationDue;
 }
 function rationInfo() {
   const c = calc(state), worth = Math.max(50, Math.floor(c.baseIncome * 600));
   const left = nextRationAt() - now();
   modal(`<h3>The ration drop</h3>
-    <p>The Ministry issues one every <b>${CONFIG.RATION_MIN_H}–${CONFIG.RATION_MAX_H} hours</b> to anyone still alive. It is not food. It is credits, because the Ministry stopped pretending some time ago.</p>
+    <p>The Ministry issues one every <b>${CONFIG.RATION_MIN_M}–${CONFIG.RATION_MAX_M} minutes</b> to anyone still alive. It is not food. It is credits, because the Ministry stopped pretending some time ago.</p>
     <p>It is worth about <b>ten minutes of your base income</b>, minimum ₵50. Right now that would be <b>₵${fmt(worth)}</b>, so the better your operation is when you claim it, the bigger it is.</p>
     <p class="muted">The Ministry redraws the schedule after every claim. This timer stays fixed until the next drop. ${left > 0 ? 'Next one in ' + dur(left / 1000) + '.' : 'One is ready now.'} Do not question the colour.</p>
     <button id="ok" class="big2">UNDERSTOOD</button>`);

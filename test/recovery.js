@@ -21,13 +21,14 @@ start(0, async ({ srv, db, url }) => {
     ok('returning to the same browser resumes the same ID', await A.evaluate(() => MUSTEAT.state.id) === aid);
     ok('the company is shared while personal saves differ', db.players.some(p => p.id === aid) && db.players.some(p => p.id === bid));
     const draw = async random => A.evaluate(value => { const original = Math.random; try { Math.random = () => value; MUSTEAT.state.ration = 0; MUSTEAT.state.rationDue = 0; MUSTEAT.claimRation(); return MUSTEAT.state.rationDue - MUSTEAT.state.ration; } finally { Math.random = original; } }, random);
-    ok('ration cooldown minimum is one hour', await draw(0) === 3600000);
-    ok('ration cooldown maximum is six hours', await draw(0.999999) === 6 * 3600000);
+    ok('ration cooldown minimum is three minutes', await draw(0) === 3 * 60000);
+    ok('ration cooldown maximum is fifteen minutes', await draw(0.999999) === 15 * 60000);
     const rationDue = await A.evaluate(() => MUSTEAT.state.rationDue);
     ok('ration cannot be claimed again during the cooldown', await A.evaluate(() => { const before = MUSTEAT.state.cash; MUSTEAT.claimRation(); return MUSTEAT.state.cash === before; }));
     await A.reload();
     ok('ration countdown survives reload without rerolling', await A.evaluate(() => MUSTEAT.state.rationDue) === rationDue);
     ok('old 20-hour waits migrate and overdue rations become ready', await A.evaluate(() => { const s = MUSTEAT.state; s.ration = Date.now() - 7 * 3600000; delete s.rationDue; MUSTEAT.render(); const first = s.rationDue; MUSTEAT.render(); return first === s.rationDue && first < Date.now() && !!document.querySelector('[data-act="ration"]'); }));
+    ok('saved hour-long deadlines shorten once from the last claim', await A.evaluate(() => { const s = MUSTEAT.state; s.ration = Date.now() - 20 * 60000; s.rationDue = s.ration + 4 * 3600000; MUSTEAT.render(); const first = s.rationDue, wait = first - s.ration; MUSTEAT.render(); return first === s.rationDue && wait >= 3 * 60000 && wait <= 15 * 60000 && !!document.querySelector('[data-act="ration"]'); }));
     await A.click('[data-act="ration"]');
     await A.click('[data-act="replayIntro"]');
     ok('intro keeps six lines, now set in 2099', await A.locator('#intro .lines p').count() === 6 && /2099/.test(await A.textContent('#intro')) && !/3019/.test(await A.textContent('#intro')) && /ACCESS DENIED/.test(await A.textContent('#intro')));
