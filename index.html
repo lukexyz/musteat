@@ -445,7 +445,7 @@ const CONFIG = {
   RUNNER_TAX: 0.10,           // what a runner without a shop pays their shop owner
   GANG_TAX: 0.15,             // the local gang's cut of everyone with no runners. Recruit one and they move on to them
   REVEAL_S: 120,              // seconds of play before the recruiter and the gang introduce themselves. The cut was always there
-  SYNC_S: 30,
+  SYNC_S: 15,
   INTRO_S: 5,                 // seconds the first-visit splash stays before it moves on by itself
   CRATE_MIN_S: 300,           // unmarked ration crates: seconds between them, plus up to CRATE_RANGE_S
   CRATE_RANGE_S: 600,
@@ -2412,7 +2412,7 @@ function render() {
         <div class="stat"><div class="k">Other people's work</div><div class="v">₵${fmt(state.down.credited || 0)}</div><div class="sub">credited to you, all time</div></div>
         <div class="stat"><div class="k">Of your lifetime</div><div class="v">${othersPct}%</div><div class="sub">earned by someone else</div></div></div>
       <div class="card">${pyramid}<p class="muted">Idle runners are faded. Franchisees are gold. Everyone on this diagram is paying you, whether or not they have noticed.</p></div>`
-    : `<div class="empty"><b>△</b>The pyramid has one block. It is you.<br>Everyone who joins through your link appears under you here, with what they pay you per second.<div class="row" style="justify-content:center"><button data-act="share">Copy invite for Slack</button></div></div>`);
+    : `<div class="empty"><b>△</b>You're the entire pyramid. Bit embarrassing.<br>Send your link. Anyone who joins appears below, along with what they pay you per second. Call it leadership.<div class="row" style="justify-content:center"><button data-act="share">Copy invite for Slack</button></div></div>`);
     // People as trophies: every downline member gets a shelf card with what has been taken from them.
     const seen = state.down.seen || {};
     const via = m => { if (m.level === 1) return 'Direct'; const r = state.down.list.find(x => x.code === m.ref); return 'Via ' + (r ? esc(r.name) : 'someone'); };

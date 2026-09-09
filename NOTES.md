@@ -142,11 +142,13 @@ If the sheet is unreachable the game falls back to local mode and says so in the
 Redeploy the web app (Deploy > Manage deployments > edit > new version) after changing Code.gs;
 the URL stays the same.
 
-The client makes one POST per sync (every 30 seconds per open tab) that upserts the player row,
-flushes queued feed and ledger rows, and returns all three tables, plus one GET per intro. Apps
-Script runtime is capped per day (about 90 minutes on a personal account, 6 hours on a Workspace
-one); at a few hundred milliseconds a call that is comfortably a working day of thirty people on a
-Workspace account, and tight on a personal one. `CONFIG.SYNC_S` is the lever.
+The client makes one POST per sync (every 15 seconds per open tab) that upserts the player row,
+flushes queued feed and ledger rows, and returns all three tables, plus one GET per intro.
+`CONFIG.SYNC_S` controls this interval. Apps Script execution limits and serialized sheet writes
+constrain capacity; measure request times and errors rather than assuming a player limit.
+The separate high-score page also refreshes every 15 seconds online. Initial score loading uses
+scanning placeholder rows and a terminal cursor; results appear as soon as they arrive, failures
+stop the loading state, and reduced-motion settings keep the indicators static.
 
 Strings that would turn into formulas or numbers in a cell (`=1+1`, `007`) are stored with a
 zero-width-space prefix and stripped on the way out, so a name cannot become a formula.
