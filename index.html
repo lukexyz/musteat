@@ -131,10 +131,13 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .box input,.box select{width:100%;font:inherit;padding:8px;background:#000;color:#fff;border:1px solid var(--line);margin:8px 0}
 .box input[readonly]{color:var(--acc);border-style:dashed;cursor:not-allowed}
 .box .big2{width:100%;padding:12px;font-weight:bold;background:var(--acc);color:#000;border:none;margin-top:6px}
-.inv{display:block;width:100%;text-align:left;margin:6px 0;padding:8px 10px;font-size:13px;line-height:1.4;background:#000}
+.inv{position:relative;display:block;width:100%;text-align:left;margin:6px 0;padding:8px 10px;font-size:13px;line-height:1.4;background:#000}
 .inv i{display:block;font-style:normal;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:2px}
 .inv.honest{color:var(--dim)}
 .inv.honest i{color:var(--dim)}
+.inv>i{padding-right:25px}.inv .copy-icon{position:absolute;top:8px;right:10px;width:16px;height:16px;color:var(--dim);pointer-events:none}.inv:hover .copy-icon,.inv:focus-visible .copy-icon{color:var(--acc)}
+.invite-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 12px;margin-bottom:10px}.box .invite-heading h3{margin:0}
+.box .invite-ref[readonly]{width:16ch;max-width:100%;margin:0;padding:9px 10px;border:1px solid #38535c;border-radius:8px;background:#091215;color:var(--blue);font-size:13px;text-align:center;cursor:text;box-shadow:inset 0 1px 8px #0005}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--acc);color:#000;padding:8px 14px;border-radius:4px;font-weight:bold;z-index:20;max-width:90vw}
 .pop{position:fixed;pointer-events:none;z-index:6;font-weight:bold;font-size:24px;letter-spacing:1px;color:#fff;white-space:nowrap;text-shadow:0 0 4px #000,0 0 10px #000,0 0 14px var(--acc),0 0 30px var(--acc);animation:pop .9s ease-out forwards;transform:translate(-50%,-50%)}
 .pop.gold{color:var(--gold);font-size:30px;text-shadow:0 0 4px #000,0 0 10px #000,0 0 16px var(--gold),0 0 36px var(--gold)}
@@ -239,6 +242,14 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 @media(max-width:520px){.intro .lines{font-size:14px}.intro .yr{font-size:28px}.intro .big{font-size:20px}}
 .next-goal{border:1px solid #426133;background:linear-gradient(110deg,#172511,var(--panel));padding:12px;margin:0 0 12px;display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:center}
 .next-goal[hidden]{display:none}
+.target-cinema{position:relative;border-color:#75db99;box-shadow:inset 0 0 32px #39ff140c,0 0 24px #39ff1424}
+.target-char{opacity:0;filter:blur(3px);transition:opacity 100ms ease-out,filter 180ms ease-out,color 350ms ease-out;text-shadow:0 0 10px #70ff88;color:#baffcb}
+.target-char.shown{opacity:1;filter:blur(0);color:inherit;text-shadow:none}
+.target-caret{position:absolute;z-index:2;width:7px;background:#baffcb;box-shadow:0 0 8px #39ff14,0 0 22px #39ff1470;pointer-events:none}
+.box.terminal-letter{position:relative;background-color:#0d1714;background-image:repeating-linear-gradient(0deg,transparent 0 3px,#a7ffc806 3px 4px),radial-gradient(ellipse at 50% 0,#45b86710,transparent 75%);border-color:#71d18d;box-shadow:inset 0 0 35px #0005,0 0 35px #39ff1426}
+.terminal-letter h3{text-shadow:0 0 12px #70ff8830}.terminal-letter .target-char{filter:none;transition:opacity 60ms ease-out;color:inherit;text-shadow:none}
+.terminal-letter.terminal-boot{animation:terminal-boot 160ms ease-out 3}
+@keyframes terminal-boot{0%,100%{border-color:#437a53;box-shadow:inset 0 0 35px #0005,0 0 18px #39ff1418}35%{border-color:#c7ffda;box-shadow:inset 0 0 28px #8aff9c12,0 0 30px #39ff1440}}
 .next-goal .eyebrow,.operation .eyebrow,.empire-live .eyebrow{display:block;color:var(--dim);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
 .next-goal strong{color:#fff;font-size:16px}.next-goal .bar{grid-column:1/-1;margin:4px 0 0;height:5px}.next-goal .bar i{background:var(--acc)}
 .next-goal .goal-detail{color:var(--dim);font-size:11px}.next-goal button{grid-column:2;grid-row:1/4;max-width:150px;font-size:12px}
@@ -397,6 +408,7 @@ const CONFIG = {
 const qs = new URLSearchParams(location.search);
 const SLOT = qs.get('slot') || '';
 const KEY = CONFIG.SAVE_KEY + (SLOT ? '_' + SLOT : '');
+let aliasPreview = ''; // Registration preview only; do not save an unfinished citizen.
 const $ = id => document.getElementById(id);
 const now = () => Date.now();
 const rnd = a => a[Math.floor(Math.random() * a.length)];
@@ -1098,6 +1110,8 @@ function revealRecruiter(c) {
     log('<b>A letter under the airlock door.</b> ' + esc(who) + ' takes 10% of everything you make. Has done since your first delivery. ₵' + fmt(paid) + ' so far.');
   }
   $('ok').onclick = closeModal;
+  $('modalBox').classList.add('terminal-letter');
+  viewTarget('#modalBox', 'h3, p', { dialog: true, fast: true });
 }
 function revealGang(c) {
   const paid = Math.floor(state.total / c.keep * c.gang);
@@ -1332,9 +1346,9 @@ function shareLink(extra, slot) { return rootLink() + '?ref=' + encodeURICompone
 function share() {
   const c = calc(state), cut = c.keep < 1 ? Math.round((1 - c.keep) * 100) : Math.round(CONFIG.GANG_TAX * 100);
   const opts = INVITES.map(i => ({ align: i.align, text: i.text.replace('{cut}', cut) })).concat({ align: 'True neutral', text: SHARE[c.rank], honest: true });
-  modal(`<h3>Copy your invite</h3>
-    <p class="muted">Pick a message. It goes to the clipboard with your link on the end. Nobody needs to know what it is for.</p>
-    ${opts.map((o, i) => `<button class="inv ${o.honest ? 'honest' : ''}" data-invite="${i}"><i>${esc(o.align)}</i>${esc(o.text.replace(' {link}', ''))}</button>`).join('')}
+  modal(`<div class="invite-heading"><h3>Copy your invite</h3><input class="invite-ref" aria-label="Your referral link code" title="Your public referral code. Added to every invite." value="?ref=${esc(encodeURIComponent(state.code || ''))}" readonly spellcheck="false"></div>
+    <p class="muted">Pick a message. It copies with your referral link. The app with the most users wins. Subtle, we know.</p>
+    ${opts.map((o, i) => `<button class="inv ${o.honest ? 'honest' : ''}" data-invite="${i}" title="Copy this message and your invite link"><svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><i>${esc(o.align)}</i>${esc(o.text.replace(' {link}', ''))}</button>`).join('')}
     <div class="row"><button id="cancel">Cancel</button></div>`);
   $('cancel').onclick = closeModal;
   $('modalBox').querySelectorAll('[data-invite]').forEach(b => { b.onclick = () => { closeModal(); copy(opts[+b.dataset.invite].text.replace('{link}', shareLink())); }; });
@@ -1536,13 +1550,83 @@ function viewContract(unlocking = false) {
   };
   contractFocusFrame = requestAnimationFrame(arrive);
 }
+let cancelTargetCinema = () => {};
+function viewTarget(selector, copySelector, options = {}) {
+  cancelTargetCinema();
+  const first = document.querySelector(selector); if (!first) return;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!options.dialog) first.scrollIntoView({ behavior: reduced ? 'instant' : 'smooth', block: 'center' });
+  let frame = 0, target = first, chars = [], caret = null, revealed = 0;
+  let started = null, previousTop = null, stillFrames = 0, message = null;
+  const requested = performance.now();
+  const restore = () => {
+    target.classList.remove('target-cinema', 'terminal-boot');
+    target.querySelectorAll('.target-char').forEach(span => span.replaceWith(document.createTextNode(span.textContent)));
+    caret?.remove(); target.normalize();
+  };
+  const stop = () => { cancelAnimationFrame(frame); restore(); cancelTargetCinema = () => {}; };
+  cancelTargetCinema = stop;
+  const draw = () => {
+    const current = document.querySelector(selector);
+    if (!current || (options.dialog ? $('modal').hidden : state.tab !== 'run')) return stop();
+    if (current !== target) { restore(); target = current; chars = []; caret = null; }
+    const rect = target.getBoundingClientRect(), time = performance.now();
+    if (started == null) {
+      stillFrames = previousTop != null && Math.abs(rect.top - previousTop) < .5 ? stillFrames + 1 : 0;
+      previousTop = rect.top;
+      if (options.dialog || (rect.top < innerHeight - 30 && rect.bottom > 30 && (reduced || (stillFrames >= 3 && time - requested > 100)))) started = time;
+      else if (time - requested > 2500) return stop();
+      else { frame = requestAnimationFrame(draw); return; }
+    }
+    target.classList.add('target-cinema');
+    const elapsed = time - started;
+    if (reduced) {
+      if (elapsed > 900) return stop();
+      frame = requestAnimationFrame(draw); return;
+    }
+    if (options.dialog) target.classList.add('terminal-boot');
+    const blocks = [...target.querySelectorAll(copySelector)];
+    const text = blocks.map(el => el.textContent).join('\n');
+    if (message != null && text !== message) return stop(); // A purchase or event changed the copy; show it immediately.
+    message = text;
+    if (!chars.length || !chars[0].isConnected) {
+      chars = []; revealed = 0;
+      blocks.forEach(block => {
+        const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT), nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach(node => {
+          const fragment = document.createDocumentFragment();
+          for (const letter of Array.from(node.textContent)) {
+            const span = document.createElement('span'); span.className = 'target-char'; span.textContent = letter;
+            fragment.appendChild(span); chars.push(span);
+          }
+          node.replaceWith(fragment);
+        });
+      });
+    }
+    if (!chars.length) return stop();
+    if (!caret?.isConnected) {
+      caret = document.createElement('span'); caret.className = 'target-caret'; caret.setAttribute('aria-hidden', 'true'); target.appendChild(caret);
+    }
+    const blinkTime = options.fast ? 480 : 1260, typeTime = options.fast ? clamp(chars.length * 3, 700, 1800) : clamp(chars.length * 12, 1400, 4600);
+    const count = Math.floor(clamp((elapsed - blinkTime) / typeTime, 0, 1) * chars.length);
+    while (revealed < count) chars[revealed++].classList.add('shown');
+    const cursorRect = chars[Math.min(count, chars.length - 1)].getBoundingClientRect();
+    const blinking = elapsed < blinkTime, tail = clamp((elapsed - blinkTime - typeTime) / 700, 0, 1);
+    const left = clamp(cursorRect.left - rect.left - target.clientLeft + target.scrollLeft, 0, target.clientWidth - 8);
+    caret.style.cssText = `left:${left}px;top:${cursorRect.top - rect.top - target.clientTop + target.scrollTop}px;height:${cursorRect.height || 16}px;opacity:${blinking ? Math.floor(elapsed / (blinkTime / 6)) % 2 ? .05 : 1 : 1 - tail};filter:blur(${blinking ? 3.5 * (1 - elapsed / blinkTime) : 0}px)`;
+    if (tail >= 1) return stop();
+    frame = requestAnimationFrame(draw);
+  };
+  frame = requestAnimationFrame(draw);
+}
 function pursueGoal() {
   const goal = nextGoal(calc(state));
   if (goal.contract) return viewContract();
-  if (goal.shop) { if (state.cash >= goal.cost) openShopDialog(); else $('shop').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  if (goal.shop) { if (state.cash >= goal.cost) openShopDialog(); else viewTarget('#shop', 'p'); return; }
   if (goal.upgrade) return buyUpgrade(goal.upgrade);
   const g = GEAR.find(g => g.id === goal.gear), cost = gearCost(g, lvl(g.id), 1);
-  if (state.cash < cost) return $('gear').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (state.cash < cost) return viewTarget('#gear .item:has([data-buy="' + g.id + '"])', '.tech-heading > span:first-child, .body > .d, .gain-preview');
   const qty = state.qty; state.qty = 1; buy(g.id); state.qty = qty; render();
 }
 function renderFocus(c) {
@@ -1778,8 +1862,8 @@ function wipeCompany() {
 // ---------------- UI ----------------
 const lastHTML = {};
 function setHTML(id, html) { if (lastHTML[id] !== html) { lastHTML[id] = html; $(id).innerHTML = html; } }
-function modal(html) { if (!$('protectionDrawer').hidden) closeProtection(); $('modalBox').innerHTML = html; $('modal').hidden = false; }
-function closeModal() { $('modal').hidden = true; }
+function modal(html) { cancelTargetCinema(); if (!$('protectionDrawer').hidden) closeProtection(); $('modalBox').classList.remove('terminal-letter'); $('modalBox').innerHTML = html; $('modal').hidden = false; }
+function closeModal() { cancelTargetCinema(); $('modalBox').classList.remove('terminal-letter'); $('modal').hidden = true; }
 function saveInfo() {
   let hasPrevious = false; try { hasPrevious = !!localStorage.getItem(KEY + '_before_restore'); } catch (e) {}
   modal(`<h3>Your citizen record</h3>
@@ -1964,7 +2048,7 @@ function render() {
   $('deliv').textContent = fmt(Math.floor(state.deliveries));
   $('zone').textContent = ZONES[c.zone].name + (c.outbreak ? ' (fallback)' : c.supply.plant ? ' (via plant)' : '');
   const r = RANKS[c.rank]; const next = RANKS[c.rank + 1];
-  setHTML('rank', `<b class="${state.ach.complete ? 'gilded' : ''}" ${state.ach.complete ? 'title="Every upgrade. Every single one. The name is gold now."' : ''}>${esc(state.name || 'Unknown Citizen')} <a href="#" data-act="rename" title="Rename yourself or your shop. Your code and runners stay.">✎</a></b>${r.name}${state.dept ? ' · ' + esc(state.dept) : ''} · ×${r.mul} income` +
+  setHTML('rank', `<b class="${state.ach.complete ? 'gilded' : ''}" ${state.ach.complete ? 'title="Every upgrade. Every single one. The name is gold now."' : ''}>${esc(state.name || aliasPreview || 'Unknown Citizen')} <a href="#" data-act="rename" title="Rename yourself or your shop. Your code and runners stay.">✎</a></b>${r.name}${state.dept ? ' · ' + esc(state.dept) : ''} · ×${r.mul} income` +
     (next ? `<br>${state.shop ? downCount() + '/' + next.need + ' runners to ' + next.name : 'Open a shop to rank up'}` : '<br>There is nothing above you.'));
 
   // The notices wait for the reveal (checkReveal), then live in the side drawer. The details element keeps its
@@ -2051,10 +2135,14 @@ function render() {
   let sh;
   const vbtn = `<button data-act="voucher" ${state.cash < CONFIG.VOUCHER_COST ? 'disabled' : ''}>Ration voucher for a colleague (₵${CONFIG.VOUCHER_COST})</button>`;
   if (!state.shop) {
-    sh = `<p>You are a runner. ${state.ref ? 'Runners pay 10% to their shop owner.' : 'Nobody sent you here. Impressive. Or sad.'} Open your own shop to remove the recruiter deduction and rank up. ${c.gang ? 'The 15% protection tax stays until your first runner joins.' : ''}</p>
+    const boss = esc(state.recruiter || 'your recruiter');
+    const pitch = c.tax ? `You’re paying <b>${Math.round(c.tax * 100)}% tax</b> to <b>${boss}</b>. Stop making them rich. Open a shop, end their cut, and <b>start your own fleet.</b>`
+      : c.gang ? `You’re paying <b>${Math.round(c.gang * 100)}% protection tax</b> to the <b>Sector 7 gang</b>. Recruit one runner to end it. Open a shop and <b>start your own fleet.</b>`
+      : 'Nobody is taking a cut. Keep it that way. Open a shop and <b>start your own fleet.</b>';
+    sh = `<p>${pitch}</p>
       <div class="row"><button data-act="shop" ${state.cash < CONFIG.SHOP_COST ? 'disabled' : ''}>Open a shop (₵${fmt(CONFIG.SHOP_COST)})</button>
       <button data-act="share">Copy invite for Slack</button>${vbtn}</div>
-      <p class="muted">You can recruit before you have a shop. Anyone who joins through your link pays you 10% of their earnings. A voucher gives a named colleague ₵${CONFIG.VOUCHER_BONUS} to start with, which makes them feel special, which makes them click.</p>`;
+      <p class="muted">${c.tax && c.gang ? 'Recruit one runner to end the separate ' + Math.round(c.gang * 100) + '% protection tax. ' : ''}Recruit now: your direct runners pay you 10%. Vouchers give them ₵${CONFIG.VOUCHER_BONUS} to start.</p>`;
   } else {
     const L = [1, 2, 3].map(n => state.down.list.filter(m => m.level === n).length);
     const rows = state.down.list.slice().sort((a, b) => a.level - b.level || b.total - a.total).slice(0, 15).map(m => {
@@ -2272,7 +2360,6 @@ function showSplash() {
 }
 async function showIntro() {
   const ref = state.ref, v = qs.get('v');
-  const sealed = !!ref && !!(qs.get('ref') || qs.get('fr')); // the link carried a code. It stays. Everyone thinks about removing it.
   let fr = null, recName = null;
   const rows = (qs.get('fr') || ref) ? await Sheet.read('players') : [];
   if (qs.get('fr')) { const owner = rows.find(r => r.code === qs.get('fr')); const o = parseOffer(owner); if (owner) fr = { owner, offer: o, open: !!o && owner.claimedOffer !== o.id }; }
@@ -2282,21 +2369,18 @@ async function showIntro() {
     ${v ? '<p><b>' + esc(v) + '</b>, someone bought you a ration voucher worth <b>₵' + CONFIG.VOUCHER_BONUS + '</b>. They want something. They want you to run.</p>' : ''}
     ${fr && fr.open ? '<p>🏆 <b>' + esc(fr.owner.name) + '</b> is handing you <b>' + esc(fr.offer.shopName) + '</b>: ' + esc(gearSummary(fr.offer.gear)) + ', ₵' + fmt(fr.offer.income) + '/s, ready to run. They keep 25% of everything you make. Sign here before someone else does.</p>'
       : fr ? '<p><b>' + esc(fr.owner.name) + '</b> offered their business, but ' + (fr.owner.claimedName ? '<b>' + esc(fr.owner.claimedName) + '</b> got there first' : 'the offer is gone') + '. You can still run for them.</p>'
-      : ref ? '<p>You were recruited' + (recName ? ' by <b>' + esc(recName) + '</b>' : '') + ' with code <b>' + esc(ref) + '</b>. Your shop owner takes 10% of what you earn. You will resent this. Good.</p>' : '<p>Nobody recruited you. You found this yourself. The Ministry finds that suspicious.</p>'}
-    <input id="nm" placeholder="Your name (as colleagues would know it)" maxlength="40" value="${esc(v || '')}" autofocus>
+      : ref ? '<p>You were recruited' + (recName ? ' by <b>' + esc(recName) + '</b>' : '') + '. Your shop owner takes 10% of what you earn. You will resent this. Good.</p>' : '<p>Nobody recruited you. You found this yourself. The Ministry finds that suspicious.</p>'}
+    <input id="nm" placeholder="Your alias" aria-label="Your alias" maxlength="40" value="${esc(v || '')}" autofocus>
     <select id="dept">${DEPTS.map(d => '<option>' + d + '</option>').join('')}</select>
-    <input id="refIn" placeholder="Who sent you? Their code, if the link lost it (optional)" maxlength="12" value="${esc(ref || '')}" style="text-transform:uppercase" autocomplete="off" spellcheck="false" ${sealed ? 'readonly title="Sealed. The code stays on the invite."' : ''}>
-    <div class="hint">${sealed ? 'Recruiter code, sealed by the Ministry. It cannot be removed from an invite. Thinking "maybe I should recruit my own runner instead of paying tax to ' + esc(recName || 'them') + '... they would never know"? They would not. You will have your own link in a minute.' : 'The code is at the end of the invite link, after ?ref=. Without it your recruiter gets nothing, which they will mention.'}</div>
     <button id="go" class="big2">${fr && fr.open ? 'TAKE THE BUSINESS' : 'START RUNNING'}</button>
     <button class="help" data-act="restoreCode">Already a citizen? Restore with a recovery code</button>`);
-  // Whatever is typed in the code box wins, including clearing it. Untouched, it keeps what the link carried.
-  let refEdited = false;
-  $('refIn').addEventListener('input', () => { refEdited = true; });
+  // The URL already supplied state.ref on open. Registration never asks for or edits it.
+  const previewAlias = () => { aliasPreview = $('nm').value.trim().slice(0, 40); render(); };
+  $('nm').addEventListener('input', previewAlias);
+  previewAlias();
   const go = () => {
     const n = $('nm').value.trim().slice(0, 40); if (!n) return;
-    state.name = n; state.dept = $('dept').value;
-    const typed = String($('refIn').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
-    state.ref = sealed ? state.ref : (typed || (refEdited ? null : state.ref) || null);
+    state.name = n; state.dept = $('dept').value; aliasPreview = '';
     log('Registered citizen <b>' + esc(n) + '</b> of ' + esc(state.dept) + '. Welcome to the food economy.');
     closeModal(); start(false);
   };

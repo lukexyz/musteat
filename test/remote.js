@@ -34,7 +34,7 @@ start(0, async ({ srv, db, url }) => {
   console.log('Bob joins from laptop B through the link');
   const B = await (await ctxOf()).newPage();
   await B.goto(game + '&ref=' + code); await skip(B);
-  ok('intro names Ada from the shared sheet, code sealed', /recruited by[\s\S]*Ada/.test(await B.textContent('#modalBox')) && (await B.getAttribute('#refIn', 'readonly')) != null, await B.textContent('#modalBox'));
+  ok('intro names Ada and applies the referral without a code field', /recruited by[\s\S]*Ada/.test(await B.textContent('#modalBox')) && !(await B.$('#refIn')) && await B.evaluate(() => MUSTEAT.state.ref) === code, await B.textContent('#modalBox'));
   await B.fill('#nm', 'Bob'); await B.click('#go');
   await B.waitForFunction(() => window.MUSTEAT.state.id); await reveal(B);
   await B.waitForFunction(() => /running for[\s\S]*Ada/.test(document.getElementById('recruiter').textContent), null, { timeout: 8000 }).catch(() => {});

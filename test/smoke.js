@@ -229,7 +229,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   const p2 = await ctx.newPage();
   await p2.goto(url + '?dev&slot=2&ref=' + code + '&v=Sam');
   await skip(p2);
-  ok('intro names the referral code', new RegExp(code).test(await p2.textContent('#modalBox')));
+  ok('intro applies the referral without showing the code', !(await p2.$('#refIn')) && !(await p2.textContent('#modalBox')).includes(code) && await p2.evaluate(() => MUSTEAT.state.ref) === code);
   ok('voucher pre-fills name', (await p2.inputValue('#nm')) === 'Sam');
   await p2.click('#go');
   await p2.waitForFunction(() => window.MUSTEAT.state.id); await reveal(p2);
@@ -310,28 +310,30 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok("recruit's banner follows the rename", /running for.*Ada and Bo's Big Dog Kitchen/s.test(await p2.textContent('#recruiter')), await p2.textContent('#recruiter'));
   await p1.bringToFront();
 
-  console.log('manual referral code on the intro');
+  console.log('automatic referrals and live alias preview');
   const p3 = await ctx.newPage();
   await p3.goto(url + '?dev&slot=3');
   await skip(p3);
-  ok('intro has a who-sent-you box', await p3.isVisible('#refIn'));
-  await p3.fill('#nm', 'Mo'); await p3.fill('#refIn', ' ' + code.toLowerCase() + ' ');
+  ok('registration asks for an alias with no referral field', !(await p3.$('#refIn')) && await p3.getAttribute('#nm', 'placeholder') === 'Your alias');
+  await p3.fill('#nm', '<img src=x>');
+  ok('alias preview is escaped text in the header', (await p3.textContent('#rank')).includes('<img src=x>') && !(await p3.$('#rank img')));
+  await p3.fill('#nm', '');
+  ok('clearing the draft alias restores the citizen placeholder', /Unknown Citizen/.test(await p3.textContent('#rank')));
+  await p3.fill('#nm', 'Mo');
+  ok('alias updates live without registering or saving the draft', /Mo/.test(await p3.textContent('#rank')) && await p3.evaluate(() => !MUSTEAT.state.name && !MUSTEAT.state.id));
   await p3.click('#go');
   await p3.waitForFunction(() => window.MUSTEAT.state.id); await reveal(p3);
-  await p3.waitForFunction(() => !document.getElementById('recruiter').hidden);
-  ok('typed code resolves to the owner', /running for.*Ada/s.test(await p3.textContent('#recruiter')), await p3.textContent('#recruiter'));
+  ok('direct arrival registers the alias without a recruiter', (await save(p3, '3')).name === 'Mo' && !(await save(p3, '3')).ref && /Mo/.test(await p3.textContent('#rank')));
   await p3.close();
 
   const p6 = await ctx.newPage();
   await p6.goto(url + '?dev&slot=6&ref=' + code);
   await skip(p6);
-  ok('code box is sealed when the link carried a code', (await p6.getAttribute('#refIn', 'readonly')) != null && (await p6.inputValue('#refIn')) === code && /never know/.test(await p6.textContent('#modalBox')), await p6.inputValue('#refIn'));
-  await p6.click('#refIn'); await p6.keyboard.press('End'); await p6.keyboard.type('ZZ');
-  ok('typing does not change a sealed code', (await p6.inputValue('#refIn')) === code, await p6.inputValue('#refIn'));
+  ok('invite code is applied on open without a visible field', !(await p6.$('#refIn')) && await p6.evaluate(() => MUSTEAT.state.ref) === code);
   await p6.fill('#nm', 'Solo'); await p6.click('#go');
   await p6.waitForFunction(() => window.MUSTEAT.state.id); await reveal(p6);
   await p6.waitForFunction(() => !document.getElementById('recruiter').hidden);
-  ok('sealed code registers under the recruiter, with the temptation line', (await save(p6, '6')).ref === code && /never know/.test(await p6.textContent('#recruiter')), await p6.textContent('#recruiter'));
+  ok('automatic referral survives alias registration', (await save(p6, '6')).ref === code && (await save(p6, '6')).name === 'Solo', await p6.textContent('#recruiter'));
   ok('runner with no runners pays both taxes', /\(−25%\)/.test(await p6.textContent('#cut')), await p6.textContent('#cut'));
   await p6.click('#cut');
   ok('both cuts explained, with the recruiter named and the shop nudge', /10%[\s\S]*Ada[\s\S]*15%[\s\S]*Sector 7/.test(await p6.textContent('#modalBox')) && /Twenty-five percent/.test(await p6.textContent('#modalBox')) && await p6.isVisible('#toShop'), await p6.textContent('#modalBox'));
