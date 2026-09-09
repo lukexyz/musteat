@@ -31,6 +31,7 @@ td.r,th.r{text-align:right;white-space:nowrap}
 .order button{font:inherit;font-size:11px;cursor:pointer;background:#131c1f;color:var(--fg);border:1px solid var(--line);padding:2px 8px;margin-left:4px}
 .order button.on{border-color:var(--acc);color:var(--acc)}
 .score-controls{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 0;font-size:12px}.score-controls button{font:inherit;font-size:11px;cursor:pointer;background:#131c1f;color:var(--fg);border:1px solid var(--line);padding:5px 8px}.score-controls button.on{border-color:var(--acc);color:var(--acc)}.score-controls input{width:80px;font:inherit;background:#000;color:var(--fg);border:1px solid var(--line);padding:5px}.me{color:var(--acc)}
+.load-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0;color:var(--dim);font-size:12px}.load-status.failed{color:var(--gold)}.load-status button{font:inherit;color:var(--acc);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:6px 10px;cursor:pointer}
 .gold{color:var(--gold)}
 .blue{color:var(--blue)}
 .bar{height:6px;background:#111;border:1px solid var(--line);margin-top:3px;max-width:220px}
@@ -51,22 +52,23 @@ footer{margin-top:24px;font-size:12px;color:var(--dim);border-top:1px solid var(
     <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"><span style="color:#fff">· HIGH SCORES</span></h1><div class="tag">Everyone who has ever registered, ranked. Underneath: the ledger, every cut and royalty ever credited.</div></div>
     <div class="muted" id="mode"></div>
   </header>
+  <div class="load-status" id="loadStatus" role="status"><span id="loadMessage">Loading company scores…</span><button id="retry" hidden>Retry connection</button></div>
   <section class="stats">
-    <div class="stat"><div class="k">Entries</div><div class="v" id="nRows">0</div></div>
-    <div class="stat"><div class="k">Credited in cuts</div><div class="v" id="sumAll">₵0</div></div>
-    <div class="stat"><div class="k">Of which royalties</div><div class="v" id="sumRoy">₵0</div></div>
-    <div class="stat"><div class="k">Citizens paying up</div><div class="v" id="nPayers">0</div></div>
+    <div class="stat"><div class="k">Entries</div><div class="v" id="nRows">—</div></div>
+    <div class="stat"><div class="k">Credited in cuts</div><div class="v" id="sumAll">—</div></div>
+    <div class="stat"><div class="k">Of which royalties</div><div class="v" id="sumRoy">—</div></div>
+    <div class="stat"><div class="k">Citizens paying up</div><div class="v" id="nPayers">—</div></div>
   </section>
   <h2>High scores</h2>
   <div class="score-controls" id="order"><button data-order="pace" class="on">Same playtime</button><button data-order="total">Lifetime</button><label id="minuteLabel">At minute <input id="scoreMinute" type="number" min="1" step="1" value="1" aria-label="Compare scores at active minute"></label><button id="myMinute">My minute</button></div>
-  <div class="card" id="scores"></div>
+  <div class="card" id="scores"><div class="empty">Loading high scores…</div></div>
   <h2>Latest 10 transactions</h2>
-  <div class="card" id="recent"></div>
+  <div class="card" id="recent"><div class="empty">Loading transactions…</div></div>
   <h2>The ledger: top earners from runners</h2>
-  <div class="card" id="top"></div>
+  <div class="card" id="top"><div class="empty">Loading the ledger…</div></div>
   <div class="grid">
-    <div><h2>Biggest contributors</h2><div class="card" id="payers"></div></div>
-    <div><h2>Who pays whom</h2><div class="card" id="pairs"></div></div>
+    <div><h2>Biggest contributors</h2><div class="card" id="payers"><div class="empty">Loading contributors…</div></div></div>
+    <div><h2>Who pays whom</h2><div class="card" id="pairs"><div class="empty">Loading payments…</div></div></div>
   </div>
   <footer>Cuts are 10% / 5% / 2.5% of a runner's lifetime earnings by level, royalties 25% of a franchisee's, credited to the owner on sync and recorded here by the receiving client. Self-reported, like everything else in the food economy. <a href="index.html">Back to the game</a></footer>
 </div>
@@ -119,23 +121,43 @@ function rankedScores(players, mode, minute) {
 }
 // End shared playtime scores.
 async function read(table) {
-  if (CONFIG.SHEET_API) { try { const r = await fetch(CONFIG.SHEET_API + (CONFIG.SHEET_API.includes('?') ? '&' : '?') + 'table=' + table + '&t=' + Date.now()); if (r.ok) return await r.json(); } catch (e) {} return []; }
-  try { return (JSON.parse(localStorage.getItem(CONFIG.SHEET_KEY)) || {})[table] || []; } catch (e) { return []; }
+  let data;
+  if (CONFIG.SHEET_API) {
+    const controller = new AbortController(), timeout = setTimeout(() => controller.abort(), 12000);
+    try {
+      const response = await fetch(CONFIG.SHEET_API + (CONFIG.SHEET_API.includes('?') ? '&' : '?') + 'table=' + table + '&t=' + Date.now(), { signal: controller.signal, cache: 'no-store' });
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      data = await response.json();
+    } finally { clearTimeout(timeout); }
+  } else data = (JSON.parse(localStorage.getItem(CONFIG.SHEET_KEY)) || {})[table] || [];
+  if (!Array.isArray(data) || data.some(row => !row || typeof row !== 'object' || Array.isArray(row))) throw new Error('Invalid table response');
+  return data;
 }
 const sum = (arr, f) => arr.reduce((a, r) => a + (f(r) || 0), 0);
 const groupSum = (arr, key) => { const m = {}; arr.forEach(r => { const k = r[key]; if (!m[k]) m[k] = { id: k, total: 0, n: 0, rows: [] }; m[k].total += Number(r.amount) || 0; m[k].n++; m[k].rows.push(r); }); return Object.values(m).sort((a, b) => b.total - a.total); };
 const nameOf = (players, id, fallback) => { const p = players.find(x => x.id === id); return p ? p.name : fallback || 'someone'; };
 
-let generation = 0;
-async function render() {
-  const thisGeneration = ++generation;
+const loaded = { players: null, ledger: null }, loadErrors = { players: false, ledger: false };
+let refreshing = false;
+async function refresh() {
+  if (refreshing) return;
+  refreshing = true;
+  render();
+  await Promise.all(['players', 'ledger'].map(async table => {
+    try { loaded[table] = await read(table); loadErrors[table] = false; }
+    catch (error) { loadErrors[table] = true; }
+    render(); // Scores can appear before the transaction ledger finishes loading.
+  }));
+  refreshing = false;
+  render();
+}
+function render() {
   document.querySelectorAll('[data-order]').forEach(b => b.classList.toggle('on', b.dataset.order === order));
   $('minuteLabel').hidden = order !== 'pace'; $('myMinute').hidden = order !== 'pace';
   if (document.activeElement !== $('scoreMinute')) $('scoreMinute').value = minute;
-  const [players, ledger] = await Promise.all([read('players'), read('ledger')]);
-  if (thisGeneration !== generation) return;
+  const players = loaded.players || [], ledger = loaded.ledger || [];
   const rows = (ledger || []).map(r => Object.assign({}, r, { amount: Number(r.amount) || 0, ts: Number(r.ts) || 0 }));
-  $('mode').textContent = (CONFIG.SHEET_API ? 'connected to the company sheet' : 'local sheet (this browser only)') + ' · refreshes every ' + (CONFIG.SHEET_API ? 30 : 10) + 's';
+  $('mode').textContent = (CONFIG.SHEET_API ? 'company high scores' : 'local sheet (this browser only)') + ' · refreshes every ' + (CONFIG.SHEET_API ? 30 : 10) + 's';
   $('nRows').textContent = rows.length.toLocaleString();
   $('sumAll').textContent = '₵' + fmt(sum(rows, r => r.amount));
   $('sumRoy').textContent = '₵' + fmt(sum(rows.filter(r => r.kind === 'royalty'), r => r.amount));
@@ -171,10 +193,23 @@ async function render() {
   const recent = rows.slice().sort((a, b) => b.ts - a.ts).slice(0, 10);
   $('recent').innerHTML = recent.length ? `<table><tr><th>When</th><th>From</th><th></th><th>To</th><th class="r">Level</th><th class="r">Amount</th></tr>` +
     recent.map(r => `<tr><td class="muted">${ago(r.ts)}</td><td>${esc(nameOf(players, r.from, r.fromName))}</td><td class="muted">→</td><td>${esc(nameOf(players, r.to, r.toName))}</td><td class="r ${r.kind === 'royalty' ? 'gold' : 'blue'}">${r.kind === 'royalty' ? 'royalty' : 'L' + esc(r.level)}</td><td class="r">₵${fmt(r.amount)}</td></tr>`).join('') + `</table>` : '<div class="empty">The ledger is empty.</div>';
+  if (loaded.players === null) $('scores').innerHTML = '<div class="empty">' + (loadErrors.players ? 'High scores could not be loaded. Retry the connection above.' : 'Loading high scores…') + '</div>';
+  if (loaded.ledger === null) {
+    ['nRows', 'sumAll', 'sumRoy', 'nPayers'].forEach(id => { $(id).textContent = '—'; });
+    ['recent', 'top', 'payers', 'pairs'].forEach(id => { $(id).innerHTML = '<div class="empty">' + (loadErrors.ledger ? 'The ledger could not be loaded. Retry the connection above.' : 'Loading the ledger…') + '</div>'; });
+  }
+  const failed = Object.keys(loadErrors).filter(table => loadErrors[table]);
+  $('loadStatus').classList.toggle('failed', !!failed.length);
+  $('retry').hidden = !failed.length; $('retry').disabled = refreshing;
+  $('loadMessage').textContent = failed.length
+    ? failed.map(table => (table === 'players' ? 'High scores' : 'Transaction ledger') + (loaded[table] === null ? ' unavailable.' : ' refresh failed; showing last loaded data.')).join(' ') + (refreshing ? ' Retrying…' : ' Retry now or wait for the automatic refresh.')
+    : refreshing ? (loaded.players === null ? 'Loading high scores…' : loaded.ledger === null ? 'Scores loaded. Loading the transaction ledger…' : 'Refreshing company data…')
+    : 'Up to date · ' + players.length + ' registered citizens.';
 }
-render();
-setInterval(render, CONFIG.SHEET_API ? 30000 : 10000);
-window.addEventListener('storage', e => { if (e.key === CONFIG.SHEET_KEY) render(); });
+$('retry').addEventListener('click', refresh);
+refresh();
+setInterval(refresh, CONFIG.SHEET_API ? 30000 : 10000);
+window.addEventListener('storage', e => { if (e.key === CONFIG.SHEET_KEY) refresh(); });
 </script>
 </body>
 </html>
