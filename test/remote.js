@@ -21,8 +21,9 @@ start(0, async ({ srv, db, url }) => {
   await A.waitForFunction(() => /connected to the company sheet/.test(document.getElementById('mode').textContent));
   ok('footer says connected to the company sheet', true);
   ok('player row reached the backend', db.players.length === 1 && db.players[0].name === 'Ada', JSON.stringify(db.players));
-  await A.evaluate(() => { window.MUSTEAT.state.cash = 6000; });
+  await A.evaluate(() => { window.MUSTEAT.state.cash = 26000; });
   await A.click('[data-act="shop"]'); await A.fill('#shopName', 'Bunker Bao'); await A.click('#confirm');
+  await A.click('#shopOpeningDone');
   await A.waitForFunction(() => /Bunker Bao/.test(document.getElementById('shop').textContent));
   const link = await A.textContent('#shop .link');
   const code = (link.match(/ref=([A-Z0-9]+)/) || [])[1];

@@ -69,7 +69,7 @@ h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);m
 .item.owned{border-color:var(--acc)}
 .item.locked{opacity:.55}
 .item .d{font-size:12px;color:var(--dim)}
-.item .lvl{font-size:11px;color:var(--blue);margin-left:4px}
+.item .lvl,.scene-name .lvl{font-size:11px;color:var(--blue);margin-left:4px}
 .tech-heading{display:flex;align-items:center;gap:8px}.tech-heading>span:first-child{flex-shrink:0;max-width:100%}
 .tech-dots{display:grid;grid-template-rows:repeat(2,4px);grid-auto-flow:column;grid-auto-columns:4px;gap:2px;min-width:0;max-width:148px;overflow:hidden;flex:0 1 auto}
 .tech-dots i{width:4px;height:4px;border-radius:1px;background:#39e6f2}
@@ -257,15 +257,39 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .gang-name .target-char{color:inherit;text-shadow:inherit}
 .target-caret{position:absolute;z-index:2;width:7px;background:#baffcb;box-shadow:0 0 8px #39ff14,0 0 22px #39ff1470;pointer-events:none}
 .box.terminal-letter{position:relative;background-color:#0d1714;background-image:repeating-linear-gradient(0deg,transparent 0 3px,#a7ffc806 3px 4px),radial-gradient(ellipse at 50% 0,#45b86710,transparent 75%);border-color:#71d18d;box-shadow:inset 0 0 35px #0005,0 0 35px #39ff1426}
+.shop-front{position:relative;overflow:hidden;min-height:230px;border:1px solid #655636;background:radial-gradient(ellipse at 50% 20%,#795c2026,transparent 70%),#070d0e;padding:24px 16px 0}
+.shop-sign{text-align:center;position:relative;z-index:1;animation:shop-sign-on 1.1s .7s both}
+.shop-sign-label{font-size:9px;letter-spacing:2px;color:#ad9867}
+.shop-sign h3{margin:10px 0 22px;font-size:24px;line-height:1.3;color:#fff3d5;text-shadow:0 0 10px #ffd16660,0 0 30px #ffd16630;overflow-wrap:anywhere}
+.shop-hatch{height:100px;width:82%;margin:auto;border:1px solid #574b31;border-bottom:0;background:#040708;display:flex;align-items:flex-end;justify-content:center;gap:12px;box-shadow:inset 0 8px 20px #ffd1660a}
+.shop-hatch i{display:block;width:23px;height:27px;background:#28302a;border-top:2px solid #b6a778}.shop-hatch i:nth-child(2){width:38px;height:16px}.shop-hatch i:nth-child(3){height:35px;width:15px}
+.shop-shutter{position:absolute;inset:0;z-index:2;background:repeating-linear-gradient(0deg,#17201e 0 12px,#344039 12px 14px,#0a110f 14px 16px);border-bottom:4px solid #a39470;box-shadow:0 8px 24px #000;animation:shop-shutter-up 1.5s .15s cubic-bezier(.55,.05,.2,1) both}
+.shop-opening .shop-opening-line{margin:24px 0;text-align:center;font-size:14px;font-weight:bold;letter-spacing:2px;animation:fadeup .6s 1.2s both}.shop-opening-line span{color:#c7ab71}
+@keyframes shop-shutter-up{0%,10%{transform:translateY(0)}18%{transform:translateY(-3%)}24%{transform:translateY(-2%)}100%{transform:translateY(-105%)}}
+@keyframes shop-sign-on{0%{opacity:.05}18%{opacity:.8}30%{opacity:.25}50%,100%{opacity:1}}
+@media(max-width:520px){.shop-sign h3{font-size:20px}.shop-front{padding:18px 12px 0;min-height:215px}}
+@media(prefers-reduced-motion:reduce){.shop-shutter{display:none}.shop-sign,.shop-opening .shop-opening-line{opacity:1}}
 .terminal-letter h3{text-shadow:0 0 12px #70ff8830}.terminal-letter .target-char{filter:none;transition:opacity 60ms ease-out;color:inherit;text-shadow:none}
 .terminal-letter.terminal-boot{animation:terminal-boot 160ms ease-out 3}
 @keyframes terminal-boot{0%,100%{border-color:#437a53;box-shadow:inset 0 0 35px #0005,0 0 18px #39ff1418}35%{border-color:#c7ffda;box-shadow:inset 0 0 28px #8aff9c12,0 0 30px #39ff1440}}
+.white-rabbit{position:absolute;inset:0;z-index:5;pointer-events:none;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at center,#071110ee,transparent 68%);animation:rabbit-transmission 1s linear both}
+.rabbit-signal{position:relative;width:min(260px,65%);aspect-ratio:1;filter:drop-shadow(0 0 8px #ecffff80) drop-shadow(0 0 28px #89f8d845);animation:rabbit-lock 1s ease-out both}
+.terminal-letter .rabbit-signal{width:min(190px,55%)}
+.rabbit-signal svg{position:absolute;inset:0;width:100%;height:100%;color:#f5ffff}
+.rabbit-signal .rabbit-echo{color:#73ffd5;opacity:.3;transform:translate(-9px,2px);clip-path:polygon(0 24%,100% 24%,100% 38%,0 38%,0 65%,100% 65%,100% 72%,0 72%);animation:rabbit-ghost 1s steps(2,end) both}
+.rabbit-signal::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 4px,#06141350 4px 5px);mask-image:radial-gradient(ellipse,#000,transparent 70%)}
+.white-rabbit::after{content:'';position:absolute;left:20%;right:20%;top:50%;height:1px;background:#eaffff;box-shadow:0 0 12px #9affdf;transform:scaleX(0);animation:rabbit-exit 1s ease-out both}
+@keyframes rabbit-transmission{0%{opacity:0}9%,76%{opacity:1}100%{opacity:0}}
+@keyframes rabbit-lock{0%{transform:scale(1.12);filter:blur(8px);opacity:1}14%{transform:translateX(-3px) scale(1.03)}24%{transform:translateX(2px) scale(1);filter:drop-shadow(0 0 8px #ecffff80) drop-shadow(0 0 28px #89f8d845)}35%,73%{transform:translateX(0) scale(1);opacity:1}88%,100%{transform:scale(1.15,.015);opacity:0}}
+@keyframes rabbit-ghost{0%,35%{transform:translate(-12px,2px);opacity:.5}36%,65%{transform:translate(7px,-1px);opacity:.25}66%,100%{transform:translate(0);opacity:0}}
+@keyframes rabbit-exit{0%,73%{transform:scaleX(0);opacity:0}84%{transform:scaleX(1);opacity:.8}100%{transform:scaleX(.05);opacity:0}}
+@media(prefers-reduced-motion:reduce){.white-rabbit{display:none}}
 .next-goal .eyebrow,.operation .eyebrow,.empire-live .eyebrow{display:block;color:var(--dim);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
 .next-goal strong{color:#fff;font-size:16px}.next-goal .bar{grid-column:1/-1;margin:4px 0 0;height:5px}.next-goal .bar i{background:var(--acc)}
 .next-goal .goal-detail{color:var(--dim);font-size:11px}.next-goal button{grid-column:2;grid-row:1/4;max-width:150px;font-size:12px}
 .focus-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:14px}.focus-grid .operation,.focus-grid .empire-live{margin-bottom:0;min-width:0}.focus-grid .empire-live{display:block}.focus-grid .empire-live button{margin-top:6px}
 .operation{position:relative;border:1px solid var(--line);background:linear-gradient(#0e191e,#080d0f);height:135px;overflow:hidden;margin-bottom:12px;padding:10px 12px}
-.operation .scene-name{font-size:12px;color:var(--blue)}.operation .district{position:absolute;bottom:28px;left:0;right:0;height:43px;background:repeating-linear-gradient(90deg,transparent 0 30px,#15252b 30px 58px,transparent 58px 65px);opacity:.7}
+.operation .scene-name{font-size:12px;color:var(--blue);display:flex;align-items:center;gap:8px}.scene-name>span:first-child{min-width:0}.operation .district{position:absolute;bottom:28px;left:0;right:0;height:43px;background:repeating-linear-gradient(90deg,transparent 0 30px,#15252b 30px 58px,transparent 58px 65px);opacity:.7}
 .operation .route{position:absolute;bottom:24px;left:0;right:0;border-top:1px dashed #35533d}.operation .airlock{position:absolute;right:14px;bottom:25px;height:50px;width:35px;border:2px solid #466a50;border-bottom:none;background:#0b1310;box-shadow:inset 0 0 12px #39ff1420}.operation .airlock::after{content:'';position:absolute;left:14px;top:5px;bottom:0;border-left:1px solid #466a50}
 .operation .courier{position:absolute;bottom:24px;left:-50px;width:40px;height:32px;color:var(--acc);animation:delivery-route 8s linear infinite}.operation .courier.second{animation-delay:-4s;opacity:.5}.operation .courier.air{bottom:42px;color:var(--blue)}
 .operation .scene-foot{position:absolute;bottom:4px;left:12px;right:12px;display:flex;justify-content:space-between;font-size:9px;letter-spacing:1px;color:var(--dim)}
@@ -318,7 +342,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 <body>
 <div class="wrap">
   <header>
-    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 2099. Lockdown day <span id="lockdownDay">336,041</span>. Going outside is illegal. The survivors must eat.</div></div>
+    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 2099. Lockdown day <span id="lockdownDay">336,041</span>. Going outside is illegal. Survivors must eat.</div></div>
     <div class="rankbox" id="rank"></div>
   </header>
   <div id="supply" class="banner good" hidden></div>
@@ -401,7 +425,7 @@ const CONFIG = {
   SAVE_KEY: 'musteat_save',
   LOCKDOWN_DAY: 336041,       // one fictional lockdown day per five real seconds since this save began
   SHEET_KEY: 'musteat_sheet',
-  SHOP_COST: 5000,
+  SHOP_COST: 25000,
   DRONE_COST: 2500,
   CONTRACTS_COST: 4000,
   VOUCHER_COST: 200,
@@ -1136,7 +1160,7 @@ function revealRecruiter(c) {
   }
   $('ok').onclick = closeModal;
   $('modalBox').classList.add('terminal-letter');
-  viewTarget('#modalBox', 'h3, p', { dialog: true, fast: true });
+  viewTarget('#modalBox', 'h3, p', { dialog: true, fast: true, rabbit: true });
 }
 function revealGang(c) {
   const paid = Math.floor(state.total / c.keep * c.gang);
@@ -1446,23 +1470,36 @@ function claimRation() {
   save(); render();
 }
 function openShopDialog() {
-  if (state.cash < CONFIG.SHOP_COST) return;
+  if (state.shop || state.cash < CONFIG.SHOP_COST) return;
   let name = rnd(SHOP_NAMES);
   modal(`<h3>Open your shop</h3>
     <p class="muted">₵${fmt(CONFIG.SHOP_COST)} buys a licence, a hatch, and a very old fryer. Pick a name.</p>
+    <p class="muted">Shop Owner rank starts at <b>×1.1 income</b>. Opening a shop ends the recruiter deduction. No runners required to open.${calc(state).gang ? ' <b class="gang-name">The gang still takes 15%</b> until your first runner joins.' : ''}${state.franchiseOf ? ' Franchise royalties continue.' : ''}</p>
     <input id="shopName" value="${esc(name)}" maxlength="40">
     <div class="row"><button id="reroll">Reroll name</button><button id="cancel">Not yet</button></div>
     <button id="confirm" class="big2">OPEN SHOP (₵${fmt(CONFIG.SHOP_COST)})</button>`);
   $('reroll').onclick = () => { $('shopName').value = rnd(SHOP_NAMES.filter(name => name !== $('shopName').value)); };
   $('cancel').onclick = closeModal;
   $('confirm').onclick = () => {
-    if (state.cash < CONFIG.SHOP_COST) return closeModal();
+    if (state.shop || state.cash < CONFIG.SHOP_COST) return closeModal();
     state.cash -= CONFIG.SHOP_COST;
     state.shop = { name: ($('shopName').value.trim() || name).slice(0, 40), at: now() };
     log('<b>You opened ' + esc(state.shop.name) + '.</b> Recruiter deduction removed.' + (calc(state).gang ? ' Protection still costs 15% until your first runner joins.' : '') + ' Now you need runners.');
     post('shop', state.shop.name);
-    closeModal(); save(); sync(); render();
+    closeModal(); save(); sync(); render(); showShopOpening();
   };
+}
+function showShopOpening() {
+  modal(`<div class="shop-opening">
+    <div class="shop-front">
+      <div class="shop-sign"><span class="shop-sign-label">INDEPENDENT KITCHEN / 2099</span><h3>${esc(state.shop.name)}</h3></div>
+      <div class="shop-hatch" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="shop-shutter" aria-hidden="true"></div>
+    </div>
+    <p class="shop-opening-line">YOUR NAME ON THE DOOR.<br><span>YOUR PROBLEM NOW.</span></p>
+    <button id="shopOpeningDone" class="big2">BACK TO WORK</button>
+  </div>`);
+  $('shopOpeningDone').onclick = closeModal;
 }
 function buildStatus(b) {
   const owned = !!state.buildings[b.id];
@@ -1583,8 +1620,10 @@ function viewTarget(selector, copySelector, options = {}) {
   if (!options.dialog) first.scrollIntoView({ behavior: reduced ? 'instant' : 'smooth', block: 'center' });
   let frame = 0, target = first, chars = [], caret = null, revealed = 0;
   let started = null, previousTop = null, stillFrames = 0, message = null;
+  let dismissRabbit = () => {};
   const requested = performance.now();
   const restore = () => {
+    dismissRabbit();
     target.classList.remove('target-cinema', 'terminal-boot');
     target.querySelectorAll('.target-char').forEach(span => span.replaceWith(document.createTextNode(span.textContent)));
     caret?.remove(); target.normalize();
@@ -1599,7 +1638,10 @@ function viewTarget(selector, copySelector, options = {}) {
     if (started == null) {
       stillFrames = previousTop != null && Math.abs(rect.top - previousTop) < .5 ? stillFrames + 1 : 0;
       previousTop = rect.top;
-      if (options.dialog || (rect.top < innerHeight - 30 && rect.bottom > 30 && (reduced || (stillFrames >= 3 && time - requested > 100)))) started = time;
+      if (options.dialog || (rect.top < innerHeight - 30 && rect.bottom > 30 && (reduced || (stillFrames >= 3 && time - requested > 100)))) {
+        started = time;
+        if (options.rabbit) dismissRabbit = showWhiteRabbit(target);
+      }
       else if (time - requested > 2500) return stop();
       else { frame = requestAnimationFrame(draw); return; }
     }
@@ -1633,7 +1675,7 @@ function viewTarget(selector, copySelector, options = {}) {
     if (!caret?.isConnected) {
       caret = document.createElement('span'); caret.className = 'target-caret'; caret.setAttribute('aria-hidden', 'true'); target.appendChild(caret);
     }
-    const blinkTime = options.fast ? 480 : 1260, typeTime = options.fast ? clamp(chars.length * 3, 700, 1800) : clamp(chars.length * 12, 1400, 4600);
+    const blinkTime = options.rabbit && !reduced ? 950 : options.fast ? 480 : 1260, typeTime = options.fast ? clamp(chars.length * 3, 700, 1800) : clamp(chars.length * 12, 1400, 4600);
     const count = Math.floor(clamp((elapsed - blinkTime) / typeTime, 0, 1) * chars.length);
     while (revealed < count) chars[revealed++].classList.add('shown');
     const cursorRect = chars[Math.min(count, chars.length - 1)].getBoundingClientRect();
@@ -1653,6 +1695,9 @@ function pursueGoal() {
   const g = GEAR.find(g => g.id === goal.gear), cost = gearCost(g, lvl(g.id), 1);
   if (state.cash < cost) return viewTarget('#gear .item:has([data-buy="' + g.id + '"])', '.tech-heading > span:first-child, .body > .d, .gain-preview');
   const qty = state.qty; state.qty = 1; buy(g.id); state.qty = qty; render();
+}
+function techDots(count) {
+  return count > 0 ? '<span class="tech-dots" aria-hidden="true">' + '<i></i>'.repeat(Math.min(50, Math.floor(count))) + '</span>' : '';
 }
 function renderFocus(c) {
   $('firstTechHint').hidden = gearTotal(state) > 0 || state.retirements > 0;
@@ -1680,7 +1725,7 @@ function renderFocus(c) {
   ];
   const shape = shapes[Math.max(0, tier)];
   const courier = cls => `<svg class="courier ${cls}" viewBox="0 0 40 34" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">${shape}</svg>`;
-  setHTML('operation', `<span class="eyebrow">${esc(state.shop ? state.shop.name : 'One citizen. One delivery bag.')}</span><div class="scene-name">${esc(top ? 'Best tech: ' + top.name : 'You are the entire operation')}</div><div class="district" aria-hidden="true"></div><div class="route" aria-hidden="true"></div><div class="airlock" aria-hidden="true"></div>${courier(tier >= 2 ? 'air' : '')}${tier >= 1 ? courier('second ' + (tier >= 2 ? 'air' : '')) : ''}<div class="scene-foot"><span>Zone: ${esc(ZONES[c.zone].name)}</span><span>${fmt(c.dps)} deliveries/s</span></div>`);
+  setHTML('operation', `<span class="eyebrow">${esc(state.shop ? state.shop.name : 'One citizen. One delivery bag.')}</span><div class="scene-name"><span>${esc(top ? 'Best tech: ' + top.name : 'You are the entire operation')}${top ? '<span class="lvl">×' + lvl(top.id) + '</span>' : ''}</span>${top ? techDots(lvl(top.id)) : ''}</div><div class="district" aria-hidden="true"></div><div class="route" aria-hidden="true"></div><div class="airlock" aria-hidden="true"></div>${courier(tier >= 2 ? 'air' : '')}${tier >= 1 ? courier('second ' + (tier >= 2 ? 'air' : '')) : ''}<div class="scene-foot"><span>Zone: ${esc(ZONES[c.zone].name)}</span><span>${fmt(c.dps)} deliveries/s</span></div>`);
   const latest = state.lastSocial;
   const sector = world.sectors.find(s => s.dept === state.dept);
   let challenge = '';
@@ -2191,7 +2236,7 @@ function render() {
     const projected = !secret && !maxed ? calc(Object.assign({}, state, { gear: Object.assign({}, state.gear, { [g.id]: l + n }) })) : null;
     const gain = projected ? projected.baseIncome - c.baseIncome : 0;
     const benefit = gain > 0 ? '<div class="gain-preview need">Adds ₵' + fmt(gain) + '/sec at base rate' + (n > 1 ? ' for ×' + n : '') + '</div>' : '';
-    const dots = l > 0 ? '<span class="tech-dots" aria-hidden="true">' + '<i></i>'.repeat(Math.min(50, Math.floor(l))) + '</span>' : '';
+    const dots = techDots(l);
     return `<div class="item ${secret ? 'locked' : ''}"><div class="ico" data-ico="${g.id}" aria-hidden="true">${secret ? '?' : g.id.slice(0, 2).toUpperCase()}</div><div class="body"><div class="tech-heading"><span><b>${secret ? '???' : g.name}</b><span class="lvl">×${l}</span></span>${dots}</div><div class="d">${desc}</div>${benefit}</div>${rev}
       <button data-buy="${g.id}" ${maxed || state.cash < cost ? 'disabled' : ''}>${maxed ? 'MAX' : '₵' + fmt(cost) + (n > 1 ? ' ×' + n : '')}</button></div>`;
   }).join(''));
@@ -2419,12 +2464,25 @@ function showOffline(o) {
     <button id="ok" class="big2">BACK TO WORK</button>`);
   $('ok').onclick = () => { closeModal(); if (state.pendingRush) showFirstCrate(state.pendingRush.bonus); };
 }
+// A local vector transmission: no assets to fetch and no changes to the save.
+function showWhiteRabbit(host) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return () => {};
+  host.querySelectorAll('.white-rabbit').forEach(el => el.remove());
+  const layer = document.createElement('div');
+  layer.className = 'white-rabbit'; layer.setAttribute('aria-hidden', 'true');
+  const shape = `<path fill="currentColor" d="M43 105C29 107 25 96 31 90C35 86 40 89 44 93C42 78 47 67 61 61C72 56 85 59 91 67L97 55C89 45 77 22 82 16C89 11 105 34 109 47C105 30 105 8 112 8C121 8 122 34 118 48C131 49 138 58 136 69L147 75L137 82L120 85L111 102L121 119L138 123C143 125 141 131 135 132L112 132L99 115L88 126L65 133L37 133C33 129 38 125 46 123L63 119C49 117 45 112 43 105Z"/><path d="M70 87C86 84 94 105 78 115" fill="none" stroke="#15372d" stroke-width="2.5" stroke-linecap="round"/><circle cx="125" cy="64" r="2.4" fill="#07130f"/>`;
+  layer.innerHTML = `<div class="rabbit-signal"><svg viewBox="0 0 160 150" focusable="false">${shape}</svg><svg class="rabbit-echo" viewBox="0 0 160 150" focusable="false">${shape}</svg></div>`;
+  host.appendChild(layer);
+  const timer = setTimeout(() => layer.remove(), 1050);
+  return () => { clearTimeout(timer); layer.remove(); };
+}
 // First visit: the splash, then registration. Five seconds or a tap.
 function showSplash() {
   return new Promise(res => {
     const el = $('intro'); el.hidden = false;
+    const dismissRabbit = showWhiteRabbit(el);
     let done = false;
-    const end = () => { if (done) return; done = true; clearTimeout(timer); el.removeEventListener('click', end); el.hidden = true; res(); };
+    const end = () => { if (done) return; done = true; clearTimeout(timer); dismissRabbit(); el.removeEventListener('click', end); el.hidden = true; res(); };
     el.addEventListener('click', end);
     const timer = setTimeout(end, CONFIG.INTRO_S * 1000);
   });

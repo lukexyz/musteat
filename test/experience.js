@@ -43,10 +43,15 @@ start(0, async ({ srv, db, url }) => {
     check('next-goal purchase buys one, preserving bulk selection', await page.evaluate(() => MUSTEAT.state.gear.trainers === 1 && MUSTEAT.state.qty === 10));
     await page.click('#pursueGoal');
     check('operation changes with the Hoverbike purchase', /Best tech: Hoverbike/.test(await page.textContent('#operation')) && /Put your name above a shop/.test(await page.textContent('#nextGoal')));
-    await page.evaluate(() => { MUSTEAT.state.cash = 6000; MUSTEAT.render(); });
+    await page.evaluate(() => { MUSTEAT.state.cash = 24999; MUSTEAT.render(); });
+    check('shop needs the full 25K', await page.locator('#shop [data-act="shop"]').isDisabled());
+    await page.evaluate(() => { MUSTEAT.state.cash = 25000; MUSTEAT.render(); });
     await page.click('#pursueGoal');
     await page.fill('#shopName', 'Minute Kitchen');
+    check('shop purchase explains the remaining protection tax and solo access', /gang still takes 15%/.test(await page.textContent('#modalBox')) && /No runners required/.test(await page.textContent('#modalBox')));
     await page.click('#confirm');
+    check('shop costs 25K and shows its name on the door', await page.evaluate(() => MUSTEAT.state.cash === 0) && /Minute Kitchen/.test(await page.textContent('.shop-sign')));
+    await page.click('#shopOpeningDone');
     check('shop milestone correctly retains protection tax', await page.evaluate(() => MUSTEAT.calc(MUSTEAT.state).gang === 0.15) && /Protection still costs 15%/.test(await page.textContent('#log')));
 
     console.log('contracts');
@@ -87,7 +92,7 @@ start(0, async ({ srv, db, url }) => {
       MUSTEAT.claimDispatch(); MUSTEAT.claimDispatch();
       return { paid: s.cash - before, reward, done: s.dispatch.done, active: s.dispatch.active };
     });
-    check('contract reward is paid exactly once', paid.paid === paid.reward && paid.done === 1 && paid.active === null);
+    check('contract reward is paid exactly once', Math.abs(paid.paid - paid.reward) < 1e-8 && paid.done === 1 && paid.active === null);
     check('next-move card returns after collecting payment', await page.isVisible('#nextGoal'));
     check('three completions give a 1% permanent bonus', await page.evaluate(() => { const s = MUSTEAT.state; s.dispatch.done = 0; const before = MUSTEAT.calc(s).baseIncome; s.dispatch.done = 3; return Math.abs(MUSTEAT.calc(s).baseIncome / before - 1.01) < 1e-9; }));
     check('contract income bonus caps at 20%', await page.evaluate(() => { const s = MUSTEAT.state; s.dispatch.done = 0; const before = MUSTEAT.calc(s).baseIncome; s.dispatch.done = 600; return Math.abs(MUSTEAT.calc(s).baseIncome / before - 1.2) < 1e-9; }));

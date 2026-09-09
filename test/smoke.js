@@ -111,11 +111,13 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok('fast click on gear button registers', (await gearLvl()) === '×2', await gearLvl());
 
   console.log('shop');
-  await patchSave(p1, '', 's.cash = 6000');
+  await patchSave(p1, '', 's.cash = 26000');
   await p1.click('[data-act="shop"]');
   ok('shop dialog opens', await p1.isVisible('#confirm'));
   await p1.fill('#shopName', 'Test Kebab');
   await p1.click('#confirm');
+  ok('shop opening displays the chosen name', /Test Kebab/.test(await p1.textContent('.shop-sign')));
+  await p1.click('#shopOpeningDone');
   ok('shop dialog closes', !(await p1.isVisible('#modal')));
   await p1.waitForFunction(() => /Test Kebab/.test(document.getElementById('shop').textContent));
   const link = await p1.textContent('#shop .link');
