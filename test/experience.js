@@ -33,11 +33,16 @@ start(0, async ({ srv, db, url }) => {
     await page.keyboard.press('Escape');
     check('Escape restores focus and the playable background', await page.evaluate(() => document.activeElement.id === 'protectionTab' && !document.querySelector('.wrap').inert && document.getElementById('protectionDrawer').hidden));
     check('purchase benefit is visible without bookkeeping', /Adds ₵0.3.*\/sec at base rate/.test(await page.textContent('#gear')));
+    check('technology is directly after delivery controls, with its first buy above the fold', await page.evaluate(() => {
+      const gear = document.getElementById('gear');
+      return document.querySelector('.run').nextElementSibling.contains(gear) && gear.querySelector('button').getBoundingClientRect().bottom < innerHeight;
+    }));
+    check('route and recruitment live in Portfolio', await page.evaluate(() => ['operation', 'empireLive'].every(id => document.getElementById('tab-portfolio').contains(document.getElementById(id)))));
     await page.evaluate(() => { MUSTEAT.state.cash = 1000; MUSTEAT.state.qty = 10; MUSTEAT.render(); });
     await page.click('#pursueGoal');
     check('next-goal purchase buys one, preserving bulk selection', await page.evaluate(() => MUSTEAT.state.gear.trainers === 1 && MUSTEAT.state.qty === 10));
     await page.click('#pursueGoal');
-    check('operation changes with the Hoverbike purchase', /Hoverbike on the route/.test(await page.textContent('#operation')) && /Put your name above a shop/.test(await page.textContent('#nextGoal')));
+    check('operation changes with the Hoverbike purchase', /Best tech: Hoverbike/.test(await page.textContent('#operation')) && /Put your name above a shop/.test(await page.textContent('#nextGoal')));
     await page.evaluate(() => { MUSTEAT.state.cash = 6000; MUSTEAT.render(); });
     await page.click('#pursueGoal');
     await page.fill('#shopName', 'Minute Kitchen');
@@ -45,8 +50,34 @@ start(0, async ({ srv, db, url }) => {
     check('shop milestone correctly retains protection tax', await page.evaluate(() => MUSTEAT.calc(MUSTEAT.state).gang === 0.15) && /Protection still costs 15%/.test(await page.textContent('#log')));
 
     console.log('contracts');
+    await page.evaluate(() => { MUSTEAT.state.played = 89; MUSTEAT.render(); MUSTEAT.unlockDispatch(); MUSTEAT.acceptDispatch(); });
+    check('contracts and their recommendation stay locked before 90 active seconds', !await page.isVisible('#dispatchSection') && !await page.isVisible('#contractUnlock') && !/contract/i.test(await page.textContent('#nextGoal')) && !await page.evaluate(() => MUSTEAT.state.dispatch.active));
+    check('hidden time does not unlock the permit', await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', { configurable: true, value: true });
+      window.__time += 60000; MUSTEAT.frame(); delete document.hidden; MUSTEAT.render();
+      return MUSTEAT.state.played === 89 && document.getElementById('contractUnlock').hidden;
+    }));
+    await page.evaluate(() => { window.__time += 1000; MUSTEAT.frame(); MUSTEAT.render(); });
+    check('90 active seconds earns a free permit without opening contracts automatically', await page.isVisible('#contractUnlock') && !await page.isVisible('#dispatchSection') && !await page.isVisible('#modal'));
+    check('permit also requires some delivery progress', await page.evaluate(() => {
+      const s = MUSTEAT.state, gear = s.gear, taps = s.taps; s.gear = {}; s.taps = 0; MUSTEAT.render(); MUSTEAT.unlockDispatch();
+      const locked = document.getElementById('contractUnlock').hidden && !s.dispatch.unlocked;
+      s.taps = 10; MUSTEAT.render(); const tapsQualify = !document.getElementById('contractUnlock').hidden;
+      s.gear = gear; s.taps = taps; MUSTEAT.render(); return locked && tapsQualify;
+    }));
+    const cashBeforePermit = await page.evaluate(() => MUSTEAT.state.cash);
+    await page.click('[data-act="unlockDispatch"]');
+    check('claiming the permit unlocks contracts for free', await page.isVisible('#dispatchSection') && !await page.isVisible('#contractUnlock') && await page.evaluate(() => MUSTEAT.state.cash) === cashBeforePermit);
+    await page.waitForSelector('.contract-burst');
+    check('reduced motion uses a static reveal', await page.locator('.contract-burst i, .permit-stamp').count() === 0);
+    check('permit survives recovery and cannot be claimed twice', await page.evaluate(async () => {
+      const before = MUSTEAT.state.cash; MUSTEAT.unlockDispatch();
+      const decoded = await MUSTEAT.decodeRecovery(await MUSTEAT.encodeRecovery(MUSTEAT.state));
+      return MUSTEAT.state.cash === before && decoded.dispatch.unlocked;
+    }));
     await page.click('[data-act="acceptDispatch"]');
     const job = await page.evaluate(() => MUSTEAT.state.dispatch.active);
+    check('active contract hides the next-move card and keeps the contract controls', !await page.isVisible('#nextGoal') && await page.isVisible('#dispatch'));
     check('contract locks a quota and reward at acceptance', job.quota >= 25 && job.reward >= 100);
     check('incomplete contracts cannot pay', await page.evaluate(() => { const before = MUSTEAT.state.cash; MUSTEAT.claimDispatch(); return MUSTEAT.state.cash === before && !!MUSTEAT.state.dispatch.active; }));
     const paid = await page.evaluate(() => {
@@ -57,11 +88,16 @@ start(0, async ({ srv, db, url }) => {
       return { paid: s.cash - before, reward, done: s.dispatch.done, active: s.dispatch.active };
     });
     check('contract reward is paid exactly once', paid.paid === paid.reward && paid.done === 1 && paid.active === null);
+    check('next-move card returns after collecting payment', await page.isVisible('#nextGoal'));
     check('three completions give a 1% permanent bonus', await page.evaluate(() => { const s = MUSTEAT.state; s.dispatch.done = 0; const before = MUSTEAT.calc(s).baseIncome; s.dispatch.done = 3; return Math.abs(MUSTEAT.calc(s).baseIncome / before - 1.01) < 1e-9; }));
     check('contract income bonus caps at 20%', await page.evaluate(() => { const s = MUSTEAT.state; s.dispatch.done = 0; const before = MUSTEAT.calc(s).baseIncome; s.dispatch.done = 600; return Math.abs(MUSTEAT.calc(s).baseIncome / before - 1.2) < 1e-9; }));
     await page.evaluate(() => { MUSTEAT.state.dispatch.done = 3; MUSTEAT.acceptDispatch(); MUSTEAT.save(); });
     await page.reload();
     check('contract progress survives reload', await page.evaluate(() => MUSTEAT.state.dispatch.done === 3 && !!MUSTEAT.state.dispatch.active));
+    check('legacy contracts stay accessible without a permit or playtime', await page.evaluate(() => {
+      const s = MUSTEAT.state; delete s.dispatch.unlocked; s.played = 0; MUSTEAT.render();
+      return !document.getElementById('dispatchSection').hidden && document.getElementById('contractUnlock').hidden;
+    }));
     check('offline deliveries complete contracts normally', await page.evaluate(() => { const s = MUSTEAT.state; s.lastSeen = Date.now() - 3600000; MUSTEAT.offline(s); return s.deliveries - s.dispatch.active.start >= s.dispatch.active.quota; }));
 
     console.log('minute snapshots');

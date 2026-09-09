@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MustEat — Year 2099</title>
+<title>M U S T E A T - 2099</title>
 <meta name="description" content="Going outside is illegal. Everyone must eat. Run deliveries, open a shop, recruit colleagues and take 10% of everything they earn. Forever.">
 <meta property="og:title" content="MustEat — Year 2099">
 <meta property="og:description" content="Going outside is illegal. Everyone must eat. Run deliveries, open a shop, recruit colleagues and take 10% of everything they earn. Forever.">
@@ -25,7 +25,7 @@ h1{margin:0;font-size:30px;letter-spacing:3px;color:#fff;line-height:1.2}
 h1 span{color:var(--acc)}
 h1 .logo{display:block;height:.72em;width:auto;mix-blend-mode:screen;margin:.24em 0}
 .tag{color:var(--dim);font-size:12px}
-.rankbox{text-align:left;font-size:12px;color:var(--dim)}
+.rankbox{align-self:flex-start;text-align:left;font-size:12px;color:var(--dim)}
 .rankbox b{display:block;font-size:14px;color:var(--gold)}
 .banner{margin:10px 0 0;padding:8px 10px;border:1px dashed var(--warn);color:#ffb3c0;font-size:13px}
 .banner.good{border-color:var(--acc);color:#bfffb0}
@@ -62,6 +62,9 @@ h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);m
 .item.locked{opacity:.55}
 .item .d{font-size:12px;color:var(--dim)}
 .item .lvl{font-size:11px;color:var(--blue);margin-left:4px}
+.tech-heading{display:flex;align-items:center;gap:8px}.tech-heading>span:first-child{flex-shrink:0;max-width:100%}
+.tech-dots{display:grid;grid-template-rows:repeat(2,4px);grid-auto-flow:column;grid-auto-columns:4px;gap:2px;min-width:0;max-width:148px;overflow:hidden;flex:0 1 auto}
+.tech-dots i{width:4px;height:4px;border-radius:1px;background:#39e6f2}
 .item .need{font-size:11px;color:var(--gold)}
 .item button{min-width:96px;white-space:nowrap}
 .item .body{flex:1;min-width:0}
@@ -80,6 +83,13 @@ h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);m
 .up.ledger::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.14;background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='120'><text x='27' y='71' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='13' y='58' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='4' y='106' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='23' y='41' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='36' y='18' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='13' y='83' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='31' y='63' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='2' y='113' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='6' y='58' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='10' y='56' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='37' y='40' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='55' y='59' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='30' y='46' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='43' y='48' font-family='monospace' font-size='10' fill='%2339ff14'>0</text></svg>") repeat;animation:rain 9s linear infinite;-webkit-mask-image:linear-gradient(180deg,#000,transparent 85%);mask-image:linear-gradient(180deg,#000,transparent 85%)}
 .up.ledger>*{position:relative}
 #gear{position:relative}
+#gearStage{position:relative}
+.ledger-spotlight{position:absolute;inset:0;pointer-events:none;z-index:4;overflow:visible}
+.ledger-stat-light{position:absolute;border:1px solid #a0edff;border-radius:4px;background:linear-gradient(90deg,#4bdcff0a,#b9f6ff20);box-shadow:inset 0 0 18px #78e9ff35,0 0 18px #72e8ff40;pointer-events:none}
+.ledger-stat-light::before{content:'';position:absolute;inset:0;overflow:hidden;border-radius:inherit;background:linear-gradient(180deg,transparent 0%,#c7faff08 25%,#d9ffff70 48%,#fff 50%,#8aeaff30 54%,transparent 78%);background-size:100% 250%;background-position:0 var(--scan,100%);opacity:var(--beam,0)}
+.ledger-stat-light::after{content:'';position:absolute;left:-4px;top:4px;bottom:4px;width:2px;background:#c2faff;box-shadow:0 0 8px #8aeaff}
+.ledger-spotlight-label{position:absolute;right:0;bottom:calc(100% + 8px);white-space:nowrap;padding:3px 6px;background:#0c2029;border:1px solid #4f9fac;color:#c2faff;font-size:9px;letter-spacing:1px;box-shadow:0 0 18px #72e8ff20}
+@media(max-width:520px){.ledger-spotlight-label{display:none}}
 .rainwipe{position:absolute;inset:0;pointer-events:none;z-index:3;background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='120'><text x='27' y='71' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='13' y='58' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='4' y='106' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='23' y='41' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='36' y='18' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='13' y='83' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='31' y='63' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='2' y='113' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='6' y='58' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='10' y='56' font-family='monospace' font-size='10' fill='%2339ff14'>1</text><text x='37' y='40' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='55' y='59' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='30' y='46' font-family='monospace' font-size='10' fill='%2339ff14'>0</text><text x='43' y='48' font-family='monospace' font-size='10' fill='%2339ff14'>0</text></svg>") repeat;opacity:.85;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 30%,#000 60%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 30%,#000 60%,transparent 100%);-webkit-mask-size:100% 260px;mask-size:100% 260px;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;animation:wipe 2s linear forwards}
 @keyframes wipe{from{-webkit-mask-position:0 -260px;mask-position:0 -260px}to{-webkit-mask-position:0 calc(100% + 260px);mask-position:0 calc(100% + 260px)}}
 .rev.neon>*{animation-delay:var(--d)}
@@ -228,10 +238,11 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 @keyframes flicker{0%,88%,100%{opacity:1}90%{opacity:.35}93%{opacity:1}96%{opacity:.6}}
 @media(max-width:520px){.intro .lines{font-size:14px}.intro .yr{font-size:28px}.intro .big{font-size:20px}}
 .next-goal{border:1px solid #426133;background:linear-gradient(110deg,#172511,var(--panel));padding:12px;margin:0 0 12px;display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:center}
+.next-goal[hidden]{display:none}
 .next-goal .eyebrow,.operation .eyebrow,.empire-live .eyebrow{display:block;color:var(--dim);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
 .next-goal strong{color:#fff;font-size:16px}.next-goal .bar{grid-column:1/-1;margin:4px 0 0;height:5px}.next-goal .bar i{background:var(--acc)}
 .next-goal .goal-detail{color:var(--dim);font-size:11px}.next-goal button{grid-column:2;grid-row:1/4;max-width:150px;font-size:12px}
-.focus-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.focus-grid .operation,.focus-grid .empire-live{margin-bottom:0;min-width:0}.focus-grid .empire-live{display:block}.focus-grid .empire-live button{margin-top:6px}
+.focus-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:14px}.focus-grid .operation,.focus-grid .empire-live{margin-bottom:0;min-width:0}.focus-grid .empire-live{display:block}.focus-grid .empire-live button{margin-top:6px}
 .operation{position:relative;border:1px solid var(--line);background:linear-gradient(#0e191e,#080d0f);height:135px;overflow:hidden;margin-bottom:12px;padding:10px 12px}
 .operation .scene-name{font-size:12px;color:var(--blue)}.operation .district{position:absolute;bottom:28px;left:0;right:0;height:43px;background:repeating-linear-gradient(90deg,transparent 0 30px,#15252b 30px 58px,transparent 58px 65px);opacity:.7}
 .operation .route{position:absolute;bottom:24px;left:0;right:0;border-top:1px dashed #35533d}.operation .airlock{position:absolute;right:14px;bottom:25px;height:50px;width:35px;border:2px solid #466a50;border-bottom:none;background:#0b1310;box-shadow:inset 0 0 12px #39ff1420}.operation .airlock::after{content:'';position:absolute;left:14px;top:5px;bottom:0;border-left:1px solid #466a50}
@@ -245,24 +256,33 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .score-controls{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 0;font-size:12px}.score-controls button{font-size:11px}.score-controls .on{border-color:var(--acc);color:var(--acc)}.score-controls input{width:76px;background:#000;color:var(--fg);border:1px solid var(--line);padding:5px;font:inherit}.score-controls label{margin-left:auto}.score-note{font-size:11px;color:var(--dim)}
 #dispatch .bar i{background:var(--blue)}#dispatch .contract-name{color:#fff}#dispatch .contract-status{color:var(--blue);font-size:12px}
 .dispatch-shell{position:relative;isolation:isolate}
-.contract-burst{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;border:1px solid transparent;animation:contract-afterglow 1450ms ease-out both}
-.contract-burst::before{content:'';position:absolute;inset:-60% -40%;background:linear-gradient(110deg,transparent 35%,#4cc9f01a 43%,#c5f8ff88 49%,#ffffffa6 50%,#4cc9f033 54%,transparent 63%);transform:translateX(-85%);animation:contract-sweep 440ms cubic-bezier(.16,.65,.3,1) both}
-.contract-burst::after{content:'';position:absolute;left:22%;top:45%;width:110px;height:110px;border:1px solid #b9f6ffb3;border-radius:50%;background:radial-gradient(circle,transparent 58%,#4cc9f026 68%,transparent 72%);box-shadow:0 0 15px #4cc9f044,inset 0 0 12px #4cc9f026;animation:contract-ripple 580ms cubic-bezier(.1,.55,.2,1) both}
-.contract-burst i{position:absolute;left:var(--x);top:var(--y);width:var(--size);height:2px;background:#a9efff;box-shadow:0 0 5px #4cc9f0;opacity:0;animation:contract-mote var(--life) var(--delay) ease-out both}
+.airlock-permit{display:flex;flex-direction:row;align-items:center;gap:18px;padding:18px;margin-bottom:12px;border:1px solid #4bc3df;background:linear-gradient(120deg,#102c36,#0c1519);box-shadow:inset 0 0 36px #48d8ff12,0 0 20px #48d8ff0c}
+.airlock-permit::before{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(transparent 45%,#78e9ff20 50%,transparent 55%),repeating-linear-gradient(0deg,transparent 0 5px,#70ddff08 5px 6px);background-size:100% 200%,100% 100%;animation:permit-scan 5s linear infinite}
+.airlock-permit>*{position:relative;min-width:0}.airlock-permit b{display:block;color:#d4f8ff;font-size:18px}.airlock-permit .d{max-width:620px;margin:6px 0 12px}.airlock-permit button{border-color:var(--blue);color:#c5f5ff}.permit-label{display:block;color:var(--blue);font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
+.permit-door{display:flex;width:54px;flex:0 0 54px;height:72px;padding:5px;border:2px solid #56cbe0;box-shadow:0 0 24px #48d8ff30;overflow:hidden}.permit-door i{flex:1;background:repeating-linear-gradient(0deg,#183a44 0 9px,#285461 9px 10px);border:1px solid #73e6ff;animation:permit-door 5s ease-in-out infinite}.permit-door i:last-child{--open:70%}.permit-door i:first-child{--open:-70%}
+@keyframes permit-scan{from{background-position:0 100%,0 0}to{background-position:0 -100%,0 0}}
+@keyframes permit-door{0%,25%,100%{transform:translateX(0)}50%,75%{transform:translateX(var(--open));box-shadow:0 0 16px #91efff}}
+.permit-stamp{position:absolute;z-index:1;left:50%;top:50%;width:max-content;max-width:90%;padding:10px 16px;border:2px solid #c2f7ff;background:#09232ef2;color:#d7faff;font-size:clamp(12px,2.4vw,20px);font-weight:bold;letter-spacing:2px;text-align:center;box-shadow:0 0 40px #48d8ff80;animation:permit-granted 2600ms both}
+@keyframes permit-granted{0%{opacity:0;transform:translate(-50%,-50%) scale(1.3)}16%,65%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-65%) scale(1.03)}}
+.contract-burst{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;border:1px solid transparent;animation:contract-afterglow 2900ms ease-out both}
+.contract-burst::before{content:'';position:absolute;inset:-60% -40%;background:linear-gradient(110deg,transparent 30%,#4cc9f026 40%,#c5f8ffaa 48%,#ffffffcc 50%,#4cc9f055 54%,transparent 67%);transform:translateX(-85%);animation:contract-sweep 880ms cubic-bezier(.16,.65,.3,1) both}
+.contract-burst::after,.contract-burst .ripple-echo{content:'';position:absolute;left:22%;top:45%;width:110px;height:110px;border:1px solid #c5f8ffdd;border-radius:50%;background:radial-gradient(circle,transparent 58%,#4cc9f033 68%,transparent 72%);box-shadow:0 0 24px #4cc9f066,inset 0 0 18px #4cc9f044;animation:contract-ripple 1160ms cubic-bezier(.1,.55,.2,1) both}
+.contract-burst .ripple-echo{left:38%;top:55%;border-color:#89e7ffaa;background:none;animation-duration:1280ms;animation-delay:180ms}
+.contract-burst i{position:absolute;left:var(--x);top:var(--y);width:var(--size);height:2px;background:#c5f8ff;box-shadow:0 0 8px #4cc9f0,0 0 16px #4cc9f066;opacity:0;animation:contract-mote var(--life) var(--delay) ease-out both}
 @keyframes contract-sweep{0%{transform:translateX(-85%);opacity:0}15%{opacity:.9}100%{transform:translateX(85%);opacity:0}}
 @keyframes contract-ripple{0%{transform:translate(-50%,-50%) scale(.08);opacity:0}12%{opacity:.8}100%{transform:translate(-50%,-50%) scale(7);opacity:0}}
-@keyframes contract-afterglow{0%{border-color:#a9efff99;box-shadow:0 0 18px #4cc9f035,inset 0 0 30px #4cc9f01f}32%{border-color:#4cc9f055;box-shadow:0 0 10px #4cc9f018,inset 0 0 16px #4cc9f00d}100%{border-color:transparent;box-shadow:0 0 0 transparent,inset 0 0 0 transparent}}
-@keyframes contract-mote{0%{opacity:0;transform:translate(0,0) scaleX(.3)}12%{opacity:.55}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scaleX(.25)}}
-@media(prefers-reduced-motion:reduce){.contract-burst{border-color:#4cc9f066}.contract-burst::before,.contract-burst::after,.contract-burst i{display:none}}
+@keyframes contract-afterglow{0%{border-color:#c5f8ffcc;box-shadow:0 0 32px #4cc9f066,inset 0 0 44px #4cc9f033}32%{border-color:#4cc9f088;box-shadow:0 0 20px #4cc9f033,inset 0 0 24px #4cc9f01a}100%{border-color:transparent;box-shadow:0 0 0 transparent,inset 0 0 0 transparent}}
+@keyframes contract-mote{0%{opacity:0;transform:translate(0,0) scaleX(.3)}12%{opacity:.85}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scaleX(.25)}}
+@media(prefers-reduced-motion:reduce){.contract-burst{border-color:#4cc9f066}.contract-burst::before,.contract-burst::after,.contract-burst .ripple-echo,.contract-burst i{display:none}}
 @media(max-width:800px){.protection-tab{top:auto;bottom:14px;right:10px;writing-mode:horizontal-tb;border:1px solid #4b3b40;border-radius:20px;padding:8px 12px;letter-spacing:0}.wrap{padding-bottom:70px}}
-@media(max-width:520px){.focus-grid{grid-template-columns:1fr}.focus-grid .operation{height:115px}.focus-grid .empire-live{display:flex}.focus-grid .empire-live button{margin-top:0}.protection-drawer{top:auto;left:0;width:100%;max-height:82vh;border-left:0;border-top:1px solid #554047;border-radius:14px 14px 0 0;padding:16px 16px 30px}.next-goal{gap:5px 8px}.next-goal strong{font-size:14px}.next-goal button{max-width:108px;padding:6px 8px}.empire-live{gap:8px}.score-controls label{margin-left:0}}
+@media(max-width:520px){.airlock-permit{gap:12px;padding:14px}.permit-door{flex-basis:40px;width:40px}.focus-grid{grid-template-columns:1fr}.focus-grid .operation{height:115px}.focus-grid .empire-live{display:flex}.focus-grid .empire-live button{margin-top:0}.protection-drawer{top:auto;left:0;width:100%;max-height:82vh;border-left:0;border-top:1px solid #554047;border-radius:14px 14px 0 0;padding:16px 16px 30px}.next-goal{gap:5px 8px}.next-goal strong{font-size:14px}.next-goal button{max-width:108px;padding:6px 8px}.empire-live{gap:8px}.score-controls label{margin-left:0}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.operation .courier{left:38%;opacity:1}.operation .courier.second{left:62%;opacity:.5}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 2099. Lockdown day <span id="lockdownDay">336,041</span>. City access: restricted. Going outside is illegal. Food is as scarce as federation credits.</div></div>
+    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 2099. Lockdown day <span id="lockdownDay">336,041</span>. Going outside is illegal. Everyone must eat.</div></div>
     <div class="rankbox" id="rank"></div>
   </header>
   <div id="supply" class="banner good" hidden></div>
@@ -282,10 +302,9 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
     <div id="rushClock" class="rush-clock" hidden></div>
     <div id="ration" class="row" style="justify-content:center"></div>
   </section>
+  <section><h2>Technology <span class="qty" id="qty"></span></h2><div id="gearStage"><div id="gear"></div></div></section>
   <div id="nextGoal" class="next-goal"></div>
-  <div class="focus-grid"><div id="operation" class="operation"></div><div id="empireLive" class="empire-live"></div></div>
-  <section><h2>Technology <span class="qty" id="qty"></span></h2><div id="gear"></div></section>
-  <section><h2>Upgrades</h2><div id="upgrades"></div></section>
+  <section><h2>Upgrades</h2><div id="contractUnlock" hidden></div><div id="upgrades"></div></section>
   <section id="dispatchSection" hidden><h2>Airlock contracts <span class="muted">Your own route up</span></h2><div id="dispatchShell" class="dispatch-shell"><div id="dispatch" class="card"></div></div></section>
   <section><h2>Your shop &amp; runners</h2><div id="shop" class="card"></div></section>
   <section><h2>Supply chain</h2><div class="hint">Buildings. Credits buy them, but only people unlock them: each one needs runners under you. A building makes your runners earn more and makes your cut of it bigger. That is the whole trick.</div><div id="buildings"></div></section>
@@ -298,6 +317,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <section><h2>Log</h2><div id="log" class="log"></div></section>
   </div>
   <div id="tab-portfolio" hidden>
+  <section><h2>Your operation</h2><div class="focus-grid"><div id="operation" class="operation"></div><div id="empireLive" class="empire-live"></div></div><p class="muted">Your delivery business in motion. Buy technology in Operations to grow it.</p></section>
   <section><h2>Your empire</h2><div id="pfEmpire"></div></section>
   <section><h2>Your runners' businesses</h2><div id="pfRunners"></div></section>
   <section><h2>Trophy cabinet</h2><div id="portfolio"></div></section>
@@ -622,7 +642,60 @@ const ORDERS = [
   'Chips. Just chips. Customer is crying on the intercom.',
 ];
 const CUSTOMERS = ['Unit 4471-B', 'Citizen 90210', 'someone called "Dave"', 'The Ministry (unofficially)', 'a hungry drone', 'Flat 9, The Dome', 'Bunker 12', 'the night shift at Vat Farm 3', 'your old manager', 'a suspiciously large child'];
-const SHOP_NAMES = ['Kebabsolute Zero', 'Sushi Containment Unit 7', 'Pizza Quarantine', 'The Nutrient Hut', 'Wok of Ages', 'Curry Bunker', 'Burger Dome (Sealed)', 'Noodle Perimeter', 'Fry Sector', 'Soup Ration Station', 'Taco Isolation Ward', 'Biryani Airlock', 'Chip Shop 2099', 'Falafel Fortress', 'Gyros Exclusion Zone', 'Bao Bunker', 'Doner Decontamination', 'Pho Shelter Nine', 'Ramen Redoubt', 'Wing Command', 'Pasta La Vista (Closed 2099, Reopened)', 'The Hungry Variant'];
+const SHOP_NAMES = [
+  'Ministry of Acceptable Portions',
+  'Department of Alleged Chicken',
+  'Your Hunger Has Been Escalated',
+  'The Right to Remain Hungry',
+  'Nothing to Declare But Soup',
+  'Bureau of Missing Ingredients',
+  'Office of Unauthorised Flavour',
+  'The Mandatory Happy Meal',
+  'Consent Is in the Sauce',
+  'The Cameras Recommend the Soup',
+  'Big Brother Is Wokking You',
+  'Kentucky Classified Chicken',
+  'Five Guys (Three Unaccounted For)',
+  'Pret A Comply',
+  'Nineteen Eighty Fries',
+  'Brave New Wok',
+  'The Ministry Took the Biscuit',
+  'No Country for Old Hens',
+  'Eat Now. Appeal Later.',
+  'Hunger Is a Performance Issue',
+  'Your Lunch Is Under Review',
+  'Please Hold for Nourishment',
+  'Thank You for Your Starvation',
+  'Serving Suggestion: Obedience',
+  'Two Minutes Hate, Thirty for Lunch',
+  'Soup Pending Security Clearance',
+  'Meal Deal & Non-Disclosure',
+  'Terms & Condiments Apply',
+  'Proof of Wok Required',
+  'The Last Supper (Subscription)',
+  'Congratulations, It Is Edible',
+  'Legally Distinct from Nutrition',
+  'Meat Adjacent',
+  'Probably Not Your Supervisor',
+  'Formerly a Pet Shop',
+  'Locally Sourced. Details Classified.',
+  'Farm to Table to Evidence Locker',
+  'The Witness Protection Grill',
+  'The Whistleblower Is the Special',
+  'The Unmarked Gravy',
+  'Dissident Dippers',
+  'Re-Education While You Wait',
+  'Enhanced Interrogation BBQ',
+  'The Queue Is the Restaurant',
+  'The Exit Is Decorative',
+  'Independent (Ministry Owned)',
+  'Employee of the Month Was Delicious',
+  'Zero Hours, One Calorie',
+  'Your Daily Bread, Subject to Status',
+  'Airlock Fried Chicken',
+  'Ration Impossible',
+  'Kebabsolute Zero'
+];
 const FAKE_NAMES = ['Priya', 'Dave', 'Tomasz', 'Aisha', 'Marco', 'Ingrid', 'Kwame', 'Sofia', 'Liam', 'Yuki', 'Fatima', 'Ben', 'Chloe', 'Rafael', 'Nadia', 'Olu', 'Hannah', 'Sven', 'Mei', 'Jorge', 'Zara', 'Pat', 'Anika', 'Diego', 'Lena', 'Ravi', 'Greta', 'Sam', 'Noor', 'Felix', 'Ida', 'Kofi', 'Elena', 'Tariq', 'Maja'];
 
 // ---------------- State ----------------
@@ -638,7 +711,7 @@ function fresh() {
     ration: 0, rationDue: 0, lastDecree: 0, decreesSeen: [], rankSeen: 0,
     log: [], lastSeen: now(), created: now(), lastOrder: null,
     played: 0, pace: {},       // active seconds; immutable lifetime-earnings snapshots at each complete minute
-    dispatch: { done: 0, active: null }, lastSocial: null, pendingRush: null,
+    dispatch: { unlocked: false, done: 0, active: null }, lastSocial: null, pendingRush: null,
     told: {},                  // when the recruiter (rec) and the gang (gang) were revealed, so it happens once
   };
 }
@@ -1341,7 +1414,7 @@ function openShopDialog() {
     <input id="shopName" value="${esc(name)}" maxlength="40">
     <div class="row"><button id="reroll">Reroll name</button><button id="cancel">Not yet</button></div>
     <button id="confirm" class="big2">OPEN SHOP (₵${fmt(CONFIG.SHOP_COST)})</button>`);
-  $('reroll').onclick = () => { $('shopName').value = rnd(SHOP_NAMES); };
+  $('reroll').onclick = () => { $('shopName').value = rnd(SHOP_NAMES.filter(name => name !== $('shopName').value)); };
   $('cancel').onclick = closeModal;
   $('confirm').onclick = () => {
     if (state.cash < CONFIG.SHOP_COST) return closeModal();
@@ -1388,8 +1461,18 @@ function buyUpgrade(id) {
 // Contracts have no deadline and need no recruits. Accepting fixes the quota and reward;
 // deliveries from taps, tech and offline work all count. Every three jobs adds 1%, capped at 20%.
 function contractBonus(s) { return Math.min(20, Math.floor(((s.dispatch || {}).done || 0) / 3)) / 100; }
+function contractsUnlocked(s = state) { return !!(s.dispatch && (s.dispatch.unlocked || s.dispatch.active || s.dispatch.done > 0)); }
+function contractPermitReady(s = state) { return s.played >= 90 && (gearTotal(s) > 0 || s.taps >= 10); }
+function unlockDispatch() {
+  if (contractsUnlocked() || !contractPermitReady()) return;
+  state.dispatch.unlocked = true;
+  log('<b>Airlock Permit acquired.</b> The Ministry has authorised you to feed people. Try not to look pleased.');
+  save(); render();
+  viewContract(true);
+  toast('ROUTE ACCESS GRANTED · Airlock contracts unlocked.');
+}
 function acceptDispatch() {
-  if (state.dispatch.active || (!gearTotal(state) && state.taps < 10)) return;
+  if (state.dispatch.active || !contractsUnlocked()) return;
   const c = calc(state);
   state.dispatch.active = { start: state.deliveries, quota: Math.max(25, Math.ceil(c.baseDps * 120)), reward: Math.max(100, Math.floor(c.baseIncome * 45)), name: ['Feed Bunker 12', 'The night shift is hungry', 'Emergency kebabs for Sector 7', 'Lunch for the Ministry (unofficially)'][state.dispatch.done % 4] };
   save(); render();
@@ -1408,14 +1491,17 @@ function nextGoal(c) {
   if (!lvl('trainers')) return { gear: 'trainers', title: 'Let the trainers do the running' };
   if (!lvl('hover')) return { gear: 'hover', title: 'Your first Hoverbike' };
   if (!state.shop) return { shop: true, title: 'Put your name above a shop', cost: CONFIG.SHOP_COST };
-  if (!downCount() && !state.dispatch.done) return { contract: true, title: 'Land your first airlock contract' };
+  const job = state.dispatch.active;
+  if (contractsUnlocked() && (job || (!downCount() && !state.dispatch.done))) return { contract: true, title: job ? state.deliveries - job.start >= job.quota ? 'Payment ready: ' + job.name : job.name : 'Land your first airlock contract' };
   const next = GEAR.find(g => g.dps && !lvl(g.id));
   if (next) return { gear: next.id, title: 'Next stop: ' + next.name };
   const up = UPGRADES.filter(u => !state.upg[u.id] && u.unlock(state)).sort((a, b) => a.cost - b.cost)[0];
-  return up ? { upgrade: up.id, cost: up.cost, title: up.name } : { contract: true, title: 'Keep the airlocks fed' };
+  return up ? { upgrade: up.id, cost: up.cost, title: up.name } : contractsUnlocked() ? { contract: true, title: 'Keep the airlocks fed' } : { gear: 'trainers', title: 'More feet on the street' };
 }
 let contractFocusFrame = 0, contractFocusTimer = 0;
-function viewContract() {
+function viewContract(unlocking = false) {
+  if (!contractsUnlocked()) return;
+  state.tab = 'run'; render();
   cancelAnimationFrame(contractFocusFrame); clearTimeout(contractFocusTimer);
   const shell = $('dispatchShell'); shell.querySelector('.contract-burst')?.remove();
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1429,13 +1515,19 @@ function viewContract() {
     // Wait for the scroll to settle so the little payoff lands where the player can see it.
     if (visible && (reduced || (stillFrames >= 3 && performance.now() - started > 100))) {
       const burst = document.createElement('div'); burst.className = 'contract-burst'; burst.setAttribute('aria-hidden', 'true');
-      if (!reduced) for (let i = 0; i < 9; i++) {
+      if (unlocking && !reduced) {
+        const stamp = document.createElement('span'); stamp.className = 'permit-stamp'; stamp.textContent = 'ROUTE ACCESS GRANTED'; burst.appendChild(stamp);
+      }
+      if (!reduced) {
+        const echo = document.createElement('span'); echo.className = 'ripple-echo'; burst.appendChild(echo);
+      }
+      if (!reduced) for (let i = 0; i < 18; i++) {
         const mote = document.createElement('i');
-        mote.style.cssText = `--x:${10 + i * 9}%;--y:${20 + (i * 31 % 65)}%;--size:${2 + i % 3 * 2}px;--dx:${12 + i * 3}px;--dy:${-8 - i % 4 * 5}px;--delay:${80 + i * 22}ms;--life:${700 + i % 4 * 180}ms`;
+        mote.style.cssText = `--x:${6 + i * 5}%;--y:${15 + (i * 31 % 75)}%;--size:${3 + i % 3 * 2}px;--dx:${18 + i % 6 * 7}px;--dy:${(i % 2 ? -1 : 1) * (12 + i % 4 * 8)}px;--delay:${120 + i * 24}ms;--life:${1400 + i % 4 * 200}ms`;
         burst.appendChild(mote);
       }
       shell.appendChild(burst);
-      contractFocusTimer = setTimeout(() => burst.remove(), reduced ? 350 : 1600);
+      contractFocusTimer = setTimeout(() => burst.remove(), reduced ? 350 : 3000);
       contractFocusFrame = 0;
       return;
     }
@@ -1454,11 +1546,13 @@ function pursueGoal() {
   const qty = state.qty; state.qty = 1; buy(g.id); state.qty = qty; render();
 }
 function renderFocus(c) {
+  $('nextGoal').hidden = !!state.dispatch.active;
   const goal = nextGoal(c), g = goal.gear && GEAR.find(g => g.id === goal.gear);
   const cost = g ? gearCost(g, lvl(g.id), 1) : goal.cost || 0;
   const ready = cost && state.cash >= cost;
   setHTML('nextGoal', `<div><span class="eyebrow">Your next move</span><strong>${esc(goal.title)}</strong></div><div id="goalDetail" class="goal-detail"></div><button id="pursueGoal">${goal.contract ? 'View contract' : ready ? goal.shop ? 'Open shop' : 'Buy now' : 'View target'}</button>${cost ? '<div class="bar"><i id="goalProgress"></i></div>' : ''}`);
-  $('goalDetail').textContent = goal.contract ? 'A paid delivery job. No colleagues required.' : '₵' + fmt(Math.min(state.cash, cost)) + ' / ₵' + fmt(cost) + (ready ? ' · Ready when you are.' : '');
+  const activeJob = state.dispatch.active;
+  $('goalDetail').textContent = goal.contract ? activeJob ? Math.max(0, Math.ceil(activeJob.quota - (state.deliveries - activeJob.start))) + ' deliveries left · ₵' + fmt(activeJob.reward) + ' payment' : 'A paid delivery job. No colleagues required.' : '₵' + fmt(Math.min(state.cash, cost)) + ' / ₵' + fmt(cost) + (ready ? ' · Ready when you are.' : '');
   if ($('goalProgress')) $('goalProgress').style.width = clamp(100 * state.cash / cost, 0, 100) + '%';
   const chain = GEAR.filter(g => g.dps), top = chain.filter(g => lvl(g.id)).pop();
   const tier = top ? chain.indexOf(top) : -1;
@@ -1476,7 +1570,7 @@ function renderFocus(c) {
   ];
   const shape = shapes[Math.max(0, tier)];
   const courier = cls => `<svg class="courier ${cls}" viewBox="0 0 40 34" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">${shape}</svg>`;
-  setHTML('operation', `<span class="eyebrow">${esc(state.shop ? state.shop.name : 'One citizen. One delivery bag.')}</span><div class="scene-name">${esc(top ? top.name + ' on the route' : 'You are the entire operation')}</div><div class="district" aria-hidden="true"></div><div class="route" aria-hidden="true"></div><div class="airlock" aria-hidden="true"></div>${courier(tier >= 2 ? 'air' : '')}${tier >= 1 ? courier('second ' + (tier >= 2 ? 'air' : '')) : ''}<div class="scene-foot"><span>${esc(ZONES[c.zone].name)}</span><span>${tier < 0 ? 'MANUAL LABOUR' : 'AUTOMATION AUTHORISED'}</span></div>`);
+  setHTML('operation', `<span class="eyebrow">${esc(state.shop ? state.shop.name : 'One citizen. One delivery bag.')}</span><div class="scene-name">${esc(top ? 'Best tech: ' + top.name : 'You are the entire operation')}</div><div class="district" aria-hidden="true"></div><div class="route" aria-hidden="true"></div><div class="airlock" aria-hidden="true"></div>${courier(tier >= 2 ? 'air' : '')}${tier >= 1 ? courier('second ' + (tier >= 2 ? 'air' : '')) : ''}<div class="scene-foot"><span>Zone: ${esc(ZONES[c.zone].name)}</span><span>${fmt(c.dps)} deliveries/s</span></div>`);
   const latest = state.lastSocial;
   const sector = world.sectors.find(s => s.dept === state.dept);
   let challenge = '';
@@ -1487,7 +1581,9 @@ function renderFocus(c) {
   } else if (sector && sector.shop && sector.shop.id === state.id) challenge = 'You control ' + state.dept + '. The other departments are still out there.';
   const social = latest ? latest.text : downCount() ? downCount() + ' colleagues in your pyramid. Your cut so far: ₵' + fmt(state.down.credited) + '.' : 'Your first runner lifts the 15% protection tax and earns you a cut. Somebody has to be middle management.';
   setHTML('empireLive', `<div class="body"><span class="eyebrow">${downCount() ? 'Other people’s work' : 'Your first accomplice'}</span><p>${esc(social)}</p>${challenge ? '<p class="muted">' + esc(challenge) + '</p>' : ''}${downCount() ? '<div class="nodes"><span>YOU</span>' + state.down.list.slice(0, 3).map(m => '<span>↳ ' + esc(m.name) + '</span>').join('') + (downCount() > 3 ? '<span>+' + (downCount() - 3) + '</span>' : '') + '</div>' : ''}</div><button ${downCount() ? 'data-tab="portfolio"' : 'data-act="share"'}>${downCount() ? 'View empire' : 'Recruit'}</button>`);
-  $('dispatchSection').hidden = !gearTotal(state) && state.taps < 10;
+  $('dispatchSection').hidden = !contractsUnlocked();
+  $('contractUnlock').hidden = contractsUnlocked() || !contractPermitReady();
+  setHTML('contractUnlock', '<div class="up airlock-permit"><div class="permit-door" aria-hidden="true"><i></i><i></i></div><div><span class="permit-label">Early reward · clearance intercepted</span><b>Airlock Permit</b><div class="d">Ninety seconds on the job. Somehow, you passed vetting. Unlock paid delivery contracts: extra credits, no recruits, no deadline.</div><button data-act="unlockDispatch">Claim permit · FREE</button></div></div>');
   const job = state.dispatch.active, done = state.dispatch.done;
   const progress = job ? clamp(Math.floor(state.deliveries - job.start), 0, job.quota) : 0;
   setHTML('dispatch', `${job ? '<b class="contract-name">' + esc(job.name) + '</b><div class="contract-status">' + fmt(progress) + ' / ' + fmt(job.quota) + ' deliveries · ₵' + fmt(job.reward) + ' on completion</div><div class="bar"><i style="width:' + (100 * progress / job.quota) + '%"></i></div><button data-act="claimDispatch" ' + (progress < job.quota ? 'disabled' : '') + '>Collect payment</button>' : '<p>Someone behind an airlock needs feeding. Your taps and automated deliveries count, even while you are away.</p><button data-act="acceptDispatch">Accept delivery contract</button>'}<p class="muted">${done} completed · permanent income +${Math.round(contractBonus(state) * 100)}%. ${done >= 60 ? 'Full route bonus earned. Contracts still pay credits.' : (3 - done % 3) + ' more for +1% (up to 20%).'} No deadline. No recruits required.</p>`);
@@ -1496,14 +1592,49 @@ function renderFocus(c) {
   if (until > now()) setHTML('rushClock', `${c.panic ? 'PANIC BUYING · taps ×777' : 'LUNCH RUSH · automated income ×7'} · <b>${Math.ceil((until - now()) / 1000)}s</b> ${c.panic ? '— RUN!' : '— put your tech to work'}`);
 }
 // The bookkeeping reveal: scroll to the gear list, run the digit rain down it, and let each readout blink on as the front passes.
-let revealAt = 0;
+let revealAt = 0, ledgerSpotTimer = 0, ledgerSpotFrame = 0;
 function revealLedger() {
+  clearTimeout(ledgerSpotTimer); cancelAnimationFrame(ledgerSpotFrame);
+  $('gearStage').querySelectorAll('.rainwipe,.ledger-spotlight').forEach(el => el.remove());
   revealAt = now(); render();
   const gear = $('gear');
-  if (gear.scrollIntoView) gear.closest('section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  const wipe = document.createElement('div'); wipe.className = 'rainwipe';
-  if (gear.appendChild) { gear.appendChild(wipe); setTimeout(() => wipe.remove(), 2100); }
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (gear.scrollIntoView) gear.closest('section').scrollIntoView({ behavior: reduced ? 'instant' : 'smooth', block: 'start' });
+  if (!reduced) {
+    const wipe = document.createElement('div'); wipe.className = 'rainwipe'; wipe.setAttribute('aria-hidden', 'true');
+    $('gearStage').appendChild(wipe); setTimeout(() => wipe.remove(), 2100);
+  }
+  ledgerSpotTimer = setTimeout(spotlightLedger, reduced ? 0 : 3500);
   toast('Ledger online. Every line now reports to you.');
+}
+function spotlightLedger() {
+  // Keep the overlay outside the live-rendered list; every frame tracks the actual readouts,
+  // including their different positions on phones. Purchases and scrolling stay usable.
+  revealAt = 0; render();
+  const stage = $('gearStage'), layer = document.createElement('div');
+  layer.className = 'ledger-spotlight'; layer.setAttribute('aria-hidden', 'true'); stage.appendChild(layer);
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches, started = performance.now();
+  const count = stage.querySelectorAll('.rev').length, duration = reduced ? 2400 : count * 360 + 1900;
+  toast('Income breakdown unlocked.');
+  const draw = () => {
+    const elapsed = performance.now() - started;
+    if (elapsed >= duration || !state.upg.ledger || state.tab !== 'run') { layer.remove(); ledgerSpotFrame = 0; return; }
+    const readouts = [...stage.querySelectorAll('.rev')], origin = stage.getBoundingClientRect();
+    while (layer.children.length < readouts.length) {
+      const light = document.createElement('div'); light.className = 'ledger-stat-light'; layer.appendChild(light);
+      if (layer.children.length === 1) light.innerHTML = '<span class="ledger-spotlight-label">NEW · LIVE READOUTS</span>';
+    }
+    while (layer.children.length > readouts.length) layer.lastElementChild.remove();
+    readouts.forEach((readout, i) => {
+      const rect = readout.getBoundingClientRect(), light = layer.children[i];
+      const age = elapsed - i * 360, scan = clamp(age / 850, 0, 1);
+      const glow = reduced ? .65 : age < 0 ? .08 : age < 250 ? .18 + .82 * age / 250 : Math.max(.22, 1 - (age - 250) / 1500);
+      const fade = reduced ? 1 : clamp((duration - elapsed) / 900, 0, 1);
+      light.style.cssText = `left:${rect.left - origin.left - 5}px;top:${rect.top - origin.top - 5}px;width:${rect.width + 10}px;height:${rect.height + 10}px;opacity:${glow * fade};--scan:${100 - scan * 200}%;--beam:${reduced || age < 0 || scan >= 1 ? 0 : 1}`;
+    });
+    ledgerSpotFrame = requestAnimationFrame(draw);
+  };
+  draw();
 }
 // ---------------- Franchising (prestige that recruits) ----------------
 // You put the business up for grabs; you keep playing until a colleague claims it through the link. Then they get your
@@ -1706,7 +1837,7 @@ function validateRecovery(s) {
   out.known = {}; Object.entries(obj(s.known || {})).forEach(([id, name]) => { out.known[id] = str(name); });
   out.portfolio = arr(s.portfolio || []).map(e => { obj(e); return { id: str(e.id), name: str(e.name), to: str(e.to), toId: str(e.toId, 200, null), at: num(e.at), gear: gear(e.gear), upg: num(e.upg), buildings: str(e.buildings), income: num(e.income), stamps: num(e.stamps), ministry: e.ministry === true, samples: samples(e.samples) }; });
   if (s.offer) { const o = obj(s.offer); out.offer = { id: str(o.id), at: num(o.at), shopName: str(o.shopName, 80), gear: gear(o.gear), upg: upg(o.upg), income: num(o.income) }; }
-  const dispatch = obj(s.dispatch || {}); out.dispatch = { done: num(dispatch.done), active: null };
+  const dispatch = obj(s.dispatch || {}); out.dispatch = { unlocked: dispatch.unlocked === true, done: num(dispatch.done), active: null };
   if (dispatch.active) { const j = obj(dispatch.active); out.dispatch.active = { name: str(j.name), start: num(j.start), quota: num(j.quota), reward: num(j.reward) }; if (!out.dispatch.active.quota) bad(); }
   if (s.pendingRush) out.pendingRush = { bonus: num(obj(s.pendingRush).bonus) };
   out.decreesSeen = arr(s.decreesSeen || []).map(x => str(x));
@@ -1834,8 +1965,7 @@ function render() {
   $('zone').textContent = ZONES[c.zone].name + (c.outbreak ? ' (fallback)' : c.supply.plant ? ' (via plant)' : '');
   const r = RANKS[c.rank]; const next = RANKS[c.rank + 1];
   setHTML('rank', `<b class="${state.ach.complete ? 'gilded' : ''}" ${state.ach.complete ? 'title="Every upgrade. Every single one. The name is gold now."' : ''}>${esc(state.name || 'Unknown Citizen')} <a href="#" data-act="rename" title="Rename yourself or your shop. Your code and runners stay.">✎</a></b>${r.name}${state.dept ? ' · ' + esc(state.dept) : ''} · ×${r.mul} income` +
-    (next ? `<br>${state.shop ? downCount() + '/' + next.need + ' runners to ' + next.name : 'Open a shop to rank up'}` : '<br>There is nothing above you.') +
-    `<br><span title="Active time advances while this tab is visible. Your total earnings are recorded at each full minute.">${Math.floor((state.played || 0) / 60)} active minutes · compare your pace below</span>`);
+    (next ? `<br>${state.shop ? downCount() + '/' + next.need + ' runners to ' + next.name : 'Open a shop to rank up'}` : '<br>There is nothing above you.'));
 
   // The notices wait for the reveal (checkReveal), then live in the side drawer. The details element keeps its
   // own open/closed state; only the text inside is rewritten, so a render tick never snaps it shut.
@@ -1907,7 +2037,8 @@ function render() {
     const projected = !secret && !maxed ? calc(Object.assign({}, state, { gear: Object.assign({}, state.gear, { [g.id]: l + n }) })) : null;
     const gain = projected ? projected.baseIncome - c.baseIncome : 0;
     const benefit = gain > 0 ? '<div class="gain-preview need">Adds ₵' + fmt(gain) + '/sec at base rate' + (n > 1 ? ' for ×' + n : '') + '</div>' : '';
-    return `<div class="item ${secret ? 'locked' : ''}"><div class="ico" data-ico="${g.id}" aria-hidden="true">${secret ? '?' : g.id.slice(0, 2).toUpperCase()}</div><div class="body"><b>${secret ? '???' : g.name}</b><span class="lvl">×${l}</span><div class="d">${desc}</div>${benefit}</div>${rev}
+    const dots = l > 0 ? '<span class="tech-dots" aria-hidden="true">' + '<i></i>'.repeat(Math.min(50, Math.floor(l))) + '</span>' : '';
+    return `<div class="item ${secret ? 'locked' : ''}"><div class="ico" data-ico="${g.id}" aria-hidden="true">${secret ? '?' : g.id.slice(0, 2).toUpperCase()}</div><div class="body"><div class="tech-heading"><span><b>${secret ? '???' : g.name}</b><span class="lvl">×${l}</span></span>${dots}</div><div class="d">${desc}</div>${benefit}</div>${rev}
       <button data-buy="${g.id}" ${maxed || state.cash < cost ? 'disabled' : ''}>${maxed ? 'MAX' : '₵' + fmt(cost) + (n > 1 ? ' ×' + n : '')}</button></div>`;
   }).join(''));
 
@@ -2113,12 +2244,12 @@ document.addEventListener('click', e => {
   const dc = e.target.closest('[data-decree]'); if (dc) return decree(dc.dataset.decree);
   const b = e.target.closest('[data-act]'); if (!b) return;
   e.preventDefault();
-  const act = { shop: openShopDialog, share, voucher, complain, ration: claimRation, rationInfo, cutInfo, refresh: sync, bribe, drone: buyDrone, contracts: buyContracts, seed: seedDemo, wipe: wipeCompany, franchise, withdraw: withdrawOffer, ministry: ministryDialog, rename: renameDialog, acceptDispatch, claimDispatch, saveInfo, replayIntro, recoveryCode, restoreCode, previousRecovery }[b.dataset.act];
+  const act = { shop: openShopDialog, share, voucher, complain, ration: claimRation, rationInfo, cutInfo, refresh: sync, bribe, drone: buyDrone, contracts: buyContracts, seed: seedDemo, wipe: wipeCompany, franchise, withdraw: withdrawOffer, ministry: ministryDialog, rename: renameDialog, unlockDispatch, acceptDispatch, claimDispatch, saveInfo, replayIntro, recoveryCode, restoreCode, previousRecovery }[b.dataset.act];
   if (act) act();
 });
 $('reset').addEventListener('click', e => { e.preventDefault(); ask('Delete your save?', 'This removes the save in this browser. Keep a recovery code first if you want to return to this citizen.', 'DELETE', () => { localStorage.removeItem(KEY); replacingSave = true; location.href = location.pathname; }); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && !replacingSave) { save(); Sheet.flush(); } });
-if (qs.has('dev')) window.MUSTEAT = { get state() { return state; }, calc, GEAR, UPGRADES, ACH, gearCost, buy, buyUpgrade, runDelivery, collectCrate, frame, save, sync, franchise, render, rowOf, readPace, rankedScores, paceColumns, acceptDispatch, claimDispatch, offline, encodeRecovery, decodeRecovery, claimRation, nextRationAt };
+if (qs.has('dev')) window.MUSTEAT = { get state() { return state; }, calc, GEAR, UPGRADES, ACH, gearCost, buy, buyUpgrade, runDelivery, collectCrate, frame, save, sync, franchise, render, rowOf, readPace, rankedScores, paceColumns, unlockDispatch, acceptDispatch, claimDispatch, offline, encodeRecovery, decodeRecovery, claimRation, nextRationAt };
 window.addEventListener('beforeunload', () => { if (!replacingSave) { save(); Sheet.flush(); } });
 
 function showOffline(o) {

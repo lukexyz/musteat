@@ -156,7 +156,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok('bookkeeping card carries the effect, gear rows do not', !!(await p1.$('#upgrades .up.ledger')) && !(await p1.$('#gear .ledger')));
   await p1.click('[data-upg="ledger"]');
   await p1.waitForSelector('#gear .rev');
-  ok('reveal sequence: digit wipe over the gear list and neon readouts', !!(await p1.$('#gear .rainwipe')) && !!(await p1.$('#gear .rev.neon')));
+  ok('reveal sequence: digit wipe over the gear list and neon readouts', !!(await p1.$('#gearStage .rainwipe')) && !!(await p1.$('#gear .rev.neon')));
   ok('bookkeeping bought: per-line revenue and share shown', /of income/.test(await p1.textContent('#gear')) && /₵[\d.]+K?\/s/.test(await p1.textContent('#gear .rev')));
   await patchSave(p1, '', 's.crateAt = Date.now() + 300');
   await p1.waitForSelector('#crate:not([hidden])', { timeout: 5000 });
@@ -254,7 +254,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok('feed renders structured join event', /Sam.*was recruited by.*Ada/s.test(await p1.textContent('#company')), await p1.textContent('#company'));
 
   console.log('playtime scores: new checkpoints keep recording');
-  ok('active minutes shown in the rank box', /active minutes/.test(await p1.textContent('#rank')));
+  ok('rank box omits the playtime and pace line', !/active minutes|compare your pace/.test(await p1.textContent('#rank')));
   await patchSave(p1, '', 's.played = 1799.9');
   await p1.waitForFunction(() => window.MUSTEAT.state.pace[30] != null);
   await p1.evaluate(() => window.MUSTEAT.save());
