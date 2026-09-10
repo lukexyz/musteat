@@ -19,6 +19,8 @@ start(0, async ({ srv, url }) => {
     await page.waitForFunction(() => document.querySelector('[data-ico="hover"]').closest('.item').techDecodeStarted != null);
     ok('discovery starts immediately without a scheduled delay', await row.evaluate(e => performance.now() - e.techDecodeStarted < 500));
     ok('controls stay inactive during the reveal', await row.evaluate(e => e.inert));
+    ok('redacted procurement uses three black strips and its selected message', await row.locator('.tech-redactions i').count() === 3 && await row.locator('.tech-procurement-status').textContent() === 'CLASSIFIED. UNTIL SOMEBODY PAID.');
+    ok('redaction strips begin covering the text', await row.locator('.tech-redactions i').last().evaluate(e => getComputedStyle(e).transform === 'matrix(1, 0, 0, 1, 0, 0)'));
     await page.waitForTimeout(470);
     ok('card expands while the Matrix title runs', await page.locator('.tech-decoding').count() === 1);
     ok('card reaches full width', await row.evaluate(e => Math.abs(e.getBoundingClientRect().width - e.parentElement.getBoundingClientRect().width) < 1));
@@ -28,11 +30,12 @@ start(0, async ({ srv, url }) => {
     ok('next classified tech stays mysterious', await page.locator('[data-ico="drones"]').innerText() === '?' && !await page.locator('[data-ico="drones"]').evaluate(e => e.closest('.item').classList.contains('tech-decoding')));
     ok('cipher characters are hidden from assistive technology', await row.locator('.cipher').evaluateAll(els => els.every(e => e.getAttribute('aria-hidden') === 'true')));
     ok('description remains blank during the falling digits', await row.locator('.decode-copy-char').evaluateAll(els => els.length > 0 && els.every(e => getComputedStyle(e).opacity === '0')));
-    await page.waitForTimeout(220);
+    await page.waitForTimeout(40);
     ok('rain uses vertical digits that can land on a final letter', await row.locator('.cipher-stream').evaluateAll(els => els.every(e => e.children.length === 4 && /^.\d{3}$/.test(e.textContent))));
-    const position = await row.locator('.cipher-stream').first().evaluate(e => e.style.transform);
-    await page.waitForTimeout(120);
-    ok('digits actually flow vertically', await row.locator('.cipher-stream').first().evaluate(e => e.style.transform) !== position);
+    const position = await row.locator('.cipher-stream').last().evaluate(e => e.style.transform);
+    await page.waitForTimeout(60);
+    ok('digits actually flow vertically', await row.locator('.cipher-stream').last().evaluate(e => e.style.transform) !== position);
+    ok('redaction strips peel completely away', await row.locator('.tech-redactions i').evaluateAll(els => els.every(e => getComputedStyle(e).transform === 'matrix(0, 0, 0, 1, 0, 0)')));
     await page.evaluate(() => { MUSTEAT.state.cash -= 123; MUSTEAT.render(); });
     ok('income rerenders preserve the reveal clock', await row.evaluate(e => e.techDecodeStarted) === first.started);
     await page.waitForFunction(() => {
@@ -42,9 +45,11 @@ start(0, async ({ srv, url }) => {
     });
     ok('description types progressively after the name', await row.locator('.decode-copy-char').count() > 0);
     ok('name resolves to its real text', await row.locator('.tech-heading b').innerText() === 'Hoverbike' && await row.locator('.cipher').count() === 0);
+    ok('procurement message stays clear of the gain text', await row.locator('.tech-procurement-status').evaluate(e => Number(getComputedStyle(e).opacity) > 0) && await row.locator('.gain-preview').evaluate(e => Number(getComputedStyle(e).opacity) === 0));
     ok('decryption keeps the name width and row height fixed', await row.evaluate((e, first) => Math.abs(e.querySelector('.tech-heading b').getBoundingClientRect().width-first.width)<1 && Math.abs(e.getBoundingClientRect().height-first.height)<1, first));
     await page.waitForFunction(() => !document.querySelector('.tech-decoding'));
-    ok('flash and typing clean up and controls become active', await page.locator('.tech-decoding,.tech-decode-flash,.decode-letter,.decode-copy-char').count() === 0 && !await row.evaluate(e => e.inert));
+    ok('reveal completes in about two seconds', await page.evaluate(started => performance.now() - started < 2500, first.started));
+    ok('effects and typing clean up and controls become active', await page.locator('.tech-decoding,.tech-redactions,.tech-procurement-beam,.tech-procurement-status,.decode-letter,.decode-copy-char').count() === 0 && !await row.evaluate(e => e.inert));
     await page.click('[data-buy="trainers"]');
     ok('more copies do not repeat a discovery', await page.locator('.tech-decoding').count() === 0);
     ok('discoveries survive recovery encoding', await page.evaluate(async () => (await MUSTEAT.decodeRecovery(await MUSTEAT.encodeRecovery(MUSTEAT.state))).techSeen.includes('hover')));
@@ -59,7 +64,7 @@ start(0, async ({ srv, url }) => {
     ok('mobile stays within the viewport', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.evaluate(() => { MUSTEAT.render(); MUSTEAT.buy('drones'); });
-    ok('reduced motion restores text and skips new effects', await page.locator('.tech-decoding,.decode-letter').count() === 0 && /Teleport Licence/.test(await page.locator('#gear').innerText()));
+    ok('reduced motion restores text and skips new effects', await page.locator('.tech-decoding,.decode-letter,.tech-redactions,.tech-procurement-status').count() === 0 && /Teleport Licence/.test(await page.locator('#gear').innerText()));
     ok('no browser errors', errors.length === 0);
     console.log(`\n${checks} passed`);
   } catch (error) { console.error(error); process.exitCode = 1; }

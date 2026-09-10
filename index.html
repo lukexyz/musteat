@@ -97,7 +97,11 @@ h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);m
 .item.tech-opening{position:relative;overflow:hidden;margin-left:auto;margin-right:auto}
 .item.tech-concealed>*{opacity:0!important}
 .decode-copy-char{opacity:0}
-.tech-decode-flash{position:absolute;inset:0;background:linear-gradient(0deg,#d5ffe6 0%,#effff4 48%,#fff 50%,#d5ffe6 52%,#d5ffe6 100%);opacity:0;pointer-events:none;z-index:2}
+.tech-decoding .body{position:relative}
+.tech-redactions{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+.tech-redactions i{position:absolute;left:0;right:0;height:8px;background:#010303;transform-origin:right}
+.tech-procurement-beam{position:absolute;left:0;right:0;height:1px;background:#bde5c5;box-shadow:0 0 8px #8bb79455;opacity:0;pointer-events:none;z-index:2}
+.tech-procurement-status{position:absolute;left:0;right:0;bottom:0;font-size:9px;line-height:1.4;letter-spacing:.03em;color:#8ec8a0;background:#080e10;pointer-events:none;opacity:0;z-index:3}
 .decode-letter{position:relative}.decode-letter .original{opacity:0}.decode-letter .cipher{position:absolute;left:0;top:0;width:100%;height:1.15em;line-height:1.15;overflow:hidden;color:#9fd8b0;text-shadow:0 0 5px #78d79740;pointer-events:none}
 .cipher-stream{display:block;will-change:transform}.cipher-stream>span{display:block;height:1.15em;line-height:1.15}
 .cipher-stream>span:nth-child(2){color:#d2f5dd}.cipher-stream>span:nth-child(3){color:#74b58b}.cipher-stream>span:nth-child(4){color:#518463}
@@ -220,6 +224,13 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 @keyframes dossier-open{0%{opacity:1;filter:blur(1px)}15%,65%{opacity:1;filter:none}100%{opacity:0;transform:translateY(-6px)}}
 @media(max-width:520px){.tabs button{letter-spacing:1px;font-size:11px;padding-left:4px;padding-right:4px}}
 .pfsum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.asset-section h2{color:#b49bc8}.asset-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.asset-tile{min-width:0;display:flex;flex-direction:column;padding:14px;background:linear-gradient(145deg,#14202660,transparent 65%),var(--panel);border:1px solid var(--line);border-top-color:#3b626b}
+.asset-head{display:flex;gap:10px;align-items:center;min-height:46px}.asset-head h3{font-size:13px;line-height:1.4;margin:0;overflow-wrap:anywhere}.asset-count{color:var(--blue);font-size:11px;margin-top:3px}.asset-count .tech-dots{margin-top:5px;max-width:100%}
+.asset-tile .ico{position:relative;overflow:hidden;flex:0 0 36px;width:36px;height:36px;border:1px solid #2c3b40;border-radius:4px;background:#000;display:grid;place-items:center;color:var(--blue);font-size:11px}
+.asset-tile .ico img{display:block;width:32px;height:32px;image-rendering:pixelated}.asset-tile .ico.sealed img{filter:blur(5px) saturate(.45);opacity:.38}
+.asset-earned{margin-top:20px}.asset-earned small,.asset-foot small{display:block;color:var(--dim);font-size:10px}.asset-earned strong{display:block;color:#e2d5f0;font-size:23px;line-height:1.5;overflow-wrap:anywhere}.asset-foot{border-top:1px solid var(--line);padding-top:10px;margin-top:12px;font-size:12px;color:#80c7d2}.asset-tile.support{border-top-color:#65583a}.asset-tile.support .asset-earned strong{color:var(--gold);font-size:19px}.asset-tile .asset-joke{font-size:11px;color:var(--dim);margin:10px 0 0;flex:1}.asset-summary .v{font-size:20px;overflow-wrap:anywhere}.solo-invite{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px;border:1px solid var(--line);background:var(--panel);font-size:12px}.solo-invite p{margin:0}.solo-invite button{flex-shrink:0}
+@media(max-width:650px){.asset-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.asset-tile{padding:11px}.asset-head{align-items:flex-start;flex-direction:column;gap:8px}.asset-earned strong{font-size:20px}.asset-summary{grid-template-columns:1fr}.solo-invite{align-items:flex-start;flex-direction:column}}
 .trophy{background:linear-gradient(180deg,#151a0f,var(--panel));border:1px solid var(--gold);padding:12px;margin-bottom:10px;box-shadow:0 0 18px rgba(255,209,102,.12)}
 .trophy.grey{border-color:var(--line);box-shadow:none;background:var(--panel);opacity:.85}
 .trophy .tname{font-size:18px;color:var(--gold);font-weight:bold;letter-spacing:1px}
@@ -397,7 +408,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 <body>
 <div class="wrap">
   <header>
-    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 2099. Lockdown day <span id="lockdownDay">336,041</span>. Going outside is illegal. <span class="survival-line"><span class="survival-cursor" aria-hidden="true"></span>Survivors must eat.</span></div></div>
+    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 2099. Lockdown day <span id="lockdownDay">336,041</span>. Going outside is illegal. <span class="survival-line">Survivors must eat<span class="survival-cursor" aria-hidden="true"></span></span></div></div>
     <div class="rankbox" id="rank"></div>
   </header>
   <div id="supply" class="banner good" hidden></div>
@@ -432,6 +443,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <section><h2>Log</h2><div id="log" class="log"></div></section>
   </div>
   <div id="tab-portfolio" hidden>
+  <section class="asset-section"><h2>Your machinery</h2><div id="pfTech"></div></section>
   <section><h2>Your empire</h2><div class="focus-grid"><div id="empireLive" class="empire-live"></div></div><div id="pfEmpire"></div></section>
   <section><h2>Your runners' businesses</h2><div id="pfRunners"></div></section>
   <section><h2>Trophy cabinet</h2><div id="portfolio"></div></section>
@@ -868,7 +880,7 @@ function fresh() {
   return {
     v: 3, id: null, code: null, name: null, dept: null, ref: qs.get('ref') || qs.get('fr') || null, recruiter: null,
     cash: 0, total: 0, deliveries: 0, taps: 0,
-    gear: {}, techSeen: [], upg: {}, ach: {}, qty: 1, shop: null, buildings: {}, drone: false, contracts: false,
+    gear: {}, techSeen: [], techEarnings: {}, techEarningsSince: now(), upg: {}, ach: {}, qty: 1, shop: null, buildings: {}, drone: false, contracts: false,
     stamps: 0, retirements: 0, crates: 0, crateAt: 0, fines: 0,
     portfolio: [], portfolioUnlocked: false, offer: null, franchiseOf: null, franchiseName: null, tab: 'run', msSeen: 0,
     heat: 0, fx: {}, nextEvent: now() + 45000,
@@ -889,6 +901,7 @@ function load() {
     if (s.v < 3) s.stamps = Math.min(s.stamps || 0, Math.floor(Math.cbrt(Math.max(0, s.total || 0) / CONFIG.STAMP_BASE)));
     const m = Object.assign(fresh(), s); m.v = 3;
     if (!Array.isArray(m.techSeen)) m.techSeen = [];
+    if (!m.techEarnings || typeof m.techEarnings !== 'object' || Array.isArray(m.techEarnings)) m.techEarnings = {};
     if (s.portfolioUnlocked == null) m.portfolioUnlocked = portfolioReady(m) || !!m.shop;
     if (!m.pace || typeof m.pace !== 'object' || Array.isArray(m.pace)) m.pace = {};
     if (!m.dispatch || typeof m.dispatch !== 'object') m.dispatch = { done: 0, active: null };
@@ -1104,11 +1117,12 @@ function calc(s) {
   const t = now();
   const g = id => s.gear[id] || 0;
   const up = s.up || [];
-  let dps = 0, zone = 0;
+  let dps = 0, zone = 0; const techShares = {};
   GEAR.forEach(x => {
-    if (x.dps) dps += x.dps * g(x.id) * Math.pow(2, upgCount(s, u => u.gear === x.id));
+    if (x.dps) { techShares[x.id] = x.dps * g(x.id) * Math.pow(2, upgCount(s, u => u.gear === x.id)); dps += techShares[x.id]; }
     if (x.zone != null && g(x.id) > 0) zone = Math.max(zone, x.zone);
   });
+  Object.keys(techShares).forEach(id => { techShares[id] = dps > 0 ? techShares[id] / dps : 0; });
   const supply = { depot: !!(up[0] && hasB(up[0], 'depot')), plant: up.some(u => hasB(u, 'plant')), factory: up.some(u => hasB(u, 'factory')) };
   if (supply.depot) dps *= 1.25;
   if (supply.plant) zone = Math.min(ZONES.length - 1, zone + 1);
@@ -1133,11 +1147,18 @@ function calc(s) {
     dps: dps * dpsMul, value: value * valMul, zone, rank, tax, gang, keep, outbreak, supply, panic,
     income: dps * dpsMul * value * valMul * keep,
     tapBonus: dps * dpsMul * value * valMul * 0.02 * upgCount(s, u => u.tap),
-    baseIncome: dps * value * keep, baseDps: dps,
+    baseIncome: dps * value * keep, baseDps: dps, techShares,
   };
 }
 function earn(amount, meals) {
   state.cash += amount; state.total += amount; state.deliveries += meals || 0;
+}
+// Attribute only automatic credits actually paid, using the production mix at payment time.
+// Support tech boosts are included in producers' earnings, never counted a second time.
+function recordTechIncome(s, amount, c) {
+  if (!(amount > 0)) return;
+  s.techEarnings ||= {}; s.techEarningsSince ||= now();
+  for (const [id, share] of Object.entries(c.techShares)) if (share > 0) s.techEarnings[id] = (s.techEarnings[id] || 0) + amount * share;
 }
 
 // ---------------- Tick ----------------
@@ -1150,6 +1171,7 @@ function frame() {
   if (dt <= 0) return;
   const c = calc(state);
   earn(c.income * dt, c.dps * dt);
+  recordTechIncome(state, c.income * dt, c);
   if (!document.hidden) {
     const beforeMinute = Math.floor((state.played || 0) / 60);
     state.played = (state.played || 0) + Math.min(dt, 1);
@@ -1349,6 +1371,7 @@ function offline(s) {
   const eff = full + 0.5 * half;
   const gain = c.baseIncome * eff, meals = c.baseDps * eff;
   earn(gain, meals);
+  recordTechIncome(s, gain, c);
   s.nextEvent = now() + 20000;
   return { el, gain, meals };
 }
@@ -1511,7 +1534,7 @@ function animateTechDiscoveries() {
       if (row) {
         row.classList.remove('tech-decoding','tech-opening','tech-concealed'); row.inert = false;
         row.querySelectorAll('.decode-copy-char').forEach(span => span.replaceWith(document.createTextNode(span.textContent)));
-        row.querySelector('.tech-decode-flash')?.remove();
+        row.querySelectorAll('.tech-redactions,.tech-procurement-beam,.tech-procurement-status').forEach(el => el.remove());
         [...(row.techDecodeAnimations || []), ...(row.techOpeningAnimations || [])].forEach(a => a.cancel());
       }
       techDiscoveries.delete(id);
@@ -1535,14 +1558,16 @@ function animateTechDiscoveries() {
       reveal.started = performance.now();
     }
     row.classList.remove('tech-opening','tech-concealed');
-    if (reveal.copyDuration == null) reveal.copyDuration = clamp((row.querySelector('.d')?.textContent.length || 0) * 4, 280, 850);
-    const copyStart = 2250, copyEnd = copyStart + reveal.copyDuration, duration = copyEnd + 450;
+    const copyStart = 1040, copyEnd = 1350, duration = 2050;
     const elapsed = performance.now() - reveal.started;
     if (elapsed >= duration) { finish(); continue; }
     active = true;
     if (row.techDecodeStarted !== reveal.started) {
       row.techDecodeStarted = reveal.started; row.classList.add('tech-decoding');
-      const flash = document.createElement('span'); flash.className = 'tech-decode-flash'; flash.setAttribute('aria-hidden', 'true'); row.appendChild(flash);
+      const body = row.querySelector('.body');
+      const redactions = document.createElement('span'); redactions.className = 'tech-redactions'; redactions.setAttribute('aria-hidden', 'true'); body.appendChild(redactions);
+      const beam = document.createElement('span'); beam.className = 'tech-procurement-beam'; beam.setAttribute('aria-hidden', 'true'); row.appendChild(beam);
+      const status = document.createElement('span'); status.className = 'tech-procurement-status'; status.setAttribute('aria-hidden', 'true'); status.textContent = 'CLASSIFIED. UNTIL SOMEBODY PAID.'; body.appendChild(status);
       // Real letters keep the final width and remain available to assistive technology.
       name.innerHTML = [...gear.name].map(char => char === ' ' ? ' ' : `<span class="decode-letter"><span class="original">${esc(char)}</span><span class="cipher" aria-hidden="true"><span class="cipher-stream"><span></span><span></span><span></span><span></span></span></span></span>`).join('');
       const description = row.querySelector('.d');
@@ -1558,26 +1583,33 @@ function animateTechDiscoveries() {
           node.replaceWith(fragment);
         }
       }
-      const play = (target, frames) => {
-        const animation = target.animate(frames, {duration, easing:'linear'});
+      const play = (target, frames, options = {}) => {
+        const animation = target.animate(frames, {duration, easing:'linear', fill:'both', ...options});
         animation.currentTime = elapsed;
         return animation;
       };
       row.techDecodeAnimations = [
-        play(flash, [{opacity:0,offset:0},{opacity:.13,offset:.025},{opacity:0,offset:.065},{opacity:0}]),
-        play(row, [{borderColor:'#2c4a36',boxShadow:'inset 0 0 0px #99eab500',offset:0},{borderColor:'#80b391',boxShadow:'inset 0 0 12px #99eab50c',offset:.3},{borderColor:'#497757',boxShadow:'inset 0 0 8px #99eab508',offset:.7},{borderColor:'#1f3036',boxShadow:'inset 0 0 0px #99eab500'}])
+        play(beam, [{top:'0%',opacity:0},{opacity:.28,offset:.12},{top:'100%',opacity:0}], {duration:500,delay:80}),
+        play(status, [{opacity:0},{opacity:.85,offset:.15},{opacity:.85,offset:.75},{opacity:0}], {duration:1050,delay:850}),
+        play(row, [{borderColor:'#243338',backgroundColor:'#080e10'},{borderColor:'#537c65',backgroundColor:'#080e10',offset:.2},{borderColor:'#243338',backgroundColor:'#0e1619'}])
       ];
-      for (const detail of row.querySelectorAll('.ico,.lvl,.tech-dots')) row.techDecodeAnimations.push(play(detail, [{opacity:0,offset:0},{opacity:0,offset:2000/duration},{opacity:1,offset:copyStart/duration},{opacity:1}]));
-      for (const detail of row.querySelectorAll('.gain-preview,.rev,button')) row.techDecodeAnimations.push(play(detail, [{opacity:0,offset:0},{opacity:0,offset:copyEnd/duration},{opacity:1,offset:(copyEnd+180)/duration},{opacity:1}]));
+      for (let i = 0; i < 3; i++) {
+        const bar = document.createElement('i'); bar.style.top = (i * 35) + '%'; redactions.appendChild(bar);
+        row.techDecodeAnimations.push(play(bar, [{transform:'scaleX(1)'},{transform:'scaleX(.68)'},{transform:'scaleX(.68)'},{transform:'scaleX(0)'}], {duration:330,delay:100+i*80,easing:'steps(3,end)'}));
+      }
+      for (const detail of row.querySelectorAll('.ico,.lvl,.tech-dots')) row.techDecodeAnimations.push(play(detail, [{opacity:0,offset:0},{opacity:0,offset:880/duration},{opacity:1,offset:copyStart/duration},{opacity:1}]));
+      for (const detail of row.querySelectorAll('.rev,button')) row.techDecodeAnimations.push(play(detail, [{opacity:0,offset:0},{opacity:0,offset:copyEnd/duration},{opacity:1,offset:(copyEnd+160)/duration},{opacity:1}]));
+      const gain = row.querySelector('.gain-preview');
+      if (gain) row.techDecodeAnimations.push(play(gain, [{opacity:0},{opacity:1}], {duration:150,delay:1900}));
     }
-    if (elapsed >= 2200) {
+    if (elapsed >= 1000) {
       if (name.querySelector('.decode-letter')) name.textContent = gear.name;
     } else {
       const letters = [...name.querySelectorAll('.decode-letter')];
-      const tick = Math.floor(elapsed / 110);
+      const tick = Math.floor(elapsed / 85);
       letters.forEach((letter, i) => {
-        const local = Math.max(0, elapsed - 220 - (i * 71 % 250));
-        const progress = Math.min(1, local / (1100 + i * 97 % 600));
+        const local = Math.max(0, elapsed - 80 - (i * 31 % 100));
+        const progress = Math.min(1, local / (520 + i * 37 % 200));
         letter.classList.toggle('settled', progress === 1);
         if (progress === 1) return;
         const remaining = (6 + i % 3 * 3) * (1 - progress);
@@ -1589,7 +1621,7 @@ function animateTechDiscoveries() {
         });
       });
     }
-    const copyProgress = clamp((elapsed-copyStart)/reveal.copyDuration, 0, 1);
+    const copyProgress = clamp((elapsed-copyStart)/(copyEnd-copyStart), 0, 1);
     const copyChars = [...row.querySelectorAll('.decode-copy-char')];
     if (copyProgress === 1) copyChars.forEach(span => span.replaceWith(document.createTextNode(span.textContent)));
     else copyChars.forEach((span, i) => { span.style.opacity = i < Math.floor(copyProgress*copyChars.length) ? '1' : '0'; });
@@ -2304,6 +2336,7 @@ function validateRecovery(s) {
   const gear = x => map(x, GEAR.map(g => g.id));
   const upg = x => map(x, UPGRADES.map(u => u.id), true);
   out.gear = gear(s.gear); out.upg = upg(s.upg); out.ach = map(s.ach, ACH.map(a => a.id), true);
+  out.techEarnings = map(s.techEarnings, GEAR.filter(g => g.dps).map(g => g.id));
   out.techSeen = [...new Set(arr(s.techSeen || []).filter(id => GEAR.some(g => g.id === id)))];
   out.buildings = map(s.buildings, BUILDINGS.map(b => b.id), true); out.fx = map(s.fx); out.told = map(s.told);
   out.pace = {}; Object.entries(obj(s.pace || {})).forEach(([m, value]) => { if (!Number.isSafeInteger(+m) || +m <= 0 || +m > Math.floor(out.played / 60)) bad(); out.pace[m] = num(value); });
@@ -2666,12 +2699,26 @@ function render() {
     $('portfolioClaim').textContent = dossierReady ? 'Unseal Portfolio · FREE' : 'File sealed';
   }
   if (tab === 'portfolio') {
+    const ownedTech = GEAR.filter(g => lvl(g.id) > 0);
+    const recorded = Object.values(state.techEarnings || {}).reduce((sum, amount) => sum + amount, 0);
+    setHTML('pfTech', `<p class="muted">${state.down.list.length ? 'The part of the empire that actually does the work.' : 'No staff. No applause. The machines still clocked in.'}</p>
+      <div class="pfsum asset-summary"><div class="stat"><div class="k">Lifetime earned · all sources</div><div class="v">₵${fmt(state.total)}</div></div><div class="stat"><div class="k">Tech earnings recorded</div><div class="v">₵${fmt(recorded)}</div></div><div class="stat"><div class="k">Your tech / sec · after cuts</div><div class="v">₵${fmt(c.income)}</div></div></div>
+      <div class="asset-grid">${ownedTech.map(g => {
+        const n = lvl(g.id), share = c.techShares[g.id] || 0;
+        const support = g.id === 'pod' ? '×' + (1 + g.valueMul * n).toFixed(1) + ' order value' : '−' + (25 * n) + '% trouble';
+        return `<article class="asset-tile${g.dps ? '' : ' support'}" data-asset="${g.id}"><div class="asset-head">${techIcon(g, false, n).replace('data-ico=', 'data-asset-ico=')}<div><h3>${esc(g.name)}</h3><div class="asset-count">×${n} owned${techDots(n)}</div></div></div>
+          <div class="asset-earned"><small>${g.dps ? 'Earned · recorded' : 'Support effect'}</small><strong>${g.dps ? '₵' + fmt(state.techEarnings?.[g.id] || 0) : support}</strong></div>
+          <p class="asset-joke">${g.dps ? esc(g.desc) : g.id === 'pod' ? 'Makes every meal worth more. Still no Michelin star.' : 'Fewer incidents. Same miserable city.'}</p>
+          <div class="asset-foot">${g.dps ? '₵' + fmt(c.income * share) + '/s<small>After cuts · ' + (share * 100 < .1 ? '&lt;0.1' : (share * 100).toFixed(1)) + '% of tech income</small>' : '<small>' + (g.id === 'pod' ? 'Boost included in delivery earnings.' : 'Protection equipment. No direct income.') + '</small>'}</div></article>`;
+      }).join('')}</div>${ownedTech.length ? '' : '<p class="muted">No machinery on the books. Your knees are still doing the accounting.</p>'}
+      <p class="muted">Per-tech records start ${dateStr(state.techEarningsSince)}. Automatic earnings after cuts, including offline work. Earlier earnings were not split by tech; they remain in your lifetime total.</p>`);
     const paid = state.down.paid || {}, smp = state.down.samples || {};
     const biz = state.down.list.map(m => {
       const total = Number(m.total) || 0, rps = rateFromSamples(smp[m.id]), r = cutRate(m);
       return { m, total, rps, r, cut: paid[m.id] || 0, cps: rps == null ? null : rps * r, idle: m.lastSeen && now() - Number(m.lastSeen) > 3 * H };
     }).sort((a, b) => b.cut - a.cut || b.total - a.total);
     const cutAll = biz.reduce((a, b) => a + b.cut, 0), cpsAll = biz.reduce((a, b) => a + (b.cps || 0), 0), maxCut = Math.max(1, ...biz.map(b => b.cut));
+    $('pfRunners').closest('section').hidden = !biz.length;
     setHTML('pfRunners', biz.length ? `<div class="pfsum">
         <div class="stat"><div class="k">Runners</div><div class="v">${biz.length}</div></div>
         <div class="stat"><div class="k">Your cut, all time</div><div class="v">₵${fmt(cutAll)}</div></div>
@@ -2704,7 +2751,7 @@ function render() {
         <div class="stat"><div class="k">Other people's work</div><div class="v">₵${fmt(state.down.credited || 0)}</div><div class="sub">credited to you, all time</div></div>
         <div class="stat"><div class="k">Of your lifetime</div><div class="v">${othersPct}%</div><div class="sub">earned by someone else</div></div></div>
       <div class="card">${pyramid}<p class="muted">Idle runners are faded. Franchisees are gold. Everyone on this diagram is paying you, whether or not they have noticed.</p></div>`
-    : `<div class="empty"><b>△</b>You're the entire pyramid. Bit embarrassing.<br>Send your link. Anyone who joins appears below, along with what they pay you per second. Call it leadership.<div class="row" style="justify-content:center"><button data-act="share">Call for Recruits</button></div></div>`);
+    : `<div class="solo-invite"><p>No runners yet. You built all this yourself.<br><span class="muted">Recruit someone. Your machines deserve a colleague to resent.</span></p><button data-act="share">Call for Recruits</button></div>`);
     // People as trophies: every downline member gets a shelf card with what has been taken from them.
     const seen = state.down.seen || {};
     const via = m => { if (m.level === 1) return 'Direct'; const r = state.down.list.find(x => x.code === m.ref); return 'Via ' + (r ? esc(r.name) : 'someone'); };
@@ -2735,6 +2782,7 @@ function render() {
         <div class="feat">${GEAR.filter(g => e.gear[g.id]).map(g => '<span>' + esc(g.name) + ' ×' + e.gear[g.id] + '</span>').join('')}${bnames(r ? r.buildings : e.buildings).split(', ').filter(Boolean).map(b => '<span class="b">' + esc(b) + '</span>').join('')}</div>
         <div class="muted">Handed over at ₵${fmt(e.income)}/s with ${e.upg} upgrades.${e.ministry ? ' The Ministry has since lost the paperwork.' : ''}</div>
       </div>`).join('') : '';
+    $('portfolio').closest('section').hidden = !(topT || cab || shelf);
     setHTML('portfolio', topT || cab || shelf ? topT + cab + shelf
       : '<div class="empty"><b>🏆</b>Nothing in the cabinet yet.<br>Franchise a business to a colleague, or recruit a runner: both live here forever. Businesses with what they earn you. People with what you have taken from them.</div>');
   }
