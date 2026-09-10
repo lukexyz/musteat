@@ -93,6 +93,15 @@ h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);m
 .sealed .ico-glass{opacity:1}
 .ico-scan{position:absolute;inset:0 0 auto;height:3px;background:#efffff;box-shadow:0 0 8px 3px #70eaff,0 -7px 14px #47d9ff;opacity:0;pointer-events:none}
 .item.locked .ico{border-style:dotted}
+.item.tech-decoding{position:relative;overflow:hidden}
+.item.tech-opening{position:relative;overflow:hidden;margin-left:auto;margin-right:auto}
+.item.tech-concealed>*{opacity:0!important}
+.decode-copy-char{opacity:0}
+.tech-decode-flash{position:absolute;inset:0;background:linear-gradient(0deg,#d5ffe6 0%,#effff4 48%,#fff 50%,#d5ffe6 52%,#d5ffe6 100%);opacity:0;pointer-events:none;z-index:2}
+.decode-letter{position:relative}.decode-letter .original{opacity:0}.decode-letter .cipher{position:absolute;left:0;top:0;width:100%;height:1.15em;line-height:1.15;overflow:hidden;color:#9fd8b0;text-shadow:0 0 5px #78d79740;pointer-events:none}
+.cipher-stream{display:block;will-change:transform}.cipher-stream>span{display:block;height:1.15em;line-height:1.15}
+.cipher-stream>span:nth-child(2){color:#d2f5dd}.cipher-stream>span:nth-child(3){color:#74b58b}.cipher-stream>span:nth-child(4){color:#518463}
+.decode-letter.settled .original{opacity:1}.decode-letter.settled .cipher{display:none}
 .rev{text-align:right;min-width:92px;font-size:10px;color:var(--dim);white-space:nowrap;letter-spacing:.3px}
 .rev b{display:block;font-size:12px;font-weight:600;color:var(--fg)}
 .rev.off b{color:var(--dim)}
@@ -188,6 +197,27 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .tabs button:hover:not(.on){color:var(--fg);border-color:#2c3c42}
 .tabs button.on{margin:0 0 -1px;padding-bottom:12px;color:var(--acc);background:var(--bg);border-color:var(--acc);border-bottom:1px solid var(--bg);text-shadow:0 0 8px rgba(57,255,20,.45)}
 .tabs button.on:hover{color:var(--acc)}
+.tabs button.pf-locked{color:#8e849f;border-color:#393142;background:repeating-linear-gradient(135deg,#b693e907 0 1px,transparent 1px 6px),#0b0e12}
+.tabs button.pf-ready{color:#e3caff;border-color:#ad79d5;animation:dossier-signal 3s ease-in-out infinite alternate}
+#pfLock{display:inline-block;width:10px;height:9px;border:1px solid currentColor;border-radius:1px;position:relative;margin-right:8px;vertical-align:-1px}
+#pfLock::before{content:'';position:absolute;width:5px;height:5px;border:1px solid currentColor;border-bottom:0;border-radius:4px 4px 0 0;left:1px;top:-6px}
+#pfLock[hidden]{display:none}#pfN{font-size:9px;letter-spacing:.4px}
+.pf-progress{display:inline-block;width:15px;height:15px;margin-left:5px;vertical-align:-3px;transform:rotate(-90deg);fill:none;stroke:#42364e;stroke-width:2}
+.pf-progress[hidden]{display:none}.pf-progress .fill{stroke:#b69acb;stroke-dasharray:var(--p,0) 100;transition:stroke-dasharray .6s linear}
+.pf-ready .pf-progress .fill{stroke:#ead6ff;filter:drop-shadow(0 0 2px #c69bf180)}
+@keyframes dossier-signal{from{box-shadow:inset 0 0 12px #b280e512;text-shadow:0 0 3px #c499fa20}to{box-shadow:inset 0 0 24px #b280e52c,0 0 14px #b280e51c;text-shadow:0 0 9px #c499fa80}}
+.dossier{position:relative;padding:18px;border:1px solid #68527d;background:repeating-linear-gradient(0deg,#c299ff06 0 1px,transparent 1px 4px),linear-gradient(135deg,#1c1427,#0c1115);overflow:hidden}
+.dossier::before{content:'';position:absolute;right:14px;top:14px;width:36px;height:42px;border:1px solid #b98cde55;box-shadow:-5px -5px 0 -1px #191320,-5px -5px 0 0 #b98cde33;transform:rotate(7deg)}
+.dossier .eyebrow{color:#bfa0d9;font-size:10px;letter-spacing:2px}.dossier h3{max-width:80%;color:#e4d2f6}.dossier .bar i{background:#bb86ed}.dossier .dossier-progress{color:#d9b9f8;font-size:12px}
+.dossier button{border-color:#7f6097;color:#ead8ff}.dossier button:not(:disabled){background:#30213e;box-shadow:0 0 15px #b280e522}
+#tab-portfolio{position:relative}
+.dossier-reveal{position:absolute;inset:0 0 auto;height:210px;z-index:4;pointer-events:none;overflow:hidden;border:1px solid #bd91e6;background:repeating-linear-gradient(0deg,#cfaaff0b 0 1px,transparent 1px 4px),linear-gradient(110deg,#15101ff5,#0d1217f5);display:grid;align-content:center;gap:14px;padding:24px;color:#ecdfff;animation:dossier-open 2.8s ease-out both}
+.dossier-reveal::after{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:#f5eaff;box-shadow:0 0 20px 5px #c689ff80;animation:dossier-scan 1.8s ease-in-out both}
+.dossier-reveal small{color:#bd9ed9;letter-spacing:2px}.dossier-reveal strong{font-size:18px;letter-spacing:2px;max-width:max-content;white-space:nowrap;overflow:hidden;animation:dossier-type 1s steps(25,end) .35s both}
+.dossier-reveal code{font-size:10px;letter-spacing:2px;color:#9b7cb8;overflow:hidden;white-space:nowrap}
+@keyframes dossier-type{from{clip-path:inset(0 100% 0 0);filter:blur(2px)}to{clip-path:inset(0);filter:none}}
+@keyframes dossier-scan{from{transform:translateY(0)}to{transform:translateY(210px)}}
+@keyframes dossier-open{0%{opacity:1;filter:blur(1px)}15%,65%{opacity:1;filter:none}100%{opacity:0;transform:translateY(-6px)}}
 @media(max-width:520px){.tabs button{letter-spacing:1px;font-size:11px;padding-left:4px;padding-right:4px}}
 .pfsum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 .trophy{background:linear-gradient(180deg,#151a0f,var(--panel));border:1px solid var(--gold);padding:12px;margin-bottom:10px;box-shadow:0 0 18px rgba(255,209,102,.12)}
@@ -271,6 +301,8 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .target-char.shown{opacity:1;filter:blur(0);color:inherit;text-shadow:none}
 .gang-name{color:#ff8495;background:linear-gradient(110deg,#45121f,#210c12);border-bottom:1px solid #ad344c;border-radius:3px;padding:1px 4px;text-shadow:0 0 8px #ff315255;box-shadow:inset 0 0 10px #a0142520;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .gang-name .target-char{color:inherit;text-shadow:inherit}
+.gang-name.sinister{color:#ff7188;background:linear-gradient(110deg,#4b101e,#1c090f 80%);animation:gang-embers 5s ease-in-out infinite alternate}
+@keyframes gang-embers{from{text-shadow:0 0 3px #ff244530;box-shadow:inset 0 -2px 8px #a0142520}to{text-shadow:0 0 9px #ff244580,1px 0 1px #a50b2a;box-shadow:inset 0 -2px 12px #a0142545}}
 .target-caret{position:absolute;z-index:2;width:7px;background:#baffcb;box-shadow:0 0 8px #39ff14,0 0 22px #39ff1470;pointer-events:none}
 .box.terminal-letter{position:relative;background-color:#0d1714;background-image:repeating-linear-gradient(0deg,transparent 0 3px,#a7ffc806 3px 4px),radial-gradient(ellipse at 50% 0,#45b86710,transparent 75%);border-color:#71d18d;box-shadow:inset 0 0 35px #0005,0 0 35px #39ff1426}
 .shop-front{position:relative;overflow:hidden;min-height:230px;border:1px solid #655636;background:radial-gradient(ellipse at 50% 20%,#795c2026,transparent 70%),#070d0e;padding:24px 16px 0}
@@ -340,13 +372,18 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .permit-door{display:flex;width:54px;flex:0 0 54px;height:72px;padding:5px;border:2px solid #56cbe0;box-shadow:0 0 24px #48d8ff30;overflow:hidden}.permit-door i{flex:1;background:repeating-linear-gradient(0deg,#183a44 0 9px,#285461 9px 10px);border:1px solid #73e6ff;animation:permit-door 5s ease-in-out infinite}.permit-door i:last-child{--open:70%}.permit-door i:first-child{--open:-70%}
 @keyframes permit-scan{from{background-position:0 100%,0 0}to{background-position:0 -100%,0 0}}
 @keyframes permit-door{0%,25%,100%{transform:translateX(0)}50%,75%{transform:translateX(var(--open));box-shadow:0 0 16px #91efff}}
-.permit-stamp{position:absolute;z-index:1;left:50%;top:50%;width:max-content;max-width:90%;padding:10px 16px;border:2px solid #c2f7ff;background:#09232ef2;color:#d7faff;font-size:clamp(12px,2.4vw,20px);font-weight:bold;letter-spacing:2px;text-align:center;box-shadow:0 0 40px #48d8ff80;animation:permit-granted 2600ms both}
-@keyframes permit-granted{0%{opacity:0;transform:translate(-50%,-50%) scale(1.3)}16%,65%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-65%) scale(1.03)}}
 .contract-burst{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;border:1px solid transparent;animation:contract-afterglow 2900ms ease-out both}
 .contract-burst::before{content:'';position:absolute;inset:-60% -40%;background:linear-gradient(110deg,transparent 30%,#4cc9f026 40%,#c5f8ffaa 48%,#ffffffcc 50%,#4cc9f055 54%,transparent 67%);transform:translateX(-85%);animation:contract-sweep 880ms cubic-bezier(.16,.65,.3,1) both}
 .contract-burst::after,.contract-burst .ripple-echo{content:'';position:absolute;left:22%;top:45%;width:110px;height:110px;border:1px solid #c5f8ffdd;border-radius:50%;background:radial-gradient(circle,transparent 58%,#4cc9f033 68%,transparent 72%);box-shadow:0 0 24px #4cc9f066,inset 0 0 18px #4cc9f044;animation:contract-ripple 1160ms cubic-bezier(.1,.55,.2,1) both}
 .contract-burst .ripple-echo{left:38%;top:55%;border-color:#89e7ffaa;background:none;animation-duration:1280ms;animation-delay:180ms}
 .contract-burst i{position:absolute;left:var(--x);top:var(--y);width:var(--size);height:2px;background:#c5f8ff;box-shadow:0 0 8px #4cc9f0,0 0 16px #4cc9f066;opacity:0;animation:contract-mote var(--life) var(--delay) ease-out both}
+.contract-burst.contract-transmission{padding:14px;border-color:#34483b;background:#020403;color:#b8cdbf;font-size:13px;line-height:1.5;animation:none}
+.contract-burst.contract-transmission::before{inset:0;background:repeating-linear-gradient(0deg,transparent 0 3px,#b9dfc407 3px 4px);transform:none;animation:none;pointer-events:none}
+.contract-burst.contract-transmission::after{display:none}
+.contract-transmission p{margin:0;overflow-wrap:anywhere}.contract-transmission p+p{margin-top:12px}
+.contract-transmission .transmission-greeting{color:#d6f2df;font-weight:bold}
+.contract-transmission .transmission-status{color:#7e9b88;font-size:.85em}
+.transmission-caret{display:inline-block;width:.5em;height:1em;margin-left:2px;vertical-align:-.13em;background:#effff4;box-shadow:0 0 4px #c6ffdc45}
 @keyframes contract-sweep{0%{transform:translateX(-85%);opacity:0}15%{opacity:.9}100%{transform:translateX(85%);opacity:0}}
 @keyframes contract-ripple{0%{transform:translate(-50%,-50%) scale(.08);opacity:0}12%{opacity:.8}100%{transform:translate(-50%,-50%) scale(7);opacity:0}}
 @keyframes contract-afterglow{0%{border-color:#c5f8ffcc;box-shadow:0 0 32px #4cc9f066,inset 0 0 44px #4cc9f033}32%{border-color:#4cc9f088;box-shadow:0 0 20px #4cc9f033,inset 0 0 24px #4cc9f01a}100%{border-color:transparent;box-shadow:0 0 0 transparent,inset 0 0 0 transparent}}
@@ -370,7 +407,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
     <div class="stat"><div class="k">Deliveries</div><div class="v" id="deliv">0</div></div>
     <div class="stat"><div class="k">Zone</div><div class="v small" id="zone"></div></div>
   </section>
-  <nav class="tabs"><button id="tabRunB" class="on" data-tab="run">OPERATIONS</button><button id="tabPfB" data-tab="portfolio">PORTFOLIO <span id="pfN"></span></button></nav>
+  <nav class="tabs"><button id="tabRunB" class="on" data-tab="run">OPERATIONS</button><button id="tabPfB" data-tab="portfolio"><span id="pfLock" aria-hidden="true"></span>PORTFOLIO <span id="pfN"></span><svg id="pfProgress" class="pf-progress" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6"/><circle class="fill" cx="8" cy="8" r="6" pathLength="100"/></svg></button></nav>
   <div id="tab-run">
   <section class="run">
     <button id="run" class="big">RUN DELIVERY</button>
@@ -395,10 +432,10 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <section><h2>Log</h2><div id="log" class="log"></div></section>
   </div>
   <div id="tab-portfolio" hidden>
-  <section><h2>Your operation</h2><div class="focus-grid"><div id="operation" class="operation"></div><div id="empireLive" class="empire-live"></div></div><p class="muted">Your delivery business in motion. Buy technology in Operations to grow it.</p></section>
-  <section><h2>Your empire</h2><div id="pfEmpire"></div></section>
+  <section><h2>Your empire</h2><div class="focus-grid"><div id="empireLive" class="empire-live"></div></div><div id="pfEmpire"></div></section>
   <section><h2>Your runners' businesses</h2><div id="pfRunners"></div></section>
   <section><h2>Trophy cabinet</h2><div id="portfolio"></div></section>
+  <section><h2>Your operation</h2><div class="focus-grid"><div id="operation" class="operation"></div></div><p class="muted">Your delivery business in motion. Buy technology in Operations to grow it.</p></section>
   </div>
   <footer>MustEat is a game. Please do not start an actual pyramid scheme. · <span id="mode"></span> · <a href="ledger.html" target="_blank">high scores</a> · <a href="#" data-act="saveInfo">save game</a> · <a href="#" data-act="replayIntro">replay intro</a> · <a href="#" id="reset">reset game</a> <span id="localtools"></span><div class="visual-settings"><button id="techIconsToggle" type="button" aria-pressed="false">Tech icons: off</button></div></footer>
 </div>
@@ -444,6 +481,7 @@ const CONFIG = {
   LOCKDOWN_DAY: 336041,       // one fictional lockdown day per five real seconds since this save began
   SHEET_KEY: 'musteat_sheet',
   SHOP_COST: 25000,
+  PORTFOLIO_EARNINGS: 20000,
   DRONE_COST: 2500,
   CONTRACTS_COST: 4000,
   VOUCHER_COST: 200,
@@ -830,9 +868,9 @@ function fresh() {
   return {
     v: 3, id: null, code: null, name: null, dept: null, ref: qs.get('ref') || qs.get('fr') || null, recruiter: null,
     cash: 0, total: 0, deliveries: 0, taps: 0,
-    gear: {}, upg: {}, ach: {}, qty: 1, shop: null, buildings: {}, drone: false, contracts: false,
+    gear: {}, techSeen: [], upg: {}, ach: {}, qty: 1, shop: null, buildings: {}, drone: false, contracts: false,
     stamps: 0, retirements: 0, crates: 0, crateAt: 0, fines: 0,
-    portfolio: [], offer: null, franchiseOf: null, franchiseName: null, tab: 'run', msSeen: 0,
+    portfolio: [], portfolioUnlocked: false, offer: null, franchiseOf: null, franchiseName: null, tab: 'run', msSeen: 0,
     heat: 0, fx: {}, nextEvent: now() + 45000,
     down: { list: [], credited: 0, at: 0, paid: {} }, up: [], known: {},
     ration: 0, rationDue: 0, lastDecree: 0, decreesSeen: [], rankSeen: 0,
@@ -850,6 +888,8 @@ function load() {
     // v2 stamps came from a runaway economy (₵100K base, +10% each, linear). Recompute under the current rule and cap.
     if (s.v < 3) s.stamps = Math.min(s.stamps || 0, Math.floor(Math.cbrt(Math.max(0, s.total || 0) / CONFIG.STAMP_BASE)));
     const m = Object.assign(fresh(), s); m.v = 3;
+    if (!Array.isArray(m.techSeen)) m.techSeen = [];
+    if (s.portfolioUnlocked == null) m.portfolioUnlocked = portfolioReady(m) || !!m.shop;
     if (!m.pace || typeof m.pace !== 'object' || Array.isArray(m.pace)) m.pace = {};
     if (!m.dispatch || typeof m.dispatch !== 'object') m.dispatch = { done: 0, active: null };
     return m;
@@ -1231,7 +1271,7 @@ function revealRecruiter(c) {
 function revealGang(c) {
   const paid = Math.floor(state.total / c.keep * c.gang);
   modal(`<h3>A knock on the airlock</h3>
-    <p>Three knocks. A pause. Three more. A voice through the seal: "<b>Sector 7 Provisional Gang.</b> We have been protecting you." You did not ask.</p>
+    <p>Three knocks. A pause. Three more. A voice through the seal: "<b class="gang-name sinister">Sector 7 Provisional Gang.</b> We have been protecting you." You did not ask.</p>
     <p>Protection costs <b>${Math.round(CONFIG.GANG_TAX * 100)}%</b> of everything you make, and it has since your first delivery: <b>₵${fmt(paid)}</b> so far. Nobody protects you from them.</p>
     <p>Recruit one runner with your invite link and they go and protect your runner instead. That is how protection works.</p>
     <button id="ok" class="big2">UNDERSTOOD</button>
@@ -1422,10 +1462,141 @@ window.addEventListener('storage', e => {
 });
 
 // ---------------- Actions ----------------
+function portfolioReady(s = state) {
+  return s.total >= CONFIG.PORTFOLIO_EARNINGS || (s.portfolio || []).length > 0 || s.retirements > 0;
+}
+function openPortfolio() {
+  if (!state.portfolioUnlocked && !portfolioReady()) {
+    modal(`<div class="dossier"><span class="eyebrow">Intercepted / personal file</span><h3>Someone is keeping records.</h3><p>Your runners. Their businesses. Every little empire you leave behind.</p><p>Earn <b>₵${fmt(CONFIG.PORTFOLIO_EARNINGS)}</b> over your lifetime to break the seal. Access is free. The Ministry already charged you enough.</p><p id="dossierProgress" class="dossier-progress"></p><div class="bar"><i id="dossierBar"></i></div><div class="row"><button id="portfolioClaim" disabled>File sealed</button><button id="ok">Back to work</button></div></div>`);
+    $('portfolioClaim').onclick = openPortfolio;
+    $('ok').onclick = closeModal;
+    render();
+    return;
+  }
+  const first = !state.portfolioUnlocked;
+  state.portfolioUnlocked = true;
+  state.tab = 'portfolio';
+  closeModal(); render(); save();
+  $('tabPfB').scrollIntoView({block:'nearest', behavior:'instant'});
+  if (first) {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { toast('Portfolio unlocked. Your name is in the file.'); return; }
+    const layer = document.createElement('div');
+    layer.className = 'dossier-reveal'; layer.setAttribute('aria-hidden','true');
+    layer.innerHTML = '<small>PERSONAL DOSSIER / UNSEALED</small><strong>Your name is in the file.</strong><code>07 A9 ▓▓ 20 FF ░░ 99 01 ▓▓ 04 8B ░░ 12 00</code>';
+    $('tab-portfolio').appendChild(layer);
+    setTimeout(() => layer.remove(), 2850);
+  }
+}
 const TECH_ICONS_KEY = 'musteat_tech_icons';
 let techIconsEnabled = false;
 try { techIconsEnabled = localStorage.getItem(TECH_ICONS_KEY) === 'on'; } catch (e) {}
 const iconReveals = new Map();
+const techDiscoveries = new Map();
+let techDiscoveryFrame = 0;
+function identifiedTechs() {
+  const chain = GEAR.filter(g => g.dps);
+  const top = chain.reduce((best, g, i) => lvl(g.id) > 0 ? i : best, -1);
+  return chain.slice(0, top + 2).map(g => g.id);
+}
+function animateTechDiscoveries() {
+  cancelAnimationFrame(techDiscoveryFrame); techDiscoveryFrame = 0;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let active = false;
+  for (const [id, reveal] of techDiscoveries) {
+    const row = document.querySelector(`[data-ico="${id}"]`)?.closest('.item');
+    const name = row?.querySelector('.tech-heading b');
+    const gear = GEAR.find(g => g.id === id);
+    const finish = () => {
+      if (name && row.techDecodeStarted != null) name.textContent = gear.name;
+      if (row) {
+        row.classList.remove('tech-decoding','tech-opening','tech-concealed'); row.inert = false;
+        row.querySelectorAll('.decode-copy-char').forEach(span => span.replaceWith(document.createTextNode(span.textContent)));
+        row.querySelector('.tech-decode-flash')?.remove();
+        [...(row.techDecodeAnimations || []), ...(row.techOpeningAnimations || [])].forEach(a => a.cancel());
+      }
+      techDiscoveries.delete(id);
+    };
+    if (reduced || !row || row.classList.contains('locked')) { finish(); continue; }
+    if (reveal.started == null) {
+      // The card arrives empty. Expand its box without stretching any text.
+      row.classList.add('tech-opening','tech-concealed'); row.inert = true;
+      if (row.techOpeningAt !== reveal.queuedAt) {
+        row.techOpeningAt = reveal.queuedAt;
+        const elapsedOpening = performance.now() - reveal.queuedAt;
+        if (elapsedOpening < 450) {
+          const height = row.getBoundingClientRect().height;
+          const opening = row.animate([{width:'92%',height:Math.min(reveal.fromHeight || height,height)+'px'},{width:'100%',height:height+'px'}], {duration:450,easing:'cubic-bezier(.2,.7,.2,1)'});
+          opening.currentTime = elapsedOpening; row.techOpeningAnimations = [opening];
+        }
+      }
+      const rect = row.getBoundingClientRect();
+      // Don't spend the reveal below the viewport or while the player is elsewhere.
+      if (state.tab !== 'run' || document.hidden || rect.top >= innerHeight - 20 || rect.bottom <= 20 || !$('modal').hidden) continue;
+      reveal.started = performance.now();
+    }
+    row.classList.remove('tech-opening','tech-concealed');
+    if (reveal.copyDuration == null) reveal.copyDuration = clamp((row.querySelector('.d')?.textContent.length || 0) * 4, 280, 850);
+    const copyStart = 2250, copyEnd = copyStart + reveal.copyDuration, duration = copyEnd + 450;
+    const elapsed = performance.now() - reveal.started;
+    if (elapsed >= duration) { finish(); continue; }
+    active = true;
+    if (row.techDecodeStarted !== reveal.started) {
+      row.techDecodeStarted = reveal.started; row.classList.add('tech-decoding');
+      const flash = document.createElement('span'); flash.className = 'tech-decode-flash'; flash.setAttribute('aria-hidden', 'true'); row.appendChild(flash);
+      // Real letters keep the final width and remain available to assistive technology.
+      name.innerHTML = [...gear.name].map(char => char === ' ' ? ' ' : `<span class="decode-letter"><span class="original">${esc(char)}</span><span class="cipher" aria-hidden="true"><span class="cipher-stream"><span></span><span></span><span></span><span></span></span></span></span>`).join('');
+      const description = row.querySelector('.d');
+      if (description) {
+        const walker = document.createTreeWalker(description, NodeFilter.SHOW_TEXT), nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        for (const node of nodes) {
+          const fragment = document.createDocumentFragment();
+          for (const char of node.textContent) {
+            if (/\s/.test(char)) fragment.appendChild(document.createTextNode(char));
+            else { const span = document.createElement('span'); span.className = 'decode-copy-char'; span.textContent = char; fragment.appendChild(span); }
+          }
+          node.replaceWith(fragment);
+        }
+      }
+      const play = (target, frames) => {
+        const animation = target.animate(frames, {duration, easing:'linear'});
+        animation.currentTime = elapsed;
+        return animation;
+      };
+      row.techDecodeAnimations = [
+        play(flash, [{opacity:0,offset:0},{opacity:.13,offset:.025},{opacity:0,offset:.065},{opacity:0}]),
+        play(row, [{borderColor:'#2c4a36',boxShadow:'inset 0 0 0px #99eab500',offset:0},{borderColor:'#80b391',boxShadow:'inset 0 0 12px #99eab50c',offset:.3},{borderColor:'#497757',boxShadow:'inset 0 0 8px #99eab508',offset:.7},{borderColor:'#1f3036',boxShadow:'inset 0 0 0px #99eab500'}])
+      ];
+      for (const detail of row.querySelectorAll('.ico,.lvl,.tech-dots')) row.techDecodeAnimations.push(play(detail, [{opacity:0,offset:0},{opacity:0,offset:2000/duration},{opacity:1,offset:copyStart/duration},{opacity:1}]));
+      for (const detail of row.querySelectorAll('.gain-preview,.rev,button')) row.techDecodeAnimations.push(play(detail, [{opacity:0,offset:0},{opacity:0,offset:copyEnd/duration},{opacity:1,offset:(copyEnd+180)/duration},{opacity:1}]));
+    }
+    if (elapsed >= 2200) {
+      if (name.querySelector('.decode-letter')) name.textContent = gear.name;
+    } else {
+      const letters = [...name.querySelectorAll('.decode-letter')];
+      const tick = Math.floor(elapsed / 110);
+      letters.forEach((letter, i) => {
+        const local = Math.max(0, elapsed - 220 - (i * 71 % 250));
+        const progress = Math.min(1, local / (1100 + i * 97 % 600));
+        letter.classList.toggle('settled', progress === 1);
+        if (progress === 1) return;
+        const remaining = (6 + i % 3 * 3) * (1 - progress);
+        const position = remaining % 3 || 3;
+        const stream = letter.querySelector('.cipher-stream');
+        stream.style.transform = `translateY(${-position * 1.15}em)`;
+        [...stream.children].forEach((cell, j) => {
+          cell.textContent = j === 0 && remaining <= 3 ? letter.querySelector('.original').textContent : String((i * 7 + j * 3 + tick) % 10);
+        });
+      });
+    }
+    const copyProgress = clamp((elapsed-copyStart)/reveal.copyDuration, 0, 1);
+    const copyChars = [...row.querySelectorAll('.decode-copy-char')];
+    if (copyProgress === 1) copyChars.forEach(span => span.replaceWith(document.createTextNode(span.textContent)));
+    else copyChars.forEach((span, i) => { span.style.opacity = i < Math.floor(copyProgress*copyChars.length) ? '1' : '0'; });
+    row.inert = elapsed < copyEnd + 180;
+  }
+  if (active) techDiscoveryFrame = requestAnimationFrame(animateTechDiscoveries);
+}
 const ICON_REVEAL_MS = 2600;
 const iconRevealLevel = g => Math.min(10, g.max || 10);
 function techIcon(g, secret, level) {
@@ -1460,7 +1631,15 @@ function buy(id) {
   const l = lvl(id); if (g.max && l >= g.max) return;
   const n = g.max ? Math.min(state.qty || 1, g.max - l) : (state.qty || 1);
   const cost = gearCost(g, l, n); if (state.cash < cost) return;
+  const knownBefore = identifiedTechs(), seen = new Set(state.techSeen || []);
   state.cash -= cost; state.gear[id] = l + n;
+  const knownAfter = identifiedTechs();
+  for (const next of knownAfter) if (!knownBefore.includes(next) && !seen.has(next)) {
+    const queuedAt = performance.now();
+    const fromHeight = document.querySelector(`[data-ico="${next}"]`)?.closest('.item').getBoundingClientRect().height;
+    techDiscoveries.set(next, {started:null, queuedAt, fromHeight});
+  }
+  state.techSeen = [...new Set([...seen, ...knownBefore, ...knownAfter])];
   if (techIconsEnabled && l < iconRevealLevel(g) && l + n >= iconRevealLevel(g)) iconReveals.set(id, performance.now());
   if (l === 0 && g.zone != null) log('Bought <b>' + g.name + '</b>. Unlocked ' + ZONES[g.zone].name + '.');
   else if (l === 0) log('Bought <b>' + g.name + '</b>.');
@@ -1535,7 +1714,7 @@ function cutInfo() {
   const lostPs = c.income / c.keep - c.income, lostAll = state.total / c.keep * (1 - c.keep);
   const parts = [];
   if (c.tax) parts.push(`<p><b>${Math.round(c.tax * 100)}%</b> to <b>${esc(state.recruiter || 'whoever sent you the link')}</b>, who sent you the link. Open your own shop and it stops.</p>`);
-  if (c.gang) parts.push(`<p><b>${Math.round(c.gang * 100)}%</b> to the <b>Sector 7 Provisional Gang</b>, for protection. Recruit one runner and they go and protect them instead.</p>`);
+  if (c.gang) parts.push(`<p><b>${Math.round(c.gang * 100)}%</b> to the <b class="gang-name sinister">Sector 7 Provisional Gang</b>, for protection. Recruit one runner and they go and protect them instead.</p>`);
   const closing = c.tax && c.gang ? 'Twenty-five percent. To people who have never carried a bao in their lives.' : c.tax ? 'Hmmm. Maybe I should go independent.' : 'Hmmm. Maybe I should find someone else for them to lean on.';
   modal(`<h3>Where the ${Math.round((1 - c.keep) * 100)}% goes</h3>
     ${parts.join('')}
@@ -1642,10 +1821,9 @@ function contractPermitReady(s = state) { return s.played >= 90 && (gearTotal(s)
 function unlockDispatch() {
   if (contractsUnlocked() || !contractPermitReady()) return;
   state.dispatch.unlocked = true;
-  log('<b>Airlock Permit acquired.</b> The Ministry has authorised you to feed people. Try not to look pleased.');
+  log('<b>Airlock contracts unlocked.</b> A dead frequency came back. Someone still needs feeding.');
   save(); render();
   viewContract(true);
-  toast('There’s work after curfew. Airlock contracts unlocked.');
 }
 function acceptDispatch() {
   if (state.dispatch.active || !contractsUnlocked()) return;
@@ -1674,12 +1852,50 @@ function nextGoal(c) {
   const up = UPGRADES.filter(u => !state.upg[u.id] && u.unlock(state)).sort((a, b) => a.cost - b.cost)[0];
   return up ? { upgrade: up.id, cost: up.cost, title: up.name } : contractsUnlocked() ? { contract: true, title: 'Keep the airlocks fed' } : { gear: 'trainers', title: 'More feet on the street' };
 }
-let contractFocusFrame = 0, contractFocusTimer = 0;
+let contractFocusFrame = 0, contractFocusTimer = 0, contractTerminalFrame = 0;
+function typeContractTransmission(layer, copy) {
+  const messages = ['knock knock ' + (state.name || 'citizen'), ...copy];
+  const lines = messages.map((text, i) => {
+    const line = document.createElement('p');
+    line.className = i === 0 ? 'transmission-greeting' : i === 1 ? 'transmission-body' : 'transmission-status';
+    const output = document.createElement('span'); output.textContent = text;
+    line.appendChild(output); layer.appendChild(line);
+    return {line, output, text};
+  });
+  // Measure the complete copy before typing so long aliases still fit on phones.
+  if (layer.scrollHeight > layer.clientHeight) layer.style.fontSize = Math.max(10, 13 * (layer.clientHeight - 28) / (layer.scrollHeight - 28)) + 'px';
+  lines.forEach(({output}) => { output.textContent = ''; });
+  const caret = document.createElement('span'); caret.className = 'transmission-caret';
+  lines[0].line.appendChild(caret);
+  const started = performance.now(), boot = 840;
+  let time = boot;
+  lines.forEach((entry, i) => { entry.start = time; entry.duration = entry.text.length * (i === 0 ? 26 : i === 1 ? 6 : 3); time += entry.duration + (i === 0 ? 250 : 100); });
+  const fadeAt = time + 850, endAt = fadeAt + 400;
+  const draw = () => {
+    const elapsed = performance.now() - started;
+    if (!layer.isConnected || state.tab !== 'run' || document.hidden || elapsed >= endAt || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      layer.remove(); contractTerminalFrame = 0; return;
+    }
+    let current = lines[0], typing = false;
+    for (const entry of lines) {
+      const progress = clamp((elapsed - entry.start) / Math.max(1, entry.duration), 0, 1);
+      const text = entry.text.slice(0, Math.floor(progress * entry.text.length));
+      if (entry.output.textContent !== text) entry.output.textContent = text;
+      if (elapsed >= entry.start) { current = entry; typing = progress < 1; }
+    }
+    if (caret.parentElement !== current.line) current.line.appendChild(caret);
+    caret.style.opacity = elapsed < boot ? Math.floor(elapsed / 140) % 2 ? '0' : '1' : typing ? '1' : Math.floor(elapsed / 450) % 2 ? '0' : '1';
+    layer.style.opacity = elapsed > fadeAt ? 1 - (elapsed - fadeAt) / 400 : 1;
+    contractTerminalFrame = requestAnimationFrame(draw);
+  };
+  draw();
+}
 function viewContract(unlocking = false) {
   if (!contractsUnlocked()) return;
   state.tab = 'run'; render();
-  cancelAnimationFrame(contractFocusFrame); clearTimeout(contractFocusTimer);
+  cancelAnimationFrame(contractFocusFrame); cancelAnimationFrame(contractTerminalFrame); clearTimeout(contractFocusTimer);
   const shell = $('dispatchShell'); shell.querySelector('.contract-burst')?.remove();
+  const terminalCopy = unlocking ? [...$('dispatch').querySelectorAll('p')].map(p => p.textContent) : [];
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   $('dispatchSection').scrollIntoView({ behavior: reduced ? 'instant' : 'smooth', block: 'center' });
   const started = performance.now(); let previousTop = null, stillFrames = 0;
@@ -1692,18 +1908,19 @@ function viewContract(unlocking = false) {
     if (visible && (reduced || (stillFrames >= 3 && performance.now() - started > 100))) {
       const burst = document.createElement('div'); burst.className = 'contract-burst'; burst.setAttribute('aria-hidden', 'true');
       if (unlocking && !reduced) {
-        const stamp = document.createElement('span'); stamp.className = 'permit-stamp'; stamp.textContent = 'THERE’S WORK AFTER CURFEW.'; burst.appendChild(stamp);
+        burst.classList.add('contract-transmission');
       }
-      if (!reduced) {
+      if (!reduced && !unlocking) {
         const echo = document.createElement('span'); echo.className = 'ripple-echo'; burst.appendChild(echo);
       }
-      if (!reduced) for (let i = 0; i < 18; i++) {
+      if (!reduced && !unlocking) for (let i = 0; i < 18; i++) {
         const mote = document.createElement('i');
         mote.style.cssText = `--x:${6 + i * 5}%;--y:${15 + (i * 31 % 75)}%;--size:${3 + i % 3 * 2}px;--dx:${18 + i % 6 * 7}px;--dy:${(i % 2 ? -1 : 1) * (12 + i % 4 * 8)}px;--delay:${120 + i * 24}ms;--life:${1400 + i % 4 * 200}ms`;
         burst.appendChild(mote);
       }
       shell.appendChild(burst);
-      contractFocusTimer = setTimeout(() => burst.remove(), reduced ? 350 : 3000);
+      if (unlocking && !reduced) typeContractTransmission(burst, terminalCopy);
+      else contractFocusTimer = setTimeout(() => burst.remove(), reduced ? 350 : 3000);
       contractFocusFrame = 0;
       return;
     }
@@ -1813,8 +2030,9 @@ function renderFocus(c) {
   const activeJob = state.dispatch.active;
   $('goalDetail').textContent = goal.contract ? activeJob ? Math.max(0, Math.ceil(activeJob.quota - (state.deliveries - activeJob.start))) + ' deliveries left · ₵' + fmt(activeJob.reward) + ' payment' : 'A paid delivery job. No colleagues required.' : '₵' + fmt(Math.min(state.cash, cost)) + ' / ₵' + fmt(cost) + (ready ? ' · Ready when you are.' : '');
   if ($('goalProgress')) $('goalProgress').style.width = clamp(100 * state.cash / cost, 0, 100) + '%';
-  const chain = GEAR.filter(g => g.dps), top = chain.filter(g => lvl(g.id)).pop();
-  const tier = top ? chain.indexOf(top) : -1;
+  // Most copies owned wins; ties stay in technology-list order.
+  const top = GEAR.reduce((best, tech) => lvl(tech.id) > (best ? lvl(best.id) : 0) ? tech : best, null);
+  const tier = top ? GEAR.indexOf(top) : -1;
   const shapes = [
     '<circle cx="21" cy="5" r="3"/><path d="M21 10l-5 9 8 4 3 8M16 19l-6 11M20 12l7 5h7M19 12l-8 5"/>',
     '<path d="M5 23h28l-5-9H16l-5 9m10-9 3-6h6M3 28h11m11 0h12"/><circle cx="10" cy="25" r="3"/><circle cx="30" cy="25" r="3"/>',
@@ -1825,11 +2043,14 @@ function renderFocus(c) {
     '<path d="M7 26l5-9 10 4 7-12 6 3-8 16H7zM29 9l3-5m2 8 5-2"/>',
     '<circle cx="13" cy="8" r="3"/><circle cx="28" cy="8" r="3"/><path d="M13 12v12m15-12v12M7 17h12m3 0h12M13 24l-5 6m5-6 5 6m10-6-5 6m5-6 5 6"/>',
     '<circle cx="20" cy="17" r="12"/><path d="M20 8v10l7 4M4 10l2-7 7 2"/>',
-    '<path d="M6 30V4h28v26M12 30V10h16v20M20 14v10m-4-5h8"/>'
+    '<path d="M6 30V4h28v26M12 30V10h16v20M20 14v10m-4-5h8"/>',
+    '<rect x="7" y="10" width="26" height="20" rx="3"/><path d="M7 16h26M16 10V6h8v4M16 16v14m8-14v14M11 3l2 3m16-3-2 3"/>',
+    '<path d="M10 8l10-4 10 4v12l-10 9-10-9zM12 11h16v7H12z"/><circle cx="9" cy="24" r="5"/><circle cx="31" cy="24" r="5"/><path d="M17 23h6"/>'
   ];
   const shape = shapes[Math.max(0, tier)];
   const courier = cls => `<svg class="courier ${cls}" viewBox="0 0 40 34" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">${shape}</svg>`;
-  setHTML('operation', `<span class="eyebrow">${esc(state.shop ? state.shop.name : 'One citizen. One delivery bag.')}</span><div class="scene-name"><span>${esc(top ? 'Best tech: ' + top.name : 'You are the entire operation')}${top ? '<span class="lvl">×' + lvl(top.id) + '</span>' : ''}</span>${top ? techDots(lvl(top.id)) : ''}</div><div class="district" aria-hidden="true"></div><div class="route" aria-hidden="true"></div><div class="airlock" aria-hidden="true"></div>${courier(tier >= 2 ? 'air' : '')}${tier >= 1 ? courier('second ' + (tier >= 2 ? 'air' : '')) : ''}<div class="scene-foot"><span>Zone: ${esc(ZONES[c.zone].name)}</span><span>${fmt(c.dps)} deliveries/s</span></div>`);
+  const airborne = top && top.dps && tier >= 2;
+  setHTML('operation', `<span class="eyebrow">${esc(state.shop ? state.shop.name : 'One citizen. One delivery bag.')}</span><div class="scene-name"><span>${esc(top ? 'Best tech: ' + top.name : 'You are the entire operation')}${top ? '<span class="lvl">×' + lvl(top.id) + '</span>' : ''}</span>${top ? techDots(lvl(top.id)) : ''}</div><div class="district" aria-hidden="true"></div><div class="route" aria-hidden="true"></div><div class="airlock" aria-hidden="true"></div>${courier(airborne ? 'air' : '')}${tier >= 1 ? courier('second ' + (airborne ? 'air' : '')) : ''}<div class="scene-foot"><span>Zone: ${esc(ZONES[c.zone].name)}</span><span>${fmt(c.dps)} deliveries/s</span></div>`);
   const latest = state.lastSocial;
   const sector = world.sectors.find(s => s.dept === state.dept);
   let challenge = '';
@@ -1934,7 +2155,7 @@ function showHandover(e) {
     <p>You banked <b>${e.stamps} Ration Stamp${e.stamps === 1 ? '' : 's'}</b> (income ×${stampMult(state.stamps).toFixed(2)}) and you get <b>25% of everything ${esc(e.to)} ever earns</b>. It is in your Portfolio, forever.</p>
     <p class="muted">Your clone keeps your name, runners, buildings and commendations, and starts with no tech. Again.</p>
     <div class="row"><button id="ok" class="big2">SEE THE CABINET</button><button id="cancel">Back to work</button></div>`);
-  $('ok').onclick = () => { closeModal(); state.tab = 'portfolio'; render(); };
+  $('ok').onclick = openPortfolio;
   $('cancel').onclick = closeModal;
 }
 function ministryDialog() {
@@ -2083,6 +2304,7 @@ function validateRecovery(s) {
   const gear = x => map(x, GEAR.map(g => g.id));
   const upg = x => map(x, UPGRADES.map(u => u.id), true);
   out.gear = gear(s.gear); out.upg = upg(s.upg); out.ach = map(s.ach, ACH.map(a => a.id), true);
+  out.techSeen = [...new Set(arr(s.techSeen || []).filter(id => GEAR.some(g => g.id === id)))];
   out.buildings = map(s.buildings, BUILDINGS.map(b => b.id), true); out.fx = map(s.fx); out.told = map(s.told);
   out.pace = {}; Object.entries(obj(s.pace || {})).forEach(([m, value]) => { if (!Number.isSafeInteger(+m) || +m <= 0 || +m > Math.floor(out.played / 60)) bad(); out.pace[m] = num(value); });
   out.qty = [1, 10, 100].includes(s.qty) ? s.qty : 1; out.tab = s.tab === 'portfolio' ? 'portfolio' : 'run';
@@ -2102,6 +2324,7 @@ function validateRecovery(s) {
   out.decreesSeen = arr(s.decreesSeen || []).map(x => str(x));
   // Imported text is never trusted as HTML, including the otherwise internal event log.
   out.log = arr(s.log || []).slice(0, 10).map(e => ({ t: num(obj(e).t), text: esc(unesc(str(e.text, 10000).replace(/<[^>]*>/g, ''))) }));
+  if (s.portfolioUnlocked == null) out.portfolioUnlocked = portfolioReady(out) || !!out.shop;
   if (out.rankSeen >= RANKS.length || !Number.isFinite(calc(out).baseIncome)) bad();
   return out;
 }
@@ -2288,7 +2511,7 @@ function render() {
   if (c.gang && told.gang) {
     gb.hidden = false;
     setHTML('gangS', '<b>Sector 7 protection · −15%</b>');
-    setHTML('gangM', `<b>The Sector 7 Provisional Gang</b> takes ${Math.round(CONFIG.GANG_TAX * 100)}% of everything you make. They call it protection. Recruit one runner with your invite link and they leave you alone. They go after your runner instead. That is how protection works. <a href="#" data-act="share">Copy invite</a>`);
+    setHTML('gangM', `<b class="gang-name sinister">The Sector 7 Provisional Gang</b> takes ${Math.round(CONFIG.GANG_TAX * 100)}% of everything you make. They call it protection. Recruit one runner with your invite link and they leave you alone. They go after your runner instead. That is how protection works. <a href="#" data-act="share">Copy invite</a>`);
   } else gb.hidden = true;
   $('protectionTab').hidden = rb.hidden && gb.hidden;
   $('protectionTab').textContent = c.gang ? 'Protection · −' + Math.round((1 - c.keep) * 100) + '%' : c.tax ? 'Recruiter · −10%' : 'Head office · 25%';
@@ -2348,6 +2571,7 @@ function render() {
   }).join(''));
 
   animateTechIcons();
+  animateTechDiscoveries();
 
   const avail = UPGRADES.filter(u => !state.upg[u.id] && u.unlock(state)).sort((a, b) => a.cost - b.cost).slice(0, 9);
   const bought = Object.keys(state.upg).length;
@@ -2424,10 +2648,23 @@ function render() {
   $('totalV').textContent = fmt(state.total);
 
   const pf = state.portfolio || [];
+  if (!state.portfolioUnlocked) state.tab = 'run';
   const tab = state.tab === 'portfolio' ? 'portfolio' : 'run';
   $('tab-run').hidden = tab !== 'run'; $('tab-portfolio').hidden = tab !== 'portfolio';
-  $('tabRunB').className = tab === 'run' ? 'on' : ''; $('tabPfB').className = tab === 'portfolio' ? 'on' : '';
-  $('pfN').textContent = pf.length ? '(' + pf.length + ')' : '';
+  const dossierReady = portfolioReady();
+  $('tabRunB').className = tab === 'run' ? 'on' : '';
+  $('tabPfB').className = state.portfolioUnlocked ? tab === 'portfolio' ? 'on' : '' : dossierReady ? 'pf-locked pf-ready' : 'pf-locked';
+  $('pfLock').hidden = state.portfolioUnlocked;
+  $('tabPfB').setAttribute('aria-label', state.portfolioUnlocked ? 'Portfolio' : dossierReady ? 'Portfolio reward ready. Open your dossier.' : 'Portfolio locked. Earn 20,000 lifetime credits to unlock.');
+  $('pfN').textContent = state.portfolioUnlocked && pf.length ? '(' + pf.length + ')' : '';
+  $('pfProgress').toggleAttribute('hidden', state.portfolioUnlocked);
+  $('pfProgress').style.setProperty('--p', dossierReady ? 100 : clamp(100 * state.total / CONFIG.PORTFOLIO_EARNINGS, 0, 100));
+  if ($('dossierProgress') && !$('modal').hidden) {
+    $('dossierProgress').textContent = '₵' + Math.floor(Math.min(state.total, CONFIG.PORTFOLIO_EARNINGS)).toLocaleString('en-GB') + ' / ₵' + CONFIG.PORTFOLIO_EARNINGS.toLocaleString('en-GB') + ' lifetime earnings';
+    $('dossierBar').style.width = clamp(100 * state.total / CONFIG.PORTFOLIO_EARNINGS, 0, 100) + '%';
+    $('portfolioClaim').disabled = !dossierReady;
+    $('portfolioClaim').textContent = dossierReady ? 'Unseal Portfolio · FREE' : 'File sealed';
+  }
   if (tab === 'portfolio') {
     const paid = state.down.paid || {}, smp = state.down.samples || {};
     const biz = state.down.list.map(m => {
@@ -2467,7 +2704,7 @@ function render() {
         <div class="stat"><div class="k">Other people's work</div><div class="v">₵${fmt(state.down.credited || 0)}</div><div class="sub">credited to you, all time</div></div>
         <div class="stat"><div class="k">Of your lifetime</div><div class="v">${othersPct}%</div><div class="sub">earned by someone else</div></div></div>
       <div class="card">${pyramid}<p class="muted">Idle runners are faded. Franchisees are gold. Everyone on this diagram is paying you, whether or not they have noticed.</p></div>`
-    : `<div class="empty"><b>△</b>You're the entire pyramid. Bit embarrassing.<br>Send your link. Anyone who joins appears below, along with what they pay you per second. Call it leadership.<div class="row" style="justify-content:center"><button data-act="share">Copy invite for Slack</button></div></div>`);
+    : `<div class="empty"><b>△</b>You're the entire pyramid. Bit embarrassing.<br>Send your link. Anyone who joins appears below, along with what they pay you per second. Call it leadership.<div class="row" style="justify-content:center"><button data-act="share">Call for Recruits</button></div></div>`);
     // People as trophies: every downline member gets a shelf card with what has been taken from them.
     const seen = state.down.seen || {};
     const via = m => { if (m.level === 1) return 'Direct'; const r = state.down.list.find(x => x.code === m.ref); return 'Via ' + (r ? esc(r.name) : 'someone'); };
@@ -2556,7 +2793,7 @@ document.addEventListener('click', e => {
   const bl = e.target.closest('[data-build]'); if (bl) return build(bl.dataset.build);
   const ug = e.target.closest('[data-upg]'); if (ug) return buyUpgrade(ug.dataset.upg);
   const q = e.target.closest('[data-qty]'); if (q) { state.qty = +q.dataset.qty; return render(); }
-  const tb = e.target.closest('[data-tab]'); if (tb) { state.tab = tb.dataset.tab; return render(); }
+  const tb = e.target.closest('[data-tab]'); if (tb) { if (tb.dataset.tab === 'portfolio') return openPortfolio(); state.tab = tb.dataset.tab; return render(); }
   const tip = e.target.closest('[data-tip]'); if (tip) return toast(tip.dataset.tip);
   const nd = e.target.closest('[data-nudge]'); if (nd) return nudge(nd.dataset.nudge);
   const dc = e.target.closest('[data-decree]'); if (dc) return decree(dc.dataset.decree);

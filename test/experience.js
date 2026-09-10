@@ -42,7 +42,7 @@ start(0, async ({ srv, db, url }) => {
     await page.click('#pursueGoal');
     check('next-goal purchase buys one, preserving bulk selection', await page.evaluate(() => MUSTEAT.state.gear.trainers === 1 && MUSTEAT.state.qty === 10));
     await page.click('#pursueGoal');
-    check('operation changes with the Hoverbike purchase', /Best tech: Hoverbike/.test(await page.textContent('#operation')) && /Put your name above a shop/.test(await page.textContent('#nextGoal')));
+    check('equal owned counts keep the first tech while the goal advances', /Best tech: Hazmat Trainers/.test(await page.textContent('#operation')) && /Put your name above a shop/.test(await page.textContent('#nextGoal')));
     await page.evaluate(() => { MUSTEAT.state.cash = 24999; MUSTEAT.render(); });
     check('shop needs the full 25K', await page.locator('#shop [data-act="shop"]').isDisabled());
     await page.evaluate(() => { MUSTEAT.state.cash = 25000; MUSTEAT.render(); });
@@ -74,7 +74,7 @@ start(0, async ({ srv, db, url }) => {
     await page.click('[data-act="unlockDispatch"]');
     check('claiming the permit unlocks contracts for free', await page.isVisible('#dispatchSection') && !await page.isVisible('#contractUnlock') && await page.evaluate(() => MUSTEAT.state.cash) === cashBeforePermit);
     await page.waitForSelector('.contract-burst');
-    check('reduced motion uses a static reveal', await page.locator('.contract-burst i, .permit-stamp').count() === 0);
+    check('reduced motion uses a static reveal', await page.locator('.contract-burst i, .contract-transmission').count() === 0);
     check('permit survives recovery and cannot be claimed twice', await page.evaluate(async () => {
       const before = MUSTEAT.state.cash; MUSTEAT.unlockDispatch();
       const decoded = await MUSTEAT.decodeRecovery(await MUSTEAT.encodeRecovery(MUSTEAT.state));

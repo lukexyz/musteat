@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MustEat · intercepted technology</title>
+<style>
+:root{color-scheme:dark;--ink:#cbd5d7;--muted:#7d8d92;--line:#243035;--green:#39ff14}
+*{box-sizing:border-box}body{margin:0;background:#070a0b;color:var(--ink);font:14px/1.6 'Courier New',monospace}main{max-width:1020px;margin:auto;padding:38px 24px 70px}header{border-bottom:1px solid var(--line);padding-bottom:24px}.eyebrow{color:#73b3a4;font-size:10px;letter-spacing:.2em}h1{font-size:clamp(23px,4vw,35px);line-height:1.2;color:#eef2ef;margin:12px 0}h1 span{color:var(--green)}header p{max-width:750px;margin:10px 0 18px;color:var(--muted)}button{font:inherit;color:#d0dadd;background:#101a1d;border:1px solid #2b3d42;border-radius:3px;padding:8px 13px;cursor:pointer}button:hover{border-color:#71a091;background:#162421}button:focus-visible{outline:2px solid #b9eacd;outline-offset:4px}.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.controls small{color:var(--muted)}.play-all{color:#b9ebc9}.option{padding-top:28px}.option-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:10px}.label{font-size:12px;letter-spacing:.13em;color:#d4deda}.num{color:#719084;margin-right:12px}.pick{font-size:9px;color:#8abb9b;border:1px solid #30483b;padding:3px 6px;letter-spacing:.04em;margin-left:8px}.replay{font-size:11px;padding:5px 11px}.note{color:var(--muted);font-size:12px;margin:9px 0 0}.card{position:relative;isolation:isolate;overflow:hidden;border:1px solid #243338;background:#0e1619;padding:20px 18px;min-height:146px;display:grid;grid-template-columns:44px minmax(0,1fr) 132px;gap:15px;align-items:center}.icon{height:44px;display:grid;place-items:center;background:#010506;border:1px solid #29424a;border-radius:4px;color:#4bdded;font-size:12px}.name{font-size:16px;line-height:1.4;font-weight:bold;white-space:normal;color:#d6e0df}.count{color:#43d7e9;font-size:11px;white-space:nowrap}.description{color:#8a9b9f;font-size:13px;margin-top:4px;min-height:42px}.gain{color:#d8bb57;font-size:11px;margin-top:3px}.economy{text-align:right}.rate{font-weight:bold}.share{color:#6f8489;font-size:10px}.price{margin-top:10px;border:1px solid #29363c;border-radius:3px;padding:6px 12px;background:#131d21;color:#b2bfc2;text-align:center}.effect{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}.status{position:absolute;left:78px;bottom:5px;color:#8ec8a0;letter-spacing:.11em;font-size:9px;opacity:0;z-index:4;pointer-events:none}.letter{display:inline-block;position:relative}.real{opacity:0}.window{position:absolute;inset:0;height:1.4em;overflow:hidden;color:#9bd6ae;text-shadow:0 0 5px #8fe6a640}.stream{display:block}.stream i{display:block;height:1.4em;line-height:1.4;font-style:normal}.stream i:nth-child(2){color:#e4f5e6}.stream i:nth-child(3){color:#628d6c}.char{opacity:0}.beam{position:absolute;left:0;right:0;height:1px;background:#bde5c5;box-shadow:0 0 8px #8bb79455}.redaction{position:absolute;height:8px;background:#010303;left:78px;right:180px}.packet{position:absolute;top:0;bottom:0;width:1px;background:linear-gradient(transparent,#78b9b7,transparent);box-shadow:0 0 12px #83d6dc44}.shutter{position:absolute;left:0;right:0;height:50%;background:#020405}.shutter.top{top:0;border-bottom:1px solid #3c5b58}.shutter.bottom{bottom:0;border-top:1px solid #3c5b58}.cross{position:absolute;width:10px;height:10px;border-color:#759997;border-style:solid;opacity:0}.invoice{position:absolute;right:12px;top:10px;text-align:right;font-size:9px;line-height:1.8;letter-spacing:.06em;color:#b08f76}.invoice strong{color:#d5af8d;font-weight:normal}.dead-caret{position:absolute;left:78px;top:24px;width:9px;height:15px;background:#ecf5e9;box-shadow:0 0 5px #ecf5e933}.snow{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 3px,#809a8710 3px 4px);opacity:0}.card.running{background:#080e10}.card.running .icon,.card.running .count,.card.running .gain,.card.running .economy{opacity:0}footer{border-top:1px solid var(--line);margin-top:32px;padding-top:14px;font-size:11px;color:var(--muted)}
+@media(max-width:600px){main{padding:24px 14px 40px}.card{grid-template-columns:34px minmax(0,1fr);gap:10px;padding:17px 12px 26px;min-height:208px}.icon{height:34px}.economy{grid-column:2;display:flex;align-items:center;gap:12px;text-align:left}.price{margin:0 0 0 auto;min-width:92px}.name{font-size:14px}.description{font-size:12px}.status{left:56px;font-size:8px;letter-spacing:.03em}.redaction{left:56px;right:15px}.dead-caret{left:56px}.pick{display:none}.invoice{top:auto;bottom:8px}.option-head{gap:8px}.label{font-size:11px;letter-spacing:.07em}}
+</style>
+<main>
+<header><div class="eyebrow">MUSTEAT / UNAUTHORISED INTERFACE STUDIES</div><h1>Something else <span>got out.</span></h1><p>Five technology reveals. Instant start. Falling digits settle into the title, then the description types out. No bending, shaking or prolonged light show.</p><div class="controls"><button class="play-all">Replay all five</button><small>About 2 seconds each · replay individually to compare</small></div></header>
+<div id="options"></div>
+<footer>Standalone preview. These five treatments do not change the game. Your device’s reduced-motion preference is respected.</footer>
+</main>
+<script>
+const variants=[
+ {id:'redacted',title:'Redacted procurement',note:'Black censorship strips peel away in short steps. Dry, hostile paperwork.',joke:'CLASSIFIED. UNTIL SOMEBODY PAID.',tech:'Teleport Licence (Expired)',desc:'Technically still works. Mostly. +30 deliveries/s each.',icon:'TE',price:'₵80K',gain:'Adds ₵327.2/sec at base rate'},
+ {id:'wiretap',title:'Wiretap',note:'A narrow signal crosses the card; fragments lock into place behind it.',joke:'PRIVATE CHANNEL. SEVENTEEN LISTENERS.',tech:'Drone Swarm',desc:'They deliver. They also watch. +4 deliveries/s each.',icon:'DR',price:'₵6.90K',gain:'Adds ₵29.7/sec at base rate'},
+ {id:'shutter',title:'Evidence recovered',note:'Black shutters open onto a briefly marked surveillance frame. My pick.',joke:'EVIDENCE RETAINED. WITNESS OPTIONAL.',tech:'Runner Cloning Vats',desc:'You, but more of you. HR has been informed. HR is also you.',icon:'CL',price:'₵4B',gain:'Adds ₵3.76M/sec at base rate'},
+ {id:'invoice',title:'Debt acknowledged',note:'A tiny receipt prints in the corner, then disappears. The system got paid.',joke:'WARRANTY: SURVIVE THE FIRST USE.',tech:'Vat Farm Franchise',desc:"Grow the meal inside the customer's building. Legally a restaurant.",icon:'VA',price:'₵1M',gain:'Adds ₵2.52K/sec at base rate'},
+ {id:'dead',title:'Dead terminal',note:'One pale cursor, a breath of scanline noise, then the machine answers.',joke:'OPERATOR DECEASED. SERVICE RESUMED.',tech:'Time-Loop Kitchen',desc:'Cook once, deliver forever. The soup remembers. +700K deliveries/s each.',icon:'TI',price:'₵80.5B',gain:'Adds ₵36.5M/sec at base rate'}
+];
+const active=new Map(),reduce=matchMedia('(prefers-reduced-motion: reduce)');
+for(const [i,v] of variants.entries()){
+ const section=document.createElement('section');section.className='option';section.innerHTML=`<div class="option-head"><div class="label"><span class="num">0${i+1}</span>${v.title}${i===2?'<span class="pick">PICK</span>':''}</div><button class="replay" aria-label="Replay ${v.title}">↻ Replay</button></div><div class="card" id="${v.id}"><div class="icon">${v.icon}</div><div class="copy"><div><span class="name"></span> <span class="count">×0</span></div><div class="description"></div><div class="gain">${v.gain}</div></div><div class="economy"><div><div class="rate">₵0/s</div><div class="share">not yet</div></div><div class="price">${v.price}</div></div><div class="effect" aria-hidden="true"></div><div class="status" aria-hidden="true"></div></div><p class="note">${v.note}</p>`;
+ document.querySelector('#options').append(section);section.querySelector('.name').textContent=v.tech;section.querySelector('.description').textContent=v.desc;section.querySelector('.replay').onclick=()=>play(v);
+}
+function play(v){
+ const card=document.getElementById(v.id),name=card.querySelector('.name'),desc=card.querySelector('.description'),fx=card.querySelector('.effect'),status=card.querySelector('.status');
+ active.get(v.id)?.();const animations=[];let frame=0;
+ const finish=()=>{cancelAnimationFrame(frame);animations.forEach(a=>a.cancel());card.classList.remove('running');name.textContent=v.tech;desc.textContent=v.desc;fx.replaceChildren();status.textContent='';status.style.opacity=0;card.removeAttribute('aria-label');active.delete(v.id)};
+ active.set(v.id,finish);if(reduce.matches){finish();return}
+ card.classList.add('running');card.setAttribute('aria-label',v.tech+'. '+v.desc);name.replaceChildren();desc.replaceChildren();fx.replaceChildren();status.textContent=v.joke;
+ const animate=(el,keyframes,options)=>{const a=el.animate(keyframes,{fill:'both',...options});animations.push(a);return a};
+ const add=(cls)=>{const el=document.createElement('span');el.className=cls;fx.append(el);return el};
+ animate(card,[{borderColor:'#243338'},{borderColor:'#537c65',offset:.2},{borderColor:'#243338'}],{duration:1950});
+ const letters=[...v.tech].map((ch,i)=>{if(ch===' '){name.append(' ');return null}const el=document.createElement('span');el.className='letter';const real=document.createElement('span');real.className='real';real.textContent=ch;const win=document.createElement('span');win.className='window';win.setAttribute('aria-hidden','true');const stream=document.createElement('span');stream.className='stream';for(let j=0;j<4;j++){const cell=document.createElement('i');cell.textContent=String((i*7+j*3)%10);stream.append(cell)}win.append(stream);el.append(real,win);name.append(el);return{el,real,win,stream,ch,i}}).filter(Boolean);
+ const chars=[...v.desc].map(ch=>{const el=document.createElement('span');el.className='char';el.textContent=ch;desc.append(el);return el});
+ let intro=80;
+ if(v.id==='redacted'){
+  for(let i=0;i<3;i++){const bar=add('redaction');bar.style.top=(25+i*25)+'px';bar.style.transformOrigin='right';animate(bar,[{transform:'scaleX(1)'},{transform:'scaleX(.68)'},{transform:'scaleX(.68)'},{transform:'scaleX(0)'}],{duration:330,delay:100+i*80,easing:'steps(3,end)'})}
+ }else if(v.id==='wiretap'){
+  const beam=add('packet');animate(beam,[{left:'0%',opacity:0},{opacity:.7,offset:.15},{left:'100%',opacity:0}],{duration:700});
+  const line=add('beam');line.style.bottom='0';animate(line,[{transform:'scaleX(0)',opacity:.4},{transform:'scaleX(1)',opacity:0}],{duration:950});
+ }else if(v.id==='shutter'){
+  intro=180;for(const side of ['top','bottom']){const s=add('shutter '+side);animate(s,[{transform:'translateY(0)'},{transform:`translateY(${side==='top'?'-':'+'}100%)`}],{duration:320,easing:'cubic-bezier(.2,.7,.2,1)'})}
+  for(let i=0;i<4;i++){const c=add('cross');c.style.cssText=`${i%2?'right':'left'}:7px;${i<2?'top':'bottom'}:7px;border-width:${i<2?'1px':'0'} ${i%2?'1px':'0'} ${i>=2?'1px':'0'} ${i%2?'0':'1px'};`;animate(c,[{opacity:0},{opacity:.7,offset:.15},{opacity:.7,offset:.7},{opacity:0}],{duration:1500})}
+ }else if(v.id==='invoice'){
+  const receipt=add('invoice');receipt.innerHTML='ASSET: UNREGISTERED<br>LIABILITY: YOURS<br><strong>REFUNDS: NO.</strong>';animate(receipt,[{clipPath:'inset(0 0 100% 0)',opacity:0},{clipPath:'inset(0)',opacity:.9,offset:.4},{opacity:.9,offset:.7},{opacity:0}],{duration:1100});
+ }else{
+  intro=230;const caret=add('dead-caret');animate(caret,[{opacity:1},{opacity:0}],{duration:210,easing:'steps(1,end)'});animate(caret,[{opacity:0},{opacity:0}],{duration:1800,delay:210});
+  const snow=add('snow');animate(snow,[{opacity:0},{opacity:.65,offset:.12},{opacity:0,offset:.32},{opacity:0}],{duration:900});
+ }
+ const beam=add('beam');animate(beam,[{top:'0%',opacity:0},{opacity:.28,offset:.12},{top:'100%',opacity:0}],{duration:500,delay:intro});
+ animate(status,[{opacity:0},{opacity:.85,offset:.15},{opacity:.85,offset:.75},{opacity:0}],{duration:1050,delay:850});
+ for(const el of card.querySelectorAll('.icon,.count,.gain,.economy'))animate(el,[{opacity:0},{opacity:1}],{duration:160,delay:1350});
+ const start=performance.now();
+ function tick(now){const t=now-start;
+  for(const l of letters){const p=Math.min(1,Math.max(0,(t-intro-(l.i*31%100))/(520+l.i*37%200)));if(p===1){l.real.style.opacity=1;l.win.hidden=true;continue}l.win.style.opacity=t<intro?0:1;const remaining=(6+l.i%3*3)*(1-p),pos=remaining%3||3;l.stream.style.transform=`translateY(${-pos*1.4}em)`;[...l.stream.children].forEach((cell,j)=>cell.textContent=j===0&&remaining<=3?l.ch:String((l.i*7+j*3+Math.floor(t/85))%10))}
+  const typed=Math.floor(Math.max(0,Math.min(1,(t-1040)/310))*chars.length);chars.forEach((el,i)=>el.style.opacity=i<typed?1:0);
+  if(t>=2050){finish();return}frame=requestAnimationFrame(tick)
+ }frame=requestAnimationFrame(tick);
+}
+document.querySelector('.play-all').onclick=()=>variants.forEach(play);
+reduce.addEventListener('change',()=>{if(reduce.matches)[...active.values()].forEach(f=>f())});
+// Only the first option autoplays. The rest wait for an intentional replay.
+requestAnimationFrame(()=>play(variants[0]));
+</script>
+</html>
