@@ -224,13 +224,17 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 @keyframes dossier-open{0%{opacity:1;filter:blur(1px)}15%,65%{opacity:1;filter:none}100%{opacity:0;transform:translateY(-6px)}}
 @media(max-width:520px){.tabs button{letter-spacing:1px;font-size:11px;padding-left:4px;padding-right:4px}}
 .pfsum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-.asset-section h2{color:#b49bc8}.asset-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.asset-tile{min-width:0;display:flex;flex-direction:column;padding:14px;background:linear-gradient(145deg,#14202660,transparent 65%),var(--panel);border:1px solid var(--line);border-top-color:#3b626b}
-.asset-head{display:flex;gap:10px;align-items:center;min-height:46px}.asset-head h3{font-size:13px;line-height:1.4;margin:0;overflow-wrap:anywhere}.asset-count{color:var(--blue);font-size:11px;margin-top:3px}.asset-count .tech-dots{margin-top:5px;max-width:100%}
-.asset-tile .ico{position:relative;overflow:hidden;flex:0 0 36px;width:36px;height:36px;border:1px solid #2c3b40;border-radius:4px;background:#000;display:grid;place-items:center;color:var(--blue);font-size:11px}
+#pfEmpire{scroll-margin-top:16px}#pfEmpire:focus-visible{outline:1px solid #71958e;outline-offset:5px}
+.asset-section h2{color:#b49bc8;border-bottom-color:#43364e}.asset-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.asset-tile{--asset-accent:#75bfc8;position:relative;min-width:0;display:flex;flex-direction:column;padding:9px;background:linear-gradient(135deg,#3f80821a,transparent 55%),linear-gradient(#0d171a,#090f12);border:1px solid #2d4248;border-top-color:#50787d;box-shadow:inset 0 1px #a5e9ed08}
+.asset-tile::after{content:'';position:absolute;right:-1px;bottom:-1px;width:7px;height:7px;border-right:1px solid var(--asset-accent);border-bottom:1px solid var(--asset-accent);opacity:.6;pointer-events:none}
+.asset-tile.primary-asset{--asset-accent:#c2a1e5;border-color:#665279;background:linear-gradient(135deg,#b780e422,transparent 65%),linear-gradient(#14151e,#0c1017);box-shadow:inset 0 1px #dfb7ff20,0 0 16px #b786e509}
+.asset-register{display:flex;justify-content:space-between;gap:4px;margin:-1px 0 8px;color:#637e84;font-size:8px;line-height:1;letter-spacing:.09em}.asset-register span:last-child{color:var(--asset-accent)}.asset-tile.primary-asset .asset-register{color:#9d8aaf}
+.asset-head{display:flex;gap:7px;align-items:flex-start;min-height:42px}.asset-head>div:last-child{min-width:0}.asset-head h3{font-size:11px;line-height:1.35;margin:0;color:#d8e3e2;overflow-wrap:anywhere}.asset-count{color:#86b4bc;font-size:10px;margin-top:3px}
+.asset-tile .ico{position:relative;overflow:hidden;flex:0 0 36px;width:36px;height:36px;border:1px solid #36565e;border-radius:2px;background:repeating-linear-gradient(0deg,#83b8c508 0 1px,transparent 1px 4px),radial-gradient(ellipse at 50% 100%,#2e798d22,transparent),#03090b;box-shadow:inset 0 0 10px #0008;display:grid;place-items:center;color:#7ce3ed;font-size:11px;text-shadow:0 0 6px #55c8d133}
 .asset-tile .ico img{display:block;width:32px;height:32px;image-rendering:pixelated}.asset-tile .ico.sealed img{filter:blur(5px) saturate(.45);opacity:.38}
-.asset-earned{margin-top:20px}.asset-earned small,.asset-foot small{display:block;color:var(--dim);font-size:10px}.asset-earned strong{display:block;color:#e2d5f0;font-size:23px;line-height:1.5;overflow-wrap:anywhere}.asset-foot{border-top:1px solid var(--line);padding-top:10px;margin-top:12px;font-size:12px;color:#80c7d2}.asset-tile.support{border-top-color:#65583a}.asset-tile.support .asset-earned strong{color:var(--gold);font-size:19px}.asset-tile .asset-joke{font-size:11px;color:var(--dim);margin:10px 0 0;flex:1}.asset-summary .v{font-size:20px;overflow-wrap:anywhere}.solo-invite{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px;border:1px solid var(--line);background:var(--panel);font-size:12px}.solo-invite p{margin:0}.solo-invite button{flex-shrink:0}
-@media(max-width:650px){.asset-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.asset-tile{padding:11px}.asset-head{align-items:flex-start;flex-direction:column;gap:8px}.asset-earned strong{font-size:20px}.asset-summary{grid-template-columns:1fr}.solo-invite{align-items:flex-start;flex-direction:column}}
+.asset-earned{margin:6px 0 8px;padding-left:7px;border-left:2px solid #435562}.asset-earned small{display:block;color:var(--dim);font-size:8px;letter-spacing:.04em}.asset-earned strong{display:block;color:#e4dcf0;font-size:19px;line-height:1.35;letter-spacing:-.5px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.primary-asset .asset-earned{border-color:#ac85cf}.primary-asset .asset-earned strong{text-shadow:0 0 12px #c599f022}.asset-foot{display:flex;justify-content:space-between;gap:4px;padding-top:4px;margin-top:auto;font-size:10px;color:#8bd1d6}.asset-foot small{color:var(--dim);font-size:9px}.asset-meter{height:3px;margin-top:6px;background:#243439;overflow:hidden}.asset-meter i{display:block;height:100%;width:var(--asset-share);background:var(--asset-accent);box-shadow:0 0 5px var(--asset-accent)}.asset-tile.support{--asset-accent:#c6ae76;border-color:#514936;background:linear-gradient(135deg,#bd9f4a12,transparent 60%),#111411}.asset-tile.support .ico{color:#d2bd87;border-color:#5b5136}.asset-tile.support .asset-earned{border-color:#665937}.asset-tile.support .asset-earned strong{color:#e2c58b;font-size:14px}.asset-summary{gap:7px;margin-bottom:8px}.asset-summary .stat{position:relative;padding:8px;min-width:0;background:linear-gradient(120deg,#35495318,transparent),#0b1215;border-color:#304148}.asset-summary .stat::before{content:'';position:absolute;left:-1px;top:-1px;width:14px;height:5px;border-top:1px solid #7096a0;border-left:1px solid #7096a0}.asset-summary .stat:nth-child(2)::before{border-color:#b597d0}.asset-summary .stat:nth-child(2) .v{color:#dfccf2}.asset-summary .stat:last-child .v{color:#a1d8dc}.asset-summary .k{font-size:9px;letter-spacing:.5px}.asset-summary .v{font-size:17px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}.solo-invite{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;border:1px solid var(--line);background:var(--panel);font-size:12px}.solo-invite p{margin:0}.solo-invite button{flex-shrink:0}
+@media(max-width:650px){.asset-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.asset-summary .v{font-size:15px}.solo-invite{align-items:flex-start;flex-direction:column}}
 .trophy{background:linear-gradient(180deg,#151a0f,var(--panel));border:1px solid var(--gold);padding:12px;margin-bottom:10px;box-shadow:0 0 18px rgba(255,209,102,.12)}
 .trophy.grey{border-color:var(--line);box-shadow:none;background:var(--panel);opacity:.85}
 .trophy .tname{font-size:18px;color:var(--gold);font-weight:bold;letter-spacing:1px}
@@ -443,11 +447,11 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <section><h2>Log</h2><div id="log" class="log"></div></section>
   </div>
   <div id="tab-portfolio" hidden>
-  <section class="asset-section"><h2>Your machinery</h2><div id="pfTech"></div></section>
-  <section><h2>Your empire</h2><div class="focus-grid"><div id="empireLive" class="empire-live"></div></div><div id="pfEmpire"></div></section>
+  <section><h2>Your empire</h2><div class="focus-grid"><div id="empireLive" class="empire-live"></div></div><div id="pfEmpire" tabindex="-1" role="region" aria-label="Your empire breakdown"></div></section>
   <section><h2>Your runners' businesses</h2><div id="pfRunners"></div></section>
   <section><h2>Trophy cabinet</h2><div id="portfolio"></div></section>
   <section><h2>Your operation</h2><div class="focus-grid"><div id="operation" class="operation"></div></div><p class="muted">Your delivery business in motion. Buy technology in Operations to grow it.</p></section>
+  <section class="asset-section"><h2>Your machinery</h2><div id="pfTech"></div></section>
   </div>
   <footer>MustEat is a game. Please do not start an actual pyramid scheme. · <span id="mode"></span> · <a href="ledger.html" target="_blank">high scores</a> · <a href="#" data-act="saveInfo">save game</a> · <a href="#" data-act="replayIntro">replay intro</a> · <a href="#" id="reset">reset game</a> <span id="localtools"></span><div class="visual-settings"><button id="techIconsToggle" type="button" aria-pressed="false">Tech icons: off</button></div></footer>
 </div>
@@ -1510,6 +1514,13 @@ function openPortfolio() {
     setTimeout(() => layer.remove(), 2850);
   }
 }
+function viewEmpire() {
+  if (!state.portfolioUnlocked || state.tab !== 'portfolio') openPortfolio();
+  if (!state.portfolioUnlocked || state.tab !== 'portfolio') return;
+  const empire = $('pfEmpire');
+  empire.focus({preventScroll:true});
+  empire.scrollIntoView({block:'start', behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+}
 const TECH_ICONS_KEY = 'musteat_tech_icons';
 let techIconsEnabled = false;
 try { techIconsEnabled = localStorage.getItem(TECH_ICONS_KEY) === 'on'; } catch (e) {}
@@ -2092,7 +2103,7 @@ function renderFocus(c) {
     challenge = (state.shop ? gap + ' more ' + state.dept + ' runner' + (gap === 1 ? '' : 's') + ' to take the sector from ' + sector.shop.name + '.' : 'Open a shop to contest ' + state.dept + '.');
   } else if (sector && sector.shop && sector.shop.id === state.id) challenge = 'You control ' + state.dept + '. The other departments are still out there.';
   const social = latest ? latest.text : downCount() ? downCount() + ' colleagues in your pyramid. Your cut so far: ₵' + fmt(state.down.credited) + '.' : 'Your first runner lifts the 15% protection tax and earns you a cut. Somebody has to be middle management.';
-  setHTML('empireLive', `<div class="body"><span class="eyebrow">${downCount() ? 'Other people’s work' : 'Your first accomplice'}</span><p>${esc(social)}</p>${challenge ? '<p class="muted">' + esc(challenge) + '</p>' : ''}${downCount() ? '<div class="nodes"><span>YOU</span>' + state.down.list.slice(0, 3).map(m => '<span>↳ ' + esc(m.name) + '</span>').join('') + (downCount() > 3 ? '<span>+' + (downCount() - 3) + '</span>' : '') + '</div>' : ''}</div><button ${downCount() ? 'data-tab="portfolio"' : 'data-act="share"'}>${downCount() ? 'View empire' : 'Recruit'}</button>`);
+  setHTML('empireLive', `<div class="body"><span class="eyebrow">${downCount() ? 'Other people’s work' : 'Your first accomplice'}</span><p>${esc(social)}</p>${challenge ? '<p class="muted">' + esc(challenge) + '</p>' : ''}${downCount() ? '<div class="nodes"><span>YOU</span>' + state.down.list.slice(0, 3).map(m => '<span>↳ ' + esc(m.name) + '</span>').join('') + (downCount() > 3 ? '<span>+' + (downCount() - 3) + '</span>' : '') + '</div>' : ''}</div><button data-act="${downCount() ? 'viewEmpire' : 'share'}">${downCount() ? 'View empire' : 'Recruit'}</button>`);
   $('dispatchSection').hidden = !contractsUnlocked();
   $('contractUnlock').hidden = contractsUnlocked() || !contractPermitReady();
   setHTML('contractUnlock', '<div class="up airlock-permit"><div class="permit-door" aria-hidden="true"><i></i><i></i></div><div><span class="permit-label">Early reward · clearance intercepted</span><b>Airlock Permit</b><div class="d">Ninety seconds on the job. Somehow, you passed vetting. Unlock paid delivery contracts: extra credits, no recruits, no deadline.</div><button data-act="unlockDispatch">Claim permit · FREE</button></div></div>');
@@ -2700,16 +2711,16 @@ function render() {
   }
   if (tab === 'portfolio') {
     const ownedTech = GEAR.filter(g => lvl(g.id) > 0);
+    const mainFeed = ownedTech.filter(g => g.dps).reduce((best, g) => !best || c.techShares[g.id] > c.techShares[best.id] ? g : best, null);
     const recorded = Object.values(state.techEarnings || {}).reduce((sum, amount) => sum + amount, 0);
     setHTML('pfTech', `<p class="muted">${state.down.list.length ? 'The part of the empire that actually does the work.' : 'No staff. No applause. The machines still clocked in.'}</p>
       <div class="pfsum asset-summary"><div class="stat"><div class="k">Lifetime earned · all sources</div><div class="v">₵${fmt(state.total)}</div></div><div class="stat"><div class="k">Tech earnings recorded</div><div class="v">₵${fmt(recorded)}</div></div><div class="stat"><div class="k">Your tech / sec · after cuts</div><div class="v">₵${fmt(c.income)}</div></div></div>
       <div class="asset-grid">${ownedTech.map(g => {
         const n = lvl(g.id), share = c.techShares[g.id] || 0;
         const support = g.id === 'pod' ? '×' + (1 + g.valueMul * n).toFixed(1) + ' order value' : '−' + (25 * n) + '% trouble';
-        return `<article class="asset-tile${g.dps ? '' : ' support'}" data-asset="${g.id}"><div class="asset-head">${techIcon(g, false, n).replace('data-ico=', 'data-asset-ico=')}<div><h3>${esc(g.name)}</h3><div class="asset-count">×${n} owned${techDots(n)}</div></div></div>
+        return `<article class="asset-tile${g.dps ? g === mainFeed ? ' primary-asset' : '' : ' support'}" data-asset="${g.id}" style="--asset-share:${clamp(share * 100, 0, 100)}%"><div class="asset-register"><span>REG / ${String(GEAR.indexOf(g) + 1).padStart(2, '0')}</span><span${g === mainFeed ? ' title="Largest share of current tech income"' : ''}>${g.dps ? g === mainFeed ? 'MAIN FEED' : 'PRODUCTION' : 'SUPPORT'}</span></div><div class="asset-head">${techIcon(g, false, n).replace('data-ico=', 'data-asset-ico=')}<div><h3>${esc(g.name)}</h3><div class="asset-count">×${n} owned</div></div></div>
           <div class="asset-earned"><small>${g.dps ? 'Earned · recorded' : 'Support effect'}</small><strong>${g.dps ? '₵' + fmt(state.techEarnings?.[g.id] || 0) : support}</strong></div>
-          <p class="asset-joke">${g.dps ? esc(g.desc) : g.id === 'pod' ? 'Makes every meal worth more. Still no Michelin star.' : 'Fewer incidents. Same miserable city.'}</p>
-          <div class="asset-foot">${g.dps ? '₵' + fmt(c.income * share) + '/s<small>After cuts · ' + (share * 100 < .1 ? '&lt;0.1' : (share * 100).toFixed(1)) + '% of tech income</small>' : '<small>' + (g.id === 'pod' ? 'Boost included in delivery earnings.' : 'Protection equipment. No direct income.') + '</small>'}</div></article>`;
+          <div class="asset-foot" ${g.dps ? 'title="After cuts · share of tech income"' : ''}>${g.dps ? '<span>₵' + fmt(c.income * share) + '/s</span><small>' + (share * 100 < .1 ? '&lt;0.1' : (share * 100).toFixed(1)) + '%</small>' : '<small>' + (g.id === 'pod' ? 'Boosts delivery earnings' : 'No direct income') + '</small>'}</div>${g.dps ? '<div class="asset-meter" aria-hidden="true"><i></i></div>' : ''}</article>`;
       }).join('')}</div>${ownedTech.length ? '' : '<p class="muted">No machinery on the books. Your knees are still doing the accounting.</p>'}
       <p class="muted">Per-tech records start ${dateStr(state.techEarningsSince)}. Automatic earnings after cuts, including offline work. Earlier earnings were not split by tech; they remain in your lifetime total.</p>`);
     const paid = state.down.paid || {}, smp = state.down.samples || {};
@@ -2847,7 +2858,7 @@ document.addEventListener('click', e => {
   const dc = e.target.closest('[data-decree]'); if (dc) return decree(dc.dataset.decree);
   const b = e.target.closest('[data-act]'); if (!b) return;
   e.preventDefault();
-  const act = { shop: openShopDialog, share, voucher, complain, ration: claimRation, rationInfo, cutInfo, refresh: sync, bribe, drone: buyDrone, contracts: buyContracts, seed: seedDemo, wipe: wipeCompany, franchise, withdraw: withdrawOffer, ministry: ministryDialog, rename: renameDialog, unlockDispatch, acceptDispatch, claimDispatch, saveInfo, replayIntro, recoveryCode, restoreCode, previousRecovery }[b.dataset.act];
+  const act = { shop: openShopDialog, share, viewEmpire, voucher, complain, ration: claimRation, rationInfo, cutInfo, refresh: sync, bribe, drone: buyDrone, contracts: buyContracts, seed: seedDemo, wipe: wipeCompany, franchise, withdraw: withdrawOffer, ministry: ministryDialog, rename: renameDialog, unlockDispatch, acceptDispatch, claimDispatch, saveInfo, replayIntro, recoveryCode, restoreCode, previousRecovery }[b.dataset.act];
   if (act) act();
 });
 $('reset').addEventListener('click', e => { e.preventDefault(); ask('Delete your save?', 'This removes the save in this browser. Keep a recovery code first if you want to return to this citizen.', 'DELETE', () => { localStorage.removeItem(KEY); replacingSave = true; location.href = location.pathname; }); });

@@ -13,12 +13,12 @@ start(0,async({srv,url})=>{
   await page.waitForFunction(()=>MUSTEAT.state.id);
   await page.evaluate(()=>{Object.assign(MUSTEAT.state,{gear:{trainers:12,hover:16,drones:7,pod:10,mask:3},upg:{},techEarnings:{},total:1e8,cash:1e6,portfolioUnlocked:true,tab:'portfolio',nextEvent:Date.now()+1e9,crateAt:Date.now()+1e9,told:{gang:Date.now(),rec:Date.now()}});MUSTEAT.render()});
   ok('owned producers and support tech each have a tile',await page.locator('.asset-tile').count()===5);
-  ok('desktop uses a three-column grid',await page.locator('.asset-grid').evaluate(e=>getComputedStyle(e).gridTemplateColumns.split(' ').length===3));
+  ok('desktop uses a four-column grid',await page.locator('.asset-grid').evaluate(e=>getComputedStyle(e).gridTemplateColumns.split(' ').length===4));
   ok('no unowned tech or default sprite images',await page.locator('[data-asset="portal"],.asset-tile img').count()===0);
   ok('support tiles show effects, not invented earnings',/×2.0 order value/.test(await page.locator('[data-asset="pod"]').innerText())&&/−75% trouble/.test(await page.locator('[data-asset="mask"]').innerText()));
   ok('empty social and trophy sections are hidden',await page.locator('#pfRunners').evaluate(e=>e.closest('section').hidden)&&await page.locator('#portfolio').evaluate(e=>e.closest('section').hidden));
   ok('solo invitation recognises the player’s work',/You built all this yourself/.test(await page.locator('#pfEmpire').innerText()));
-  ok('operation scene stays last',await page.locator('#operation').evaluate(e=>e.closest('section')===document.querySelector('#tab-portfolio').lastElementChild));
+  ok('machinery is the last Portfolio section',await page.locator('#pfTech').evaluate(e=>e.closest('section')===document.querySelector('#tab-portfolio').lastElementChild));
   const before=await page.evaluate(()=>({total:MUSTEAT.state.total,tracked:Object.values(MUSTEAT.state.techEarnings).reduce((a,b)=>a+b,0)}));
   await page.waitForTimeout(500);
   const after=await page.evaluate(()=>({total:MUSTEAT.state.total,tracked:Object.values(MUSTEAT.state.techEarnings).reduce((a,b)=>a+b,0)}));
