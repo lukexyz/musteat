@@ -106,6 +106,10 @@ function fmt(n) {
 const ago = ts => { const s = Math.max(0, (Date.now() - ts) / 1000); return s < 90 ? 'just now' : s < 3600 ? Math.round(s / 60) + 'm ago' : s < 86400 ? Math.round(s / 3600) + 'h ago' : Math.round(s / 86400) + 'd ago'; };
 const RANKS = ['Runner', 'Shop Owner', 'District Overlord', 'Regional Nutrient Baron', 'Supreme Ministry of Eating'];
 const qs = new URLSearchParams(location.search);
+const returnParams = new URLSearchParams();
+if (qs.get('slot')) returnParams.set('slot', qs.get('slot'));
+if (qs.has('dev')) returnParams.set('dev', '');
+document.querySelectorAll('a[href="index.html"]').forEach(link => { link.href = 'index.html' + (returnParams.size ? '?' + returnParams.toString() : ''); });
 let order = qs.get('order') === 'total' ? 'total' : 'pace';
 let minute = Number(qs.get('minute'));
 function mySave() { try { return JSON.parse(localStorage.getItem('musteat_save' + (qs.get('slot') ? '_' + qs.get('slot') : ''))) || {}; } catch (e) { return {}; } }

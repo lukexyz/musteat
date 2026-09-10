@@ -44,6 +44,14 @@ h1 .logo{display:block;height:.72em;width:auto;mix-blend-mode:screen;margin:.24e
 @media(prefers-reduced-motion:reduce){.lockdown-digit.tick::before{display:none}}
 .rankbox{align-self:flex-start;text-align:left;font-size:12px;color:var(--dim)}
 .rankbox b{display:block;font-size:14px;color:var(--gold)}
+.stat.news-card{min-width:0;background:var(--panel)}
+.news-head{display:flex;align-items:flex-start}.news-head .k{font-size:8px;letter-spacing:.4px;line-height:1.35;color:var(--dim)}
+.news-label{flex:1;min-width:0;overflow:hidden;white-space:nowrap;border:1px solid var(--line);padding:2px 0}.news-track{display:flex;width:max-content;animation:federation-marquee 45s linear infinite}.news-track>span{flex-shrink:0;padding:0 24px 0 6px}
+@keyframes federation-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.federation-news{position:relative;font-size:11px;line-height:1.4;margin-top:6px;min-height:4.2em;color:#c7d2d4;overflow-wrap:break-word}
+.news-char{opacity:0}.news-caret{position:absolute;width:6px;height:1em;background:#f5fff9;box-shadow:0 0 4px #e8fff75c;pointer-events:none}.news-rabbit{position:absolute;width:14px;height:14px;color:#f5fff9;filter:drop-shadow(0 0 2px #e8fff760);pointer-events:none;opacity:0}.news-rabbit svg{display:block;width:100%;height:100%}
+.news-end-caret{color:#fff;font-weight:900;-webkit-text-stroke:.6px #fff;text-shadow:0 0 2px #ffffffa0,0 0 5px #ffffff45;animation:news-underscore 2.8s step-end infinite}
+@keyframes news-underscore{0%,100%{opacity:1}55%{opacity:0}}
 .banner{margin:10px 0 0;padding:8px 10px;border:1px dashed var(--warn);color:#ffb3c0;font-size:13px}
 .banner.good{border-color:var(--acc);color:#bfffb0}
 details.banner{padding:0;border-color:transparent}
@@ -157,6 +165,16 @@ td.r,th.r{text-align:right}
 .feed div i{color:var(--dim);font-style:normal;font-size:11px;margin-left:6px}
 .link{font-size:12px;word-break:break-all;background:#000;border:1px solid var(--line);padding:6px;margin-top:6px;color:var(--blue)}
 footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
+.footer-links{display:flex;align-items:center;justify-content:center;gap:12px 20px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.footer-utilities{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 14px}
+.footer-scores{position:relative;isolation:isolate;overflow:hidden;display:inline-flex;align-items:center;gap:6px;border:1px solid #4a8d40;border-radius:999px;padding:3px 8px;background:linear-gradient(120deg,#39ff1410,#081009);color:var(--acc);text-decoration:underline;font:inherit;letter-spacing:inherit;transition:border-color .2s,box-shadow .2s,background-color .2s}
+.footer-scores::before{content:'';position:absolute;inset:-40% -20%;z-index:-1;pointer-events:none;background:linear-gradient(110deg,transparent 35%,#b5ffa729 48%,#d9ffd344 50%,transparent 63%);transform:translateX(-110%)}
+.footer-scores:hover,.footer-scores:focus-visible{border-color:#a1f18b;color:#d5ffc7;background-color:#163014;box-shadow:inset 0 0 14px #39ff1410,0 0 15px #39ff1420}
+.footer-scores:hover::before,.footer-scores:focus-visible::before{animation:footer-score-scan 650ms ease-out both}
+.footer-scores:focus-visible{outline:2px solid #b9f9a9;outline-offset:4px}.footer-scores span{color:#83b878}
+#localtools:empty{display:none}#localtools{display:inline-flex;gap:14px}
+@keyframes footer-score-scan{from{transform:translateX(-110%)}to{transform:translateX(110%)}}
+@media(max-width:520px){.footer-utilities{flex-basis:100%}}
 .visual-settings{margin-top:12px}.visual-settings button{font-size:11px;padding:6px 10px;color:var(--dim)}
 .visual-settings button[aria-pressed="true"]{color:var(--blue);border-color:#367785}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
@@ -336,6 +354,9 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .terminal-letter.terminal-boot{animation:terminal-boot 160ms ease-out 3}
 .target-rabbit{position:absolute;z-index:5;pointer-events:none;color:#f5ffff;filter:drop-shadow(0 0 3px #eaffffb0);opacity:0}
 .target-rabbit svg{display:block;width:100%;height:100%}
+.crate-payout{color:#d7adff;background:#9d63d51a;border-bottom:1px solid #80599e;padding:1px 4px;text-shadow:0 0 9px #b77ce43b}
+.crate-note{margin:22px 0;color:#e0e6e3}.crate-note b{color:#fff}
+.box:has(.crate-note) .target-caret{background:#effff4;box-shadow:0 0 4px #e8fff780,0 0 9px #e8fff726}
 @keyframes terminal-boot{0%,100%{border-color:#437a53;box-shadow:inset 0 0 35px #0005,0 0 18px #39ff1418}35%{border-color:#c7ffda;box-shadow:inset 0 0 28px #8aff9c12,0 0 30px #39ff1440}}
 .white-rabbit{position:absolute;inset:0;z-index:5;pointer-events:none;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at center,#071110ee,transparent 68%);animation:rabbit-transmission 1s linear both}
 .rabbit-signal{position:relative;width:min(260px,65%);aspect-ratio:1;filter:drop-shadow(0 0 8px #ecffff80) drop-shadow(0 0 28px #89f8d845);animation:rabbit-lock 1s ease-out both}
@@ -358,6 +379,8 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .operation .route{position:absolute;bottom:24px;left:0;right:0;border-top:1px dashed #35533d}.operation .airlock{position:absolute;right:14px;bottom:25px;height:50px;width:35px;border:2px solid #466a50;border-bottom:none;background:#0b1310;box-shadow:inset 0 0 12px #39ff1420}.operation .airlock::after{content:'';position:absolute;left:14px;top:5px;bottom:0;border-left:1px solid #466a50}
 .operation .courier{position:absolute;bottom:24px;left:-50px;width:40px;height:32px;color:var(--acc);animation:delivery-route 8s linear infinite}.operation .courier.second{animation-delay:-4s;opacity:.5}.operation .courier.air{bottom:42px;color:var(--blue)}
 .operation .scene-foot{position:absolute;bottom:4px;left:12px;right:12px;display:flex;justify-content:space-between;font-size:9px;letter-spacing:1px;color:var(--dim)}
+.scene-taunt{position:relative;z-index:1;margin-top:3px;max-width:calc(100% - 44px);font-size:11px;line-height:1.4;color:#b09abf}
+.focus-grid .operation:has(.scene-taunt){height:auto;min-height:145px;padding-bottom:80px}
 @keyframes delivery-route{0%{left:-50px;opacity:0}8%{opacity:1}85%{opacity:1}100%{left:calc(100% - 35px);opacity:0}}
 .empire-live{border-left:2px solid var(--gold);background:var(--panel);padding:10px 12px;margin-bottom:14px;display:flex;align-items:center;gap:14px}.empire-live .body{flex:1;min-width:0}.empire-live p{font-size:12px;margin:3px 0}.empire-live .nodes{display:flex;flex-wrap:wrap;gap:4px;margin:7px 0 0}.empire-live .nodes span{font-size:10px;border:1px solid var(--line);padding:2px 5px;color:var(--gold)}.empire-live button{font-size:11px}
 .rush-clock{color:var(--gold);border:1px solid #76602d;background:#211e10;padding:7px 10px;margin:8px auto 0;max-width:440px;font-size:13px}.rush-clock b{font-size:18px;color:#fff}
@@ -412,7 +435,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 <body>
 <div class="wrap">
   <header>
-    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 2099. Lockdown day <span id="lockdownDay">336,041</span>. Going outside is illegal. <span class="survival-line">Survivors must eat<span class="survival-cursor" aria-hidden="true"></span></span></div></div>
+    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 2099. Lockdown day <span id="lockdownDay">342,483</span>. Going outside is illegal. <span class="survival-line">To survive.. you must eat<span class="survival-cursor" aria-hidden="true"></span></span></div></div>
     <div class="rankbox" id="rank"></div>
   </header>
   <div id="supply" class="banner good" hidden></div>
@@ -420,7 +443,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
     <div class="stat"><div class="k">Credits</div><div class="v" id="cash">0</div></div>
     <div class="stat"><div class="k">Per second</div><div class="v"><span id="ips">0</span><button id="cut" class="help" data-act="cutInfo" hidden></button></div></div>
     <div class="stat"><div class="k">Deliveries</div><div class="v" id="deliv">0</div></div>
-    <div class="stat"><div class="k">Zone</div><div class="v small" id="zone"></div></div>
+    <div class="stat news-card" id="newsCard"><div class="news-head"><div class="k news-label" title="News ticker from the Federation"><span class="news-track"><span>News ticker from the Federation</span><span aria-hidden="true">News ticker from the Federation</span></span></div></div><div id="federationNews" class="federation-news" aria-live="off"></div></div>
   </section>
   <nav class="tabs"><button id="tabRunB" class="on" data-tab="run">OPERATIONS</button><button id="tabPfB" data-tab="portfolio"><span id="pfLock" aria-hidden="true"></span>PORTFOLIO <span id="pfN"></span><svg id="pfProgress" class="pf-progress" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6"/><circle class="fill" cx="8" cy="8" r="6" pathLength="100"/></svg></button></nav>
   <div id="tab-run">
@@ -453,7 +476,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <section><h2>Your operation</h2><div class="focus-grid"><div id="operation" class="operation"></div></div><p class="muted">Your delivery business in motion. Buy technology in Operations to grow it.</p></section>
   <section class="asset-section"><h2>Your machinery</h2><div id="pfTech"></div></section>
   </div>
-  <footer>MustEat is a game. Please do not start an actual pyramid scheme. · <span id="mode"></span> · <a href="ledger.html" target="_blank">high scores</a> · <a href="#" data-act="saveInfo">save game</a> · <a href="#" data-act="replayIntro">replay intro</a> · <a href="#" id="reset">reset game</a> <span id="localtools"></span><div class="visual-settings"><button id="techIconsToggle" type="button" aria-pressed="false">Tech icons: off</button></div></footer>
+  <footer><div>MustEat is a game. Please do not start an actual pyramid scheme. · <span id="mode"></span></div><div class="visual-settings"><button id="techIconsToggle" type="button" aria-pressed="false">Tech icons: off</button></div><nav class="footer-links" aria-label="Game links"><a class="footer-scores" href="ledger.html" target="_blank">high scores <span aria-hidden="true">↗</span></a><div class="footer-utilities"><a href="#" data-act="saveInfo">save game</a><a href="#" data-act="replayIntro">replay intro</a><a href="#" id="reset">reset game</a><span id="localtools"></span></div></nav></footer>
 </div>
 <button id="protectionTab" class="protection-tab" aria-controls="protectionDrawer" aria-expanded="false" hidden>Protection · −15%</button>
 <div id="drawerShade" class="drawer-shade" hidden></div>
@@ -527,8 +550,19 @@ const CONFIG = {
 'use strict';
 
 const qs = new URLSearchParams(location.search);
+// A fresh-start link gets its own save and becomes a resumable URL before loading.
+if (qs.get('game') === 'new') {
+  qs.set('slot', 'game-' + [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join(''));
+  qs.delete('game');
+  history.replaceState(history.state, '', location.pathname + '?' + qs.toString() + location.hash);
+}
 const SLOT = qs.get('slot') || '';
 const KEY = CONFIG.SAVE_KEY + (SLOT ? '_' + SLOT : '');
+const instanceParams = new URLSearchParams();
+if (SLOT) instanceParams.set('slot', SLOT);
+if (qs.has('dev')) instanceParams.set('dev', '');
+const instanceQuery = instanceParams.size ? '?' + instanceParams.toString() : '';
+document.querySelector('footer a[href="ledger.html"]').href = 'ledger.html' + instanceQuery;
 let aliasPreview = ''; // Registration preview only; do not save an unfinished citizen.
 const $ = id => document.getElementById(id);
 const now = () => Date.now();
@@ -538,6 +572,114 @@ const uid = p => (p || '') + Math.random().toString(36).slice(2, 10);
 const playerId = () => 'p' + [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join('');
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const H = 3600000;
+
+// Short neutral-text broadcasts. Conditions prevent stale tax jokes.
+const FEDERATION_NEWS = [
+  ['Federation confirms: hope is not tax-deductible.'],
+  ['Gravity privatised. Falling now requires a deposit.'],
+  ['Local man deletes ladder. Pool denies involvement.'],
+  ['Simulation denies lag. Citizens told to blink faster.'],
+  ['New patch removes free will. Most users unaffected.'],
+  ['The cake exists. Your clearance does not.'],
+  ['Support ticket closed: citizen stopped responding.'],
+  ['Clones demand birthdays. HR authorises one cake.'],
+  ['Your fridge has filed for custody of the leftovers.'],
+  ['Toaster elected mayor. Promises warmer policies.'],
+  ['Ministry bans ghosts for occupying untaxed space.'],
+  ['Doorbell update now screams your outstanding balance.'],
+  ['Federation declares rain a premium delivery feature.'],
+  ['Elevator achieves sentience. Still avoids your floor.'],
+  ['New census counts citizens by resale value.'],
+  ['Public park replaced by a picture of a public park.'],
+  ['Oxygen trial ends tonight. Please exhale responsibly.'],
+  ['Therapist bot recommends turning society off and on.'],
+  ['Bunker opens window. Entire neighbourhood unsubscribes.'],
+  ['Meal found with texture. Inspectors called.'],
+  ['Scientists discover a third emotion. It costs extra.'],
+  ['Drone loses parcel. Finds itself. Keeps both.'],
+  ['Soup remembers your face. Police request an interview.'],
+  ['Mandatory joy postponed due to lack of volunteers.'],
+  ['Citizen promoted to emergency contact for a vending machine.'],
+  ['Ministry replaces sunrise with a loading screen.'],
+  ['Your smart bin has accepted a better offer.'],
+  ['Neighbour removes wall to improve mood. Air sold separately.'],
+  ['Lunch recalled after testing positive for breakfast.'],
+  ['Federation promises transparency. Installs more cameras.'],
+  ['Witness protection now includes a loyalty programme.'],
+  ['Coworker trapped in doorway. Productivity unchanged.'],
+  ['Reality briefly restored. Nobody saved their work.'],
+  ['Time-loop kitchen serves yesterday. Again. Freshly.'],
+  ['Federation approves a shorter word for hunger: work.'],
+  ['Your boss earned money. You did the exercise.', 'recruiter'],
+  ['Ten percent of your effort has a nicer address.', 'recruiter'],
+  ['Recruiter calls your tax passive income. You feel active.', 'recruiter'],
+  ['You carried the meal. Your boss carried the decimal.', 'recruiter'],
+  ['Federation thanks you for funding somebody else.', 'recruiter'],
+  ['Sector 7 reports record safety. Also record threats.', 'gang'],
+  ['Your 15% protection fee protects their lifestyle.', 'gang'],
+  ['Gang announces loyalty scheme. The reward is tomorrow.', 'gang'],
+  ['Sector 7 sends regards. Regards cost fifteen percent.', 'gang'],
+  ['Protection payment received. Threat remains operational.', 'gang'],
+  ['Social ladder inspection: you are the floor.', 'solo'],
+  ['Your empire has one employee. Their morale is you.', 'solo'],
+  ['Federation ranks you beneath the office furniture.', 'solo'],
+  ['No runners found. Management has blamed management.', 'solo'],
+  ['You are the entire org chart. Please stop scrolling.', 'solo'],
+];
+let newsCurrent = -1, newsChangedAt = 0, newsBag = [];
+let cancelNewsTransmission = () => {};
+function typeFederationHeadline(output, text) {
+  cancelNewsTransmission();
+  text = text.replace(/\.$/, '');
+  const showFinished = () => {
+    const underscore = document.createElement('span');
+    underscore.className = 'news-end-caret'; underscore.textContent = '_'; underscore.setAttribute('aria-hidden', 'true');
+    output.replaceChildren(document.createTextNode(text), underscore);
+  };
+  showFinished();
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || document.hidden) return;
+  output.replaceChildren();
+  const chars = [...text].map(char => { const span = document.createElement('span'); span.className = 'news-char'; span.textContent = char; output.appendChild(span); return span; });
+  const caret = document.createElement('span'); caret.className = 'news-caret'; caret.setAttribute('aria-hidden', 'true');
+  const rabbit = document.createElement('span'); rabbit.className = 'news-rabbit'; rabbit.setAttribute('aria-hidden', 'true');
+  rabbit.innerHTML = `<svg viewBox="0 0 160 150" focusable="false">${whiteRabbitShape()}</svg>`;
+  output.append(caret, rabbit);
+  const start = performance.now(), boot = 520, typing = clamp(chars.length * 5, 180, 320);
+  let frame = 0, shown = 0;
+  const finish = () => { cancelAnimationFrame(frame); showFinished(); cancelNewsTransmission = () => {}; };
+  cancelNewsTransmission = finish;
+  const draw = () => {
+    const elapsed = performance.now() - start;
+    if (document.hidden || !output.isConnected || !chars[0]?.isConnected || matchMedia('(prefers-reduced-motion: reduce)').matches || elapsed >= boot + typing) return finish();
+    const count = Math.floor(clamp((elapsed - boot) / typing, 0, 1) * chars.length);
+    while (shown < count) chars[shown++].style.opacity = '1';
+    const anchor = chars[Math.min(count, chars.length - 1)].getBoundingClientRect(), rect = output.getBoundingClientRect();
+    const left = Math.min(anchor.left - rect.left, output.clientWidth - 6), top = anchor.top - rect.top;
+    const flash = elapsed < boot && [90,350].some(at => elapsed >= at && elapsed < at + 55);
+    caret.style.cssText = `left:${left}px;top:${top}px;opacity:${flash ? 0 : elapsed < boot ? Math.floor(elapsed / 130) % 2 ? 0 : 1 : 1}`;
+    rabbit.style.cssText = `left:${left - 4}px;top:${top - 1}px;opacity:${flash ? 1 : 0}`;
+    frame = requestAnimationFrame(draw);
+  };
+  draw();
+}
+function renderFederationNews(c) {
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced || document.hidden) cancelNewsTransmission();
+  const eligible = FEDERATION_NEWS.map((entry, i) => i).filter(i => {
+    const kind = FEDERATION_NEWS[i][1];
+    return !kind || (kind === 'recruiter' && c.tax > 0) || (kind === 'gang' && c.gang > 0) || (kind === 'solo' && !state.down.list.length && c.rank <= 1);
+  });
+  // State changes must not cut short the time allowed to read a headline.
+  if (newsCurrent >= 0 && (reduced || document.hidden || now() - newsChangedAt < 45000)) return;
+  newsBag = newsBag.filter(i => eligible.includes(i) && i !== newsCurrent);
+  if (!newsBag.length) {
+    newsBag = eligible.filter(i => i !== newsCurrent);
+    for (let i = newsBag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [newsBag[i], newsBag[j]] = [newsBag[j], newsBag[i]]; }
+  }
+  newsCurrent = newsBag.pop(); newsChangedAt = now();
+  const output = $('federationNews'); output.dataset.headline = newsCurrent;
+  typeFederationHeadline(output, FEDERATION_NEWS[newsCurrent][0]);
+}
 
 function fmt(n) {
   n = Number(n) || 0;
@@ -1253,12 +1395,14 @@ function crateOpen(el, x, y, big, text) {
 }
 
 function showFirstCrate(bonus) {
-  modal(`<h3>📦 Unmarked ration crate</h3>
-    <p>It was sitting in the airlock. No label, no sender, no questions. Inside: <b>₵${fmt(bonus)}</b> and a note. The note says <b>eat</b>.</p>
+  modal(`<h3 class="crate-heading">📦 Unmarked ration crate</h3>
+    <p>It was sitting in the airlock. No label, no sender, no questions. Inside: <b class="crate-payout">₵${fmt(bonus)}</b> and a note.</p>
+    <p class="crate-note">The note says <b>eat</b>.</p>
     <p>Also, somehow, a <b>Lunch Rush</b>: income ×7 for 77 seconds. The clock starts when you press TAKEN. Buy tech, then watch it work.</p>
     <p class="muted">Crates like this fall every few minutes while the tab is open. Cash, lunch rushes, panic buying. Nobody is watching. Take them.</p>
     <button id="ok" class="big2">TAKEN</button>`);
   $('ok').onclick = () => { state.pendingRush = null; state.fx.rush = now() + 77000; closeModal(); save(); render(); };
+  viewTarget('#modalBox', '.crate-heading, .crate-note', {dialog:true,fast:true,rabbit:true,blockBoot:true});
 }
 
 // ---------------- The reveal ----------------
@@ -2035,14 +2179,28 @@ function viewTarget(selector, copySelector, options = {}) {
       rabbit.innerHTML = `<svg viewBox="0 0 160 150" focusable="false">${whiteRabbitShape()}</svg>`; target.appendChild(rabbit);
     }
     const blinkTime = options.rabbit && !reduced ? 950 : options.fast ? 480 : 1260, typeTime = options.fast ? clamp(chars.length * 3, 700, 1800) : clamp(chars.length * 12, 1400, 4600);
-    const count = Math.floor(clamp((elapsed - blinkTime) / typeTime, 0, 1) * chars.length);
+    let count = Math.floor(clamp((elapsed - blinkTime) / typeTime, 0, 1) * chars.length);
+    let blinkElapsed = elapsed, blinking = elapsed < blinkTime, tail = clamp((elapsed - blinkTime - typeTime) / 700, 0, 1);
+    if (options.blockBoot) {
+      let offset = 0, before = 0;
+      for (let i = 0; i < blocks.length; i++) {
+        const length = blocks[i].querySelectorAll('.target-char').length;
+        const typing = clamp(length * 18, 260, 850), end = offset + blinkTime + typing;
+        if (elapsed < end || i === blocks.length - 1) {
+          blinkElapsed = elapsed - offset; blinking = blinkElapsed < blinkTime;
+          count = before + Math.floor(clamp((blinkElapsed - blinkTime) / typing, 0, 1) * length);
+          tail = i === blocks.length - 1 ? clamp((elapsed - end) / 700, 0, 1) : 0;
+          break;
+        }
+        before += length; offset = end;
+      }
+    }
     while (revealed < count) chars[revealed++].classList.add('shown');
     const cursorRect = chars[Math.min(count, chars.length - 1)].getBoundingClientRect();
-    const blinking = elapsed < blinkTime, tail = clamp((elapsed - blinkTime - typeTime) / 700, 0, 1);
     const left = clamp(cursorRect.left - rect.left - target.clientLeft + target.scrollLeft, 0, target.clientWidth - 8);
-    caret.style.cssText = `left:${left}px;top:${cursorRect.top - rect.top - target.clientTop + target.scrollTop}px;height:${cursorRect.height || 16}px;opacity:${blinking ? Math.floor(elapsed / (blinkTime / 6)) % 2 ? .05 : 1 : 1 - tail};filter:blur(${blinking ? 3.5 * (1 - elapsed / blinkTime) : 0}px)`;
+    caret.style.cssText = `left:${left}px;top:${cursorRect.top - rect.top - target.clientTop + target.scrollTop}px;height:${cursorRect.height || 16}px;opacity:${blinking ? Math.floor(blinkElapsed / (blinkTime / 6)) % 2 ? .05 : 1 : 1 - tail};filter:blur(${blinking ? 3.5 * (1 - blinkElapsed / blinkTime) : 0}px)`;
     // Two 65ms interruptions in the three-blink boot: same anchor, text-sized silhouette.
-    const rabbitFlash = blinking && [blinkTime * .22, blinkTime * .55].some(at => elapsed >= at && elapsed < at + 65);
+    const rabbitFlash = blinking && [blinkTime * .22, blinkTime * .55].some(at => blinkElapsed >= at && blinkElapsed < at + 65);
     const rabbitSize = Math.min(24, Math.max(16, cursorRect.height || 16));
     rabbit.style.cssText = `left:${left + 4 - rabbitSize / 2}px;top:${cursorRect.top - rect.top - target.clientTop + target.scrollTop}px;width:${rabbitSize}px;height:${rabbitSize}px;opacity:${rabbitFlash ? 1 : 0}`;
     if (rabbitFlash) caret.style.opacity = '0';
@@ -2063,6 +2221,25 @@ function pursueGoal() {
 function techDots(count) {
   return count > 0 ? '<span class="tech-dots" aria-hidden="true">' + '<i></i>'.repeat(Math.min(50, Math.floor(count))) + '</span>' : '';
 }
+const OPERATION_TAUNTS = [
+  'Really? What were you thinking...',
+  'An expense account is not a personality.',
+  'Somebody approved this. It was you.',
+  'You paid actual credits for this.',
+  'This is why the Ministry watches you.',
+  'Your accountant has stopped blinking.',
+  "Bold choice. No, that is all we have got.",
+  "The receipt says 'cry for help'.",
+  'At least the debt believes in you.',
+  'Your ambition is not repossessable. Yet.',
+  'Your business plan appears to be a dare.',
+  'Please stop calling this an empire.',
+  'The warranty covers disappointment.',
+  'Somewhere, a salesman is still laughing.',
+  'More of these will fix you. Obviously.',
+  'Management has investigated itself.',
+];
+let operationTauntTech = null, operationTauntText = '';
 function renderFocus(c) {
   $('firstTechHint').hidden = gearTotal(state) > 0 || state.retirements > 0;
   $('nextGoal').hidden = !!state.dispatch.active;
@@ -2075,6 +2252,10 @@ function renderFocus(c) {
   if ($('goalProgress')) $('goalProgress').style.width = clamp(100 * state.cash / cost, 0, 100) + '%';
   // Most copies owned wins; ties stay in technology-list order.
   const top = GEAR.reduce((best, tech) => lvl(tech.id) > (best ? lvl(best.id) : 0) ? tech : best, null);
+  if ((top?.id || null) !== operationTauntTech) {
+    operationTauntText = top ? top.id === 'hover' && !operationTauntTech ? OPERATION_TAUNTS[0] : rnd(OPERATION_TAUNTS.filter(text => text !== operationTauntText)) : '';
+    operationTauntTech = top?.id || null;
+  }
   const tier = top ? GEAR.indexOf(top) : -1;
   const shapes = [
     '<circle cx="21" cy="5" r="3"/><path d="M21 10l-5 9 8 4 3 8M16 19l-6 11M20 12l7 5h7M19 12l-8 5"/>',
@@ -2093,7 +2274,7 @@ function renderFocus(c) {
   const shape = shapes[Math.max(0, tier)];
   const courier = cls => `<svg class="courier ${cls}" viewBox="0 0 40 34" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">${shape}</svg>`;
   const airborne = top && top.dps && tier >= 2;
-  setHTML('operation', `<span class="eyebrow">${esc(state.shop ? state.shop.name : 'One citizen. One delivery bag.')}</span><div class="scene-name"><span>${esc(top ? 'Best tech: ' + top.name : 'You are the entire operation')}${top ? '<span class="lvl">×' + lvl(top.id) + '</span>' : ''}</span>${top ? techDots(lvl(top.id)) : ''}</div><div class="district" aria-hidden="true"></div><div class="route" aria-hidden="true"></div><div class="airlock" aria-hidden="true"></div>${courier(airborne ? 'air' : '')}${tier >= 1 ? courier('second ' + (airborne ? 'air' : '')) : ''}<div class="scene-foot"><span>Zone: ${esc(ZONES[c.zone].name)}</span><span>${fmt(c.dps)} deliveries/s</span></div>`);
+  setHTML('operation', `<span class="eyebrow">${esc(state.shop ? state.shop.name : 'One citizen. One delivery bag.')}</span><div class="scene-name"><span>${esc(top ? 'Best tech: ' + top.name : 'You are the entire operation')}${top ? '<span class="lvl">×' + lvl(top.id) + '</span>' : ''}</span>${top ? techDots(lvl(top.id)) : ''}</div>${top ? '<div class="scene-taunt">' + esc(operationTauntText) + '</div>' : ''}<div class="district" aria-hidden="true"></div><div class="route" aria-hidden="true"></div><div class="airlock" aria-hidden="true"></div>${courier(airborne ? 'air' : '')}${tier >= 1 ? courier('second ' + (airborne ? 'air' : '')) : ''}<div class="scene-foot"><span>Zone: ${esc(ZONES[c.zone].name)}</span><span>${fmt(c.dps)} deliveries/s</span></div>`);
   const latest = state.lastSocial;
   const sector = world.sectors.find(s => s.dept === state.dept);
   let challenge = '';
@@ -2309,7 +2490,8 @@ function saveInfo() {
     <p>Playing as <b>${esc(state.name || 'Unregistered')}</b>${state.shop ? ' of <b>' + esc(state.shop.name) + '</b>' : ''}.</p>
     <p class="muted">Citizen ID: <b style="overflow-wrap:anywhere">${esc(state.id || 'Assigned when you register')}</b></p>
     <p>Your progress resumes automatically when you return to this address in this browser profile. The company and leaderboard are shared; your credits, technology and purchases belong to this citizen.</p>
-    <p class="muted">${location.protocol === 'file:' ? 'You opened a local file. Its save is separate from the live website, and file saves depend on browser behaviour. Use the hosted game for regular play.' : 'Saved for ' + esc(location.origin) + (SLOT ? ' · test slot ' + esc(SLOT) : '') + '.'} A different browser, device or website address has its own save. Clearing browser data removes this copy.</p>
+    <p class="muted">${location.protocol === 'file:' ? 'You opened a local file. Its save is separate from the live website, and file saves depend on browser behaviour. Use the hosted game for regular play.' : 'Saved for ' + esc(location.origin) + (SLOT ? ' · separate game instance' : '') + '.'} A different browser, device or website address has its own save. Clearing browser data removes this copy.</p>
+    ${SLOT ? '<p class="muted">Bookmark <a href="' + esc(location.pathname + instanceQuery) + '">this game instance</a> to return to this citizen. The README Play link starts another new game.</p>' : ''}
     <p class="muted">Your citizen ID and invite code identify you; they are not recovery passwords.</p>
     <div class="row"><button data-act="recoveryCode" ${state.id ? '' : 'disabled'}>Create recovery code</button><button data-act="restoreCode">Restore from code</button></div>
     ${hasPrevious ? '<button class="help" data-act="previousRecovery">Recover the local save replaced last time</button>' : ''}
@@ -2534,7 +2716,8 @@ function render() {
   const cutB = $('cut'); cutB.hidden = c.keep >= 1;
   if (c.keep < 1) { const ct = '(−' + Math.round((1 - c.keep) * 100) + '%)'; if (cutB.textContent !== ct) { cutB.textContent = ct; cutB.title = 'Why minus ' + Math.round((1 - c.keep) * 100) + '%? Click.'; } }
   $('deliv').textContent = fmt(Math.floor(state.deliveries));
-  $('zone').textContent = ZONES[c.zone].name + (c.outbreak ? ' (fallback)' : c.supply.plant ? ' (via plant)' : '');
+  $('newsCard').title = 'Current zone: ' + ZONES[c.zone].name + (c.outbreak ? ' (fallback)' : c.supply.plant ? ' (via plant)' : '');
+  renderFederationNews(c);
   const r = RANKS[c.rank]; const next = RANKS[c.rank + 1];
   setHTML('rank', `<b class="${state.ach.complete ? 'gilded' : ''}" ${state.ach.complete ? 'title="Every upgrade. Every single one. The name is gold now."' : ''}>${esc(state.name || aliasPreview || 'Unknown Citizen')} <a href="#" data-act="rename" title="Rename yourself or your shop. Your code and runners stay.">✎</a></b>${r.name}${state.dept ? ' · ' + esc(state.dept) : ''} · ×${r.mul} income` +
     (next ? `<br>${state.shop ? downCount() + '/' + next.need + ' runners to ' + next.name : 'Open a shop to rank up'}` : '<br>There is nothing above you.'));
@@ -2817,7 +3000,7 @@ function render() {
 
   setHTML('log', state.log.map(e => `<div>${e.text}</div>`).join(''));
   $('mode').textContent = CONFIG.SHEET_API ? 'connected to the company sheet' : 'local sheet (this browser only; invite links open as new players here)';
-  setHTML('localtools', CONFIG.SHEET_API ? '' : ' · <a href="#" data-act="seed">seed demo company</a> · <a href="#" data-act="wipe">wipe company</a>');
+  setHTML('localtools', CONFIG.SHEET_API ? '' : '<a href="#" data-act="seed">seed demo company</a><a href="#" data-act="wipe">wipe company</a>');
   renderDepartmentEvents();
 }
 
@@ -2861,7 +3044,7 @@ document.addEventListener('click', e => {
   const act = { shop: openShopDialog, share, viewEmpire, voucher, complain, ration: claimRation, rationInfo, cutInfo, refresh: sync, bribe, drone: buyDrone, contracts: buyContracts, seed: seedDemo, wipe: wipeCompany, franchise, withdraw: withdrawOffer, ministry: ministryDialog, rename: renameDialog, unlockDispatch, acceptDispatch, claimDispatch, saveInfo, replayIntro, recoveryCode, restoreCode, previousRecovery }[b.dataset.act];
   if (act) act();
 });
-$('reset').addEventListener('click', e => { e.preventDefault(); ask('Delete your save?', 'This removes the save in this browser. Keep a recovery code first if you want to return to this citizen.', 'DELETE', () => { localStorage.removeItem(KEY); replacingSave = true; location.href = location.pathname; }); });
+$('reset').addEventListener('click', e => { e.preventDefault(); ask('Delete your save?', 'This removes the save in this browser. Keep a recovery code first if you want to return to this citizen.', 'DELETE', () => { localStorage.removeItem(KEY); replacingSave = true; location.href = location.pathname + instanceQuery; }); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && !replacingSave) { save(); Sheet.flush(); } });
 if (qs.has('dev')) window.MUSTEAT = { get state() { return state; }, calc, GEAR, UPGRADES, ACH, gearCost, buy, buyUpgrade, runDelivery, collectCrate, frame, save, sync, franchise, render, rowOf, readPace, rankedScores, paceColumns, unlockDispatch, acceptDispatch, claimDispatch, offline, encodeRecovery, decodeRecovery, claimRation, nextRationAt };
 window.addEventListener('beforeunload', () => { if (!replacingSave) { save(); Sheet.flush(); } });
