@@ -532,6 +532,7 @@ const CONFIG = {
   RATION_MAX_M: 15,
   DECREE_H: 24,               // hours between Ministry decrees
   DECREE_MIN: 10,             // minutes a decree lasts
+  SUPPLY_HIDE_M: 10,          // minutes of play the closed supply-chain banner stays closed
   OFFLINE_FULL_H: 8,
   OFFLINE_HALF_H: 24,
   CUTS: [0.10, 0.05, 0.025],  // share of level 1/2/3 downline lifetime earnings
@@ -1039,7 +1040,7 @@ function fresh() {
     played: 0, pace: {},       // active seconds; immutable lifetime-earnings snapshots at each complete minute
     dispatch: { unlocked: false, done: 0, active: null }, lastSocial: null, pendingRush: null,
     told: {},                  // when the recruiter (rec) and the gang (gang) were revealed, so it happens once
-    supplySeen: '',            // the supply-chain notice the player closed, by its perk list, so a new building shows it again once
+    supplySeen: null,          // { perks, at }: the supply-chain notice the player closed and the played second it happened; it returns after SUPPLY_HIDE_M minutes of play, or sooner once a new building changes the list
   };
 }
 function load() {
@@ -1055,6 +1056,7 @@ function load() {
     if (s.portfolioUnlocked == null) m.portfolioUnlocked = portfolioReady(m) || !!m.shop;
     if (!m.pace || typeof m.pace !== 'object' || Array.isArray(m.pace)) m.pace = {};
     if (!m.dispatch || typeof m.dispatch !== 'object') m.dispatch = { done: 0, active: null };
+    if (!m.supplySeen || typeof m.supplySeen !== 'object') m.supplySeen = null;
     return m;
   } catch (e) { return null; }
 }
@@ -1915,10 +1917,11 @@ function cutInfo() {
   $('ok').onclick = closeModal;
   if ($('toShop')) $('toShop').onclick = () => { closeModal(); $('shop').scrollIntoView({ block: 'center', behavior: 'smooth' }); };
 }
-// The supply-chain banner lists what the buildings above you do for you. Closing it remembers that exact
-// list, so a new building (or a new upline) brings it back once.
+// The supply-chain banner lists what the buildings above you do for you. Closing it puts it away for
+// SUPPLY_HIDE_M minutes of play; a new building (or a new upline) that changes the list brings it back sooner.
 const supplyPerks = c => [c.supply.depot && 'Depot: +25% deliveries', c.supply.plant && 'Kitchen Plant: +1 zone', c.supply.factory && 'Nutrient Factory: +25% value'].filter(Boolean);
-function hideSupply() { state.supplySeen = supplyPerks(calc(state)).join('|'); render(); }
+function hideSupply() { state.supplySeen = { perks: supplyPerks(calc(state)).join('|'), at: state.played || 0 }; render(); }
+const supplyClosed = perks => { const h = state.supplySeen; return !!h && h.perks === perks.join('|') && (state.played || 0) - h.at < CONFIG.SUPPLY_HIDE_M * 60; };
 function rationWait() { return (CONFIG.RATION_MIN_M + Math.floor(Math.random() * (CONFIG.RATION_MAX_M - CONFIG.RATION_MIN_M + 1))) * 60000; }
 function nextRationAt(s = state) {
   if (!s.ration) return 0;
@@ -2753,7 +2756,7 @@ function render() {
   $('protectionSummary').textContent = c.keep < 1 ? 'You keep ' + Math.round(c.keep * 100) + '% of delivery earnings. Current deductions: ₵' + fmt(c.income / c.keep - c.income) + '/sec.' : 'No delivery deductions. Head office still receives its franchise royalty.';
   renderFocus(c);
   const sb = $('supply'), perks = supplyPerks(c);
-  if (perks.length && state.supplySeen !== perks.join('|')) { sb.hidden = false; setHTML('supply', '<span>Your supply chain feeds you: ' + perks.join(' · ') + '. This is why people join a shop with buildings.</span><button class="help banner-x" data-act="hideSupply" aria-label="Hide this notice" title="Hide this notice">×</button>'); } else sb.hidden = true;
+  if (perks.length && !supplyClosed(perks)) { sb.hidden = false; setHTML('supply', '<span>Your supply chain feeds you: ' + perks.join(' · ') + '. This is why people join a shop with buildings.</span><button class="help banner-x" data-act="hideSupply" aria-label="Hide this notice" title="Hide this notice">×</button>'); } else sb.hidden = true;
 
   if (state.lastOrder) {
     const o = state.lastOrder;
