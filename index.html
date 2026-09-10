@@ -54,6 +54,9 @@ h1 .logo{display:block;height:.72em;width:auto;mix-blend-mode:screen;margin:.24e
 @keyframes news-underscore{0%,100%{opacity:1}55%{opacity:0}}
 .banner{margin:10px 0 0;padding:8px 10px;border:1px dashed var(--warn);color:#ffb3c0;font-size:13px}
 .banner.good{border-color:var(--acc);color:#bfffb0}
+#supply{display:flex;align-items:flex-start;gap:10px}#supply[hidden]{display:none}
+.banner-x{flex-shrink:0;margin:-3px -4px -3px auto;padding:0 6px;font-size:16px;line-height:1.3;color:inherit;opacity:.6}
+.banner-x:hover:not(:disabled),.banner-x:focus-visible{color:inherit;opacity:1}
 details.banner{padding:0;border-color:transparent}
 details.banner[open]{border-color:var(--warn)}
 details.banner summary{list-style:none;cursor:pointer;padding:6px 10px}
@@ -529,6 +532,7 @@ const CONFIG = {
   RATION_MAX_M: 15,
   DECREE_H: 24,               // hours between Ministry decrees
   DECREE_MIN: 10,             // minutes a decree lasts
+  SUPPLY_HIDE_M: 10,          // minutes of play the closed supply-chain banner stays closed
   OFFLINE_FULL_H: 8,
   OFFLINE_HALF_H: 24,
   CUTS: [0.10, 0.05, 0.025],  // share of level 1/2/3 downline lifetime earnings
@@ -1036,6 +1040,7 @@ function fresh() {
     played: 0, pace: {},       // active seconds; immutable lifetime-earnings snapshots at each complete minute
     dispatch: { unlocked: false, done: 0, active: null }, lastSocial: null, pendingRush: null,
     told: {},                  // when the recruiter (rec) and the gang (gang) were revealed, so it happens once
+    supplySeen: null,          // { perks, at }: the supply-chain notice the player closed and the played second it happened; it returns after SUPPLY_HIDE_M minutes of play, or sooner once a new building changes the list
   };
 }
 function load() {
@@ -1051,6 +1056,7 @@ function load() {
     if (s.portfolioUnlocked == null) m.portfolioUnlocked = portfolioReady(m) || !!m.shop;
     if (!m.pace || typeof m.pace !== 'object' || Array.isArray(m.pace)) m.pace = {};
     if (!m.dispatch || typeof m.dispatch !== 'object') m.dispatch = { done: 0, active: null };
+    if (!m.supplySeen || typeof m.supplySeen !== 'object') m.supplySeen = null;
     return m;
   } catch (e) { return null; }
 }
@@ -1911,6 +1917,11 @@ function cutInfo() {
   $('ok').onclick = closeModal;
   if ($('toShop')) $('toShop').onclick = () => { closeModal(); $('shop').scrollIntoView({ block: 'center', behavior: 'smooth' }); };
 }
+// The supply-chain banner lists what the buildings above you do for you. Closing it puts it away for
+// SUPPLY_HIDE_M minutes of play; a new building (or a new upline) that changes the list brings it back sooner.
+const supplyPerks = c => [c.supply.depot && 'Depot: +25% deliveries', c.supply.plant && 'Kitchen Plant: +1 zone', c.supply.factory && 'Nutrient Factory: +25% value'].filter(Boolean);
+function hideSupply() { state.supplySeen = { perks: supplyPerks(calc(state)).join('|'), at: state.played || 0 }; render(); }
+const supplyClosed = perks => { const h = state.supplySeen; return !!h && h.perks === perks.join('|') && (state.played || 0) - h.at < CONFIG.SUPPLY_HIDE_M * 60; };
 function rationWait() { return (CONFIG.RATION_MIN_M + Math.floor(Math.random() * (CONFIG.RATION_MAX_M - CONFIG.RATION_MIN_M + 1))) * 60000; }
 function nextRationAt(s = state) {
   if (!s.ration) return 0;
@@ -2744,11 +2755,8 @@ function render() {
   $('protectionTab').textContent = c.gang ? 'Protection · −' + Math.round((1 - c.keep) * 100) + '%' : c.tax ? 'Recruiter · −10%' : 'Head office · 25%';
   $('protectionSummary').textContent = c.keep < 1 ? 'You keep ' + Math.round(c.keep * 100) + '% of delivery earnings. Current deductions: ₵' + fmt(c.income / c.keep - c.income) + '/sec.' : 'No delivery deductions. Head office still receives its franchise royalty.';
   renderFocus(c);
-  const sb = $('supply'); const perks = [];
-  if (c.supply.depot) perks.push('Depot: +25% deliveries');
-  if (c.supply.plant) perks.push('Kitchen Plant: +1 zone');
-  if (c.supply.factory) perks.push('Nutrient Factory: +25% value');
-  if (perks.length) { sb.hidden = false; setHTML('supply', 'Your supply chain feeds you: ' + perks.join(' · ') + '. This is why people join a shop with buildings.'); } else sb.hidden = true;
+  const sb = $('supply'), perks = supplyPerks(c);
+  if (perks.length && !supplyClosed(perks)) { sb.hidden = false; setHTML('supply', '<span>Your supply chain feeds you: ' + perks.join(' · ') + '. This is why people join a shop with buildings.</span><button class="help banner-x" data-act="hideSupply" aria-label="Hide this notice" title="Hide this notice">×</button>'); } else sb.hidden = true;
 
   if (state.lastOrder) {
     const o = state.lastOrder;
@@ -3041,7 +3049,7 @@ document.addEventListener('click', e => {
   const dc = e.target.closest('[data-decree]'); if (dc) return decree(dc.dataset.decree);
   const b = e.target.closest('[data-act]'); if (!b) return;
   e.preventDefault();
-  const act = { shop: openShopDialog, share, viewEmpire, voucher, complain, ration: claimRation, rationInfo, cutInfo, refresh: sync, bribe, drone: buyDrone, contracts: buyContracts, seed: seedDemo, wipe: wipeCompany, franchise, withdraw: withdrawOffer, ministry: ministryDialog, rename: renameDialog, unlockDispatch, acceptDispatch, claimDispatch, saveInfo, replayIntro, recoveryCode, restoreCode, previousRecovery }[b.dataset.act];
+  const act = { shop: openShopDialog, share, viewEmpire, voucher, complain, ration: claimRation, rationInfo, cutInfo, hideSupply, refresh: sync, bribe, drone: buyDrone, contracts: buyContracts, seed: seedDemo, wipe: wipeCompany, franchise, withdraw: withdrawOffer, ministry: ministryDialog, rename: renameDialog, unlockDispatch, acceptDispatch, claimDispatch, saveInfo, replayIntro, recoveryCode, restoreCode, previousRecovery }[b.dataset.act];
   if (act) act();
 });
 $('reset').addEventListener('click', e => { e.preventDefault(); ask('Delete your save?', 'This removes the save in this browser. Keep a recovery code first if you want to return to this citizen.', 'DELETE', () => { localStorage.removeItem(KEY); replacingSave = true; location.href = location.pathname + instanceQuery; }); });
