@@ -38,11 +38,11 @@ start(0, async ({srv,url}) => {
           const clock=document.getElementById('leaderboardClock').getBoundingClientRect(),logo=document.querySelector('#gameView h1').getBoundingClientRect(),news=document.getElementById('newsCard').getBoundingClientRect(),button=document.getElementById('leaderboardClock');
           return {width:clock.width,height:clock.height,fit:document.documentElement.scrollWidth<=innerWidth&&clock.right<=innerWidth&&clock.left>=logo.right&&clock.bottom<news.top&&button.scrollWidth<=button.clientWidth};
         });
-        assert.ok(layout.fit,`header/ticker overflow at ${width}, ready=${ready}, CRT=${decrypted}`);sizes.push(layout.width+':'+layout.height);
+        assert.ok(layout.fit,`header/ticker overflow at ${width}, ready=${ready}, CRT=${decrypted}`);sizes.push(layout);
       }
     }
     ok('countdown and unlocked button fit beside the logo above both tickers at 320–1100px',true);
-    ok('unlocking never changes the pill dimensions',new Set(sizes).size===1);
+    ok('pill stays short and fits its contents in both states',new Set(sizes.map(s=>s.height)).size===1&&sizes.every(s=>s.height===22)&&sizes.some(s=>s.width<70)&&sizes.every(s=>s.width<120));
     await page.evaluate(()=>{const s=MUSTEAT.state;s.played=1799.5;s.gear={trainers:3};MUSTEAT.render();});
     ok('final fraction of a second still displays 00:01',await label.textContent()==='00:01'&&await clock.getAttribute('aria-disabled')==='true');
     const cash=await page.evaluate(()=>MUSTEAT.state.cash);

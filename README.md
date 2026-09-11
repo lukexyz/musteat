@@ -44,7 +44,7 @@ Progress lives in `localStorage`, separately for each browser, website origin an
 | File | Job |
 | --- | --- |
 | [`index.html`](index.html) | The game: UI, economy, saves, animations and sheet adapter. No build step. |
-| [`index.html#highscores`](index.html#highscores) | In-game high scores, payments and who pays whom. `ledger.html` redirects old links here. |
+| [`index.html#highscores`](index.html#highscores) | In-game high scores, payments and who pays whom. |
 | [`backend/Code.gs`](backend/Code.gs) | Google Apps Script backend for the shared company sheet. |
 | [`NOTES.md`](NOTES.md) | Setup instructions and detailed development notes. |
 | [`PORTING.md`](PORTING.md) | Storage contract for moving to another backend. |

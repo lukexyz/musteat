@@ -38,7 +38,7 @@ function start(port, cb) {
       });
       return;
     }
-    // Static: the game and the ledger page, with SHEET_API pointed at this server.
+    // Static: the game, with SHEET_API pointed at this server.
     const file = path.join(ROOT, u.pathname === '/' ? 'index.html' : u.pathname);
     fs.readFile(file, (err, data) => {
       if (err) { rsp.writeHead(404); return rsp.end(); }
@@ -49,4 +49,4 @@ function start(port, cb) {
   return srv;
 }
 module.exports = { start };
-if (require.main === module) start(+process.argv[2] || 8787, ({ url }) => console.log('MustEat with a shared company at ' + url + 'index.html (ledger at ' + url + 'ledger.html). Open it in two different browsers.'));
+if (require.main === module) start(+process.argv[2] || 8787, ({ url }) => console.log('MustEat with a shared company at ' + url + 'index.html (ledger at ' + url + 'index.html#highscores). Open it in two different browsers.'));

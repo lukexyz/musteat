@@ -158,7 +158,7 @@ start(0, async ({ srv, db, url }) => {
     let ranked = await page.locator('#board tr').allTextContents();
     check('same-minute ranking uses historical scores and shared tie ranks', ranked[1].startsWith('1Minute Runner') && ranked[2].startsWith('1Tied Runner') && ranked[3].startsWith('3Older Runner') && !ranked.join('').includes('Legacy Runner'));
     const ledger = await context.newPage();
-    await ledger.goto(url + 'ledger.html?minute=9');
+    await ledger.goto(url + 'index.html#highscores?minute=9');
     await ledger.waitForFunction(() => /Older Runner/.test(document.getElementById('ledger-scores').textContent));
     ranked = await ledger.locator('#ledger-scores tr').allTextContents();
     check('full leaderboard matches the game across the shared backend', ranked[1].startsWith('1Minute Runner') && ranked[2].startsWith('1Tied Runner') && ranked[3].startsWith('3Older Runner'));
@@ -175,7 +175,7 @@ start(0, async ({ srv, db, url }) => {
     for (let i = 0; i < 35; i++) db.players.push({ id: 'ahead' + i, name: 'Ahead ' + i, total: 10000, played: 800, pace0: '{"9":1000}' });
     await page.evaluate(() => MUSTEAT.sync());
     check('your row survives outside the top 15', /36/.test(await page.textContent('#board tr.me')) && /Minute Runner/.test(await page.textContent('#board tr.me')));
-    const full = await context.newPage(); await full.goto(url + 'ledger.html?minute=9');
+    const full = await context.newPage(); await full.goto(url + 'index.html#highscores?minute=9');
     await full.waitForSelector('#ledger-scores tr.me');
     check('your row survives outside the top 30', /36/.test(await full.textContent('#ledger-scores tr.me')));
     await full.close();

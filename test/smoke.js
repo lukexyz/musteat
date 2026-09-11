@@ -281,7 +281,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p1.click('[data-tab="run"]');
   ok('board keeps your own ranked row visible', /Ada/.test(await p1.textContent('#board tr.me')));
   const pl = await ctx.newPage();
-  await pl.goto(url.replace('index.html', 'ledger.html'));
+  await pl.goto(url + '#highscores');
   await pl.waitForFunction(() => /Ada/.test(document.getElementById('ledger-top').textContent));
   ok('ledger page ranks Ada as top earner from runners', /1[\s\S]*Ada/.test(await pl.textContent('#ledger-top')));
   ok('ledger page lists Sam and Kim as contributors', /Sam/.test(await pl.textContent('#ledger-payers')) && /Kim/.test(await pl.textContent('#ledger-payers')));

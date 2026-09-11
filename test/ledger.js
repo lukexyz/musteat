@@ -22,7 +22,7 @@ start(0, async ({ srv, url }) => {
       if (mode === 'malformed' && table === 'players') return route.fulfill({ contentType: 'application/json', body: '{"error":"offline"}' });
       return route.fulfill({ contentType: 'application/json', body: JSON.stringify(mode === 'empty' ? [] : table === 'players' ? players : ledger) });
     });
-    await page.goto(url + 'ledger.html?dev&minute=9');
+    await page.goto(url + 'index.html?dev#highscores?minute=9');
     await page.waitForSelector('.score-skeleton');
     check('pending scores show animated placeholders and busy state', await page.locator('#ledger-scores').getAttribute('aria-busy') === 'true' && await page.locator('.score-skeleton').evaluate(el => getComputedStyle(el, '::after').animationName) === 'score-scan');
     await page.emulateMedia({ reducedMotion: 'reduce' });

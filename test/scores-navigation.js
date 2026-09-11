@@ -61,9 +61,9 @@ start(0, async ({srv, db, url}) => {
     await page.screenshot({path:'/private/tmp/musteat-scores-mobile.png',fullPage:true});
     await page.setViewportSize({width:1100,height:800});
     await page.screenshot({path:'/private/tmp/musteat-scores-desktop.png',fullPage:true});
-    const legacy=await context.newPage();
-    await legacy.goto(url+'ledger.html?dev&slot=nav&minute=30&order=total');await legacy.waitForSelector('#ledger-scores tr');
-    ok('legacy links redirect with instance and filters intact',new URL(legacy.url()).pathname==='/index.html' && new URL(legacy.url()).searchParams.get('slot')==='nav' && await legacy.inputValue('#ledger-scoreMinute')==='30' && await legacy.locator('[data-order="total"]').evaluate(el=>el.classList.contains('on')));
+    const direct=await context.newPage();
+    await direct.goto(url+'index.html?dev&slot=nav#highscores?minute=30&order=total');await direct.waitForSelector('#ledger-scores tr');
+    ok('direct links preserve instance and filters',new URL(direct.url()).pathname==='/index.html' && new URL(direct.url()).searchParams.get('slot')==='nav' && await direct.inputValue('#ledger-scoreMinute')==='30' && await direct.locator('[data-order="total"]').evaluate(el=>el.classList.contains('on')));
     ok('no duplicate element IDs or browser errors', errors.length===0 && await page.evaluate(()=>{const ids=[...document.querySelectorAll('[id]')].map(el=>el.id);return ids.length===new Set(ids).size;}));
     console.log('\n'+checks+' navigation checks passed.');
   } catch(e) {console.error(e);process.exitCode=1;}

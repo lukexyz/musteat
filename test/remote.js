@@ -57,7 +57,7 @@ start(0, async ({ srv, db, url }) => {
 
   console.log('the ledger page on laptop B reads the shared tables');
   const L = await B.context().newPage();
-  await L.goto(url + 'ledger.html?order=total');
+  await L.goto(url + 'index.html#highscores?order=total');
   await L.waitForFunction(() => /Ada/.test(document.getElementById('ledger-scores').textContent), null, { timeout: 8000 });
   ok('scores show Ada and Bob', /Ada/.test(await L.textContent('#ledger-scores')) && /Bob/.test(await L.textContent('#ledger-scores')));
   ok('top earner from runners is Ada', /Ada/.test(await L.textContent('#ledger-top')), await L.textContent('#ledger-top'));

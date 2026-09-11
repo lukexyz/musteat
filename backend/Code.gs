@@ -1,6 +1,6 @@
 // MustEat sheet backend. One Google Sheet, three tabs: players, events, ledger.
 // Deploy as a web app (Deploy > New deployment > Web app, execute as Me, access Anyone) and put
-// the /exec URL into CONFIG.SHEET_API in index.html and ledger.html.
+// the /exec URL into CONFIG.SHEET_API in index.html.
 //
 // Contract (PORTING.md has the long version):
 //   GET  ?table=players                      -> all rows as JSON

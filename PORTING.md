@@ -128,4 +128,4 @@ Whatever `toqan.collection(...)` really looks like, those three lines are the wh
 - The owner of a `players` row is the only client that writes its game columns. Do not add a
   server-side "fix-up" that rewrites totals; the ledger is self-reported by design and the joke
   depends on it.
-- The in-page leaderboard uses the game’s sync data; guest access reads `players` and `ledger` from the same adapter. `ledger.html` is only a redirect.
+- The in-page leaderboard uses the game’s sync data; guest access reads `players` and `ledger` from the same adapter.
