@@ -342,6 +342,14 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .pyr .node.idle{opacity:.5}
 .pyr .node.more{color:var(--dim);border-style:dashed}
 
+/* Payment traces are temporary overlays: no layout space, controls or persistent wires. */
+.money-map,.pyr{position:relative}
+.payment-traces{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;pointer-events:none;z-index:2}
+.payment-traces .payment-out{color:#ef7188}.payment-traces .payment-in{color:#9ce975}
+.payment-traces path{fill:none;stroke:currentColor;stroke-width:1;opacity:.22}
+.payment-traces circle{fill:currentColor;filter:drop-shadow(0 0 3px currentColor)}
+@media(prefers-reduced-motion:reduce){.payment-traces{display:none}}
+
 /* Keep ancestry visible when a shop breaks its runner dependency. */
 .pyr .node{position:relative;white-space:normal;overflow:visible;overflow-wrap:anywhere;text-align:center;max-width:180px;margin-top:5px;padding:3px 7px}.pyr .node::before{content:'';position:absolute;left:50%;top:-6px;height:5px;border-left:1px solid #676077}.pyr .node.you::before,.pyr .node.more::before{display:none}.pyr .node.you{margin-top:0}.pyr .node.independent{border-color:#648d82;border-style:dashed}.pyr .node.independent::before{border-left-style:dashed;border-color:#7ba899}
 .empty{text-align:center;padding:30px 10px;color:var(--dim)}
@@ -1309,7 +1317,11 @@ const Sheet = {
     this.lastSyncFailed = false;
     return this.guarded(async () => {
       const append = this.pending; this.pending = { events: [], ledger: [] };
-      try { return await this.remote('POST', 'op=sync', { upsert: row, append }); }
+      try {
+        const db = await this.remote('POST', 'op=sync', { upsert: row, append });
+        if (!db || ['players', 'events', 'ledger'].some(table => !Array.isArray(db[table]) || db[table].some(item => !item || typeof item !== 'object' || Array.isArray(item)))) throw new Error('Invalid sync response');
+        return db;
+      }
       catch (e) { this.lastSyncFailed = true; this.pending = { events: append.events.concat(this.pending.events), ledger: append.ledger.concat(this.pending.ledger) }; throw e; }
     }, async () => { await this.upsert('players', row); const db = this.local(); return { players: db.players, events: db.events, ledger: db.ledger }; });
   },
@@ -1735,6 +1747,80 @@ function networkStatus(person) {
 function independentShop(person) { return !!(person.shop || person.shopName) && !person.franchiseOf; }
 let portfolioPeople = new Map(), portfolioPaid = new Map(), portfolioReceived = new Map();
 let portfolioRevealTarget = null, portfolioRevealTimer = 0, portfolioRevealDismissed = false;
+// Observe confirmed rows once per session; entry/reconnection establish a quiet baseline.
+let paymentSeen = new Set(), paymentBaselinePending = true, paymentViewActive = false;
+const paymentTransfers = new Map();
+let paymentFrame = 0;
+function paymentViewVisible() {
+  return state.tab === 'portfolio' && !$('gameView').hidden && !document.hidden && $('modal').hidden;
+}
+function updatePaymentView() {
+  const active = paymentViewVisible();
+  if (active !== paymentViewActive) paymentBaselinePending = true;
+  paymentViewActive = active;
+  if (!active || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    paymentTransfers.clear(); cancelAnimationFrame(paymentFrame); paymentFrame = 0;
+    document.querySelectorAll('.payment-traces').forEach(el => el.remove());
+  }
+}
+function receivePortfolioPayments(ledger, failed) {
+  updatePaymentView();
+  if (failed) { paymentBaselinePending = true; return; }
+  const animate = paymentViewActive && !paymentBaselinePending && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  for (const row of ledger) {
+    if (!row.id || (row.from !== state.id && row.to !== state.id)) continue;
+    const fresh = !paymentSeen.has(row.id); paymentSeen.add(row.id);
+    if (!animate || !fresh || !(Number(row.amount) > 0) || row.from === row.to) continue;
+    const incoming = row.to === state.id, person = incoming ? row.from : row.to;
+    const key = (incoming ? 'in:' : 'out:') + person;
+    // Multiple rows for the same connection share one pulse, never a queue.
+    if (!paymentTransfers.has(key)) paymentTransfers.set(key, {person, incoming, started:performance.now()});
+  }
+  paymentBaselinePending = false;
+  if (paymentTransfers.size && !paymentFrame) paymentFrame = requestAnimationFrame(drawPaymentTransfers);
+}
+function drawPaymentTransfers(t) {
+  paymentFrame = 0; updatePaymentView();
+  document.querySelectorAll('.payment-traces').forEach(el => el.remove());
+  const ns = 'http://www.w3.org/2000/svg', layers = new Map();
+  for (const [key, transfer] of paymentTransfers) {
+    const progress = (t - transfer.started) / 950;
+    const host = document.querySelector(transfer.incoming ? '#pfEmpire .pyr' : '#pfFlow .money-map');
+    const person = host?.querySelector('[data-person="' + CSS.escape(transfer.person) + '"]');
+    const me = host?.querySelector('[data-person="' + CSS.escape(state.id) + '"]');
+    if (progress >= 1 || !person || !me) { paymentTransfers.delete(key); continue; }
+    const source = (transfer.incoming ? person : me).getBoundingClientRect();
+    const target = (transfer.incoming ? me : person).getBoundingClientRect();
+    // Off-screen payments are consumed, not saved for the next scroll.
+    if (source.top >= innerHeight || source.bottom <= 0 || target.top >= innerHeight || target.bottom <= 0) {
+      paymentTransfers.delete(key); continue;
+    }
+    const bounds = host.getBoundingClientRect();
+    let layer = layers.get(host);
+    if (!layer) {
+      layer = document.createElementNS(ns,'svg'); layer.classList.add('payment-traces');
+      layer.setAttribute('aria-hidden','true'); layer.setAttribute('focusable','false');
+      layer.setAttribute('viewBox',`0 0 ${bounds.width} ${bounds.height}`);
+      host.appendChild(layer); layers.set(host,layer);
+    }
+    const sx = source.left + source.width / 2 - bounds.left, sy = source.top - bounds.top;
+    const tx = target.left + target.width / 2 - bounds.left, ty = target.bottom - bounds.top;
+    const middle = (sy + ty) / 2;
+    // Adjacent cards connect through the gap. Longer transfers skirt intervening names.
+    const d = sy - ty < 80
+      ? `M${sx} ${sy} C${sx} ${middle} ${tx} ${middle} ${tx} ${ty}`
+      : `M${sx} ${sy} L${sx} ${sy-3} L3 ${sy-3} L3 ${ty+3} L${tx} ${ty+3} L${tx} ${ty}`;
+    const group = document.createElementNS(ns,'g'); group.classList.add(transfer.incoming ? 'payment-in' : 'payment-out');
+    group.dataset.person = transfer.person;
+    group.style.opacity = Math.min(1,progress*8,(1-progress)*5);
+    const path = document.createElementNS(ns,'path'); path.setAttribute('d',d); group.appendChild(path); layer.appendChild(group);
+    const point = path.getPointAtLength(path.getTotalLength()*Math.max(0,progress));
+    const pulse = document.createElementNS(ns,'circle'); pulse.setAttribute('r','2');
+    pulse.setAttribute('cx',point.x); pulse.setAttribute('cy',point.y); group.appendChild(pulse);
+  }
+  if (paymentTransfers.size) paymentFrame = requestAnimationFrame(drawPaymentTransfers);
+}
+
 function preloadPortfolioPeople() {
   portfolioPeople = new Map([...world.rows, ...state.up, ...state.down.list, {...rowOf(state),shop:state.shop}].map(p => [p.id, p]));
   portfolioPaid = new Map(); portfolioReceived = new Map();
@@ -1894,6 +1980,7 @@ async function sync() {
   } finally { syncing = false; }
   preloadPortfolioPeople();
   render(); save();
+  receivePortfolioPayments(world.ledger, Sheet.lastSyncFailed);
   if (syncAgain) { syncAgain = false; sync(); }
 }
 let syncTimer = null;
@@ -2923,11 +3010,12 @@ function renderScores() {
   setHTML('board', (ranked.length ? `<table><tr><th>#</th><th>Citizen / shop</th><th class="r">${label}</th><th class="r">Active now</th></tr>` + shown.map(({ p, score, place }) => `<tr class="${p.id === state.id ? 'me' : ''}"><td>${place}</td><td>${esc(p.name)}<div class="muted">${esc(p.shopName || (RANKS[Number(p.rank) || 0] || RANKS[0]).name)}</div></td><td class="r">₵${fmt(score)}</td><td class="r">${Math.floor(p.played / 60)} min</td></tr>`).join('') + '</table>' : '<p>No recorded scores at this minute yet. Your first comparison appears after a full active minute.</p>') + '<p class="score-note">' + note + '</p>' + (scoreMode === 'pace' && state.id && !me ? '<p class="muted">You have no saved score at minute ' + minute + ' yet. Try My minute or keep running.</p>' : '') + `<a class="muted" href="#highscores?minute=${minute}&order=${scoreMode}">Full high scores and the ledger →</a>`);
 }
 
-// Full scores and ledger share the game's data and sync while a citizen is playing.
+// Game sync supplies live updates; opening scores also reads independently of game writes.
 const ledgerView = (() => {
   const l$ = id => $('ledger-' + id);
   let order = 'pace', minute = 30, refreshing = false;
   const loaded = { players: null, ledger: null }, loadErrors = { players: false, ledger: false };
+  const revisions = { players: 0, ledger: 0 };
   const myMinute = () => Object.keys(state.pace || {}).map(Number).sort((a, b) => b - a)[0] || Math.max(1, Math.floor((state.played || 0) / 60));
   const sum = (arr, f) => arr.reduce((a, r) => a + (f(r) || 0), 0);
   const groupSum = (arr, key) => { const m = Object.create(null); arr.forEach(r => { const k = r[key]; if (!m[k]) m[k] = { id: k, total: 0, n: 0, rows: [] }; m[k].total += Number(r.amount) || 0; m[k].n++; m[k].rows.push(r); }); return Object.values(m).sort((a, b) => b.total - a.total); };
@@ -2937,18 +3025,21 @@ const ledgerView = (() => {
   function receive(db, failed) {
     for (const table of ['players', 'ledger']) {
       loadErrors[table] = !!failed;
-      if (!failed) loaded[table] = db[table] || [];
+      if (!failed) { loaded[table] = db[table] || []; revisions[table]++; }
     }
     if (scoresVisible) render();
   }
   async function refresh() {
-    if (refreshing || (state.id && syncing)) return;
+    if (refreshing) return;
     refreshing = true; render();
     try {
-      if (state.id) await sync();
-      else await Promise.all(['players', 'ledger'].map(async table => {
-        try { loaded[table] = await Sheet.readPublic(table); loadErrors[table] = false; }
-        catch (error) { loadErrors[table] = true; }
+      await Promise.all(['players', 'ledger'].map(async table => {
+        const revision = revisions[table];
+        try {
+          const rows = await Sheet.readPublic(table);
+          // A newer game sync wins over a read that started before it.
+          if (revisions[table] === revision) { loaded[table] = rows; loadErrors[table] = false; revisions[table]++; }
+        } catch (error) { if (revisions[table] === revision) loadErrors[table] = true; }
         render();
       }));
     } finally { refreshing = false; render(); }
@@ -2969,7 +3060,7 @@ const ledgerView = (() => {
   l$('myMinute').addEventListener('click', () => { minute = myMinute(); updateRoute(); });
   l$('retry').addEventListener('click', refresh);
   // Visitors can browse without creating a save or writing to the company sheet.
-  setInterval(() => { if (scoresVisible && !state.id) refresh(); }, CONFIG.SYNC_S * 1000);
+  setInterval(() => { if (scoresVisible && (!state.id || syncing || Object.values(loadErrors).some(Boolean) || loaded.players === null || loaded.ledger === null)) refresh(); }, CONFIG.SYNC_S * 1000);
   window.addEventListener('storage', e => { if (scoresVisible && !state.id && e.key === CONFIG.SHEET_KEY) refresh(); });
   function render() {
     $('highscoresView').querySelectorAll('[data-order]').forEach(b => b.classList.toggle('on', b.dataset.order === order));
@@ -3023,11 +3114,12 @@ const ledgerView = (() => {
     }
     const failed = Object.keys(loadErrors).filter(table => loadErrors[table]);
     l$('loadStatus').classList.toggle('failed', !!failed.length);
-    l$('loadStatus').classList.toggle('loading', refreshing);
+    const pending = refreshing || ['players', 'ledger'].some(table => loaded[table] === null && !loadErrors[table]);
+    l$('loadStatus').classList.toggle('loading', pending);
     l$('retry').hidden = !failed.length; l$('retry').disabled = refreshing;
     l$('loadMessage').textContent = failed.length
       ? failed.map(table => (table === 'players' ? 'High scores' : 'Transaction ledger') + (loaded[table] === null ? ' unavailable.' : ' refresh failed; showing last loaded data.')).join(' ') + (refreshing ? ' Retrying…' : ' Retry now or wait for the automatic refresh.')
-      : refreshing ? (loaded.players === null ? 'Loading high scores…' : loaded.ledger === null ? 'Scores loaded. Loading the transaction ledger…' : 'Refreshing company data…')
+      : pending ? (loaded.players === null ? 'Loading high scores…' : loaded.ledger === null ? 'Scores loaded. Loading the transaction ledger…' : 'Refreshing company data…')
       : 'Up to date · ' + players.length + ' registered citizens.';
   }
 
@@ -3051,13 +3143,14 @@ function applyViewRoute(initial = false) {
   scoresVisible = next;
   $('gameView').hidden = next; $('highscoresView').hidden = !next;
   document.body.classList.toggle('scores-view', next);
+  updatePaymentView();
   document.title = next ? 'MustEat — High Scores' : gameTitle;
   if (next) {
     ledgerView.readRoute();
     if (changed || initial) {
       requestAnimationFrame(() => { if (scoresVisible) { scrollTo(0, 0); $('ledger-heading').focus({preventScroll:true}); } });
-      // start() supplies the first sync for a returning citizen.
-      if (!initial || !state.name) void ledgerView.refresh();
+      // Reading public scores must never wait for the game's save/sync POST.
+      void ledgerView.refresh();
     }
   } else if (changed) {
     requestAnimationFrame(() => {
@@ -3454,6 +3547,7 @@ function render() {
   $('mode').textContent = CONFIG.SHEET_API ? 'connected to the company sheet' : 'local sheet (this browser only; invite links open as new players here)';
   setHTML('localtools', CONFIG.SHEET_API ? '' : '<a href="#" data-act="seed">seed demo company</a><a href="#" data-act="wipe">wipe company</a>');
   renderDepartmentEvents();
+  updatePaymentView();
   if (state.tab !== 'portfolio') hidePortfolioReveal();
   else if (portfolioRevealTarget && !portfolioRevealTarget.isConnected) {
     const {flow,person} = portfolioRevealTarget.dataset;
@@ -3533,7 +3627,7 @@ document.addEventListener('click', e => {
   if (act) act();
 });
 $('reset').addEventListener('click', e => { e.preventDefault(); ask('Delete your save?', 'This removes the save in this browser. Keep a recovery code first if you want to return to this citizen.', 'DELETE', () => { localStorage.removeItem(KEY); replacingSave = true; location.href = location.pathname + instanceQuery; }); });
-document.addEventListener('visibilitychange', () => { if (document.hidden && !replacingSave) { save(); Sheet.flush(); } });
+document.addEventListener('visibilitychange', () => { updatePaymentView(); if (document.hidden && !replacingSave) { save(); Sheet.flush(); } });
 if (qs.has('dev')) window.MUSTEAT = { get state() { return state; }, refreshScores: ledgerView.refresh, calc, GEAR, UPGRADES, ACH, gearCost, buy, buyUpgrade, runDelivery, collectCrate, frame, save, sync, franchise, render, rowOf, readPace, rankedScores, paceColumns, unlockDispatch, acceptDispatch, claimDispatch, offline, encodeRecovery, decodeRecovery, claimRation, nextRationAt };
 window.addEventListener('beforeunload', () => { if (!replacingSave) { save(); Sheet.flush(); } });
 

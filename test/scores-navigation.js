@@ -35,11 +35,11 @@ start(0, async ({srv, db, url}) => {
     await page.evaluate(()=>MUSTEAT.sync());
     ok('normal game sync updates the visible ledger', await page.textContent('#ledger-sumAll')==='₵200' && await page.textContent('#ledger-sumRoy')==='₵75');
     await page.route('**/api?op=sync*', route=>route.fulfill({status:503,body:'Unavailable'}));
-    await page.evaluate(()=>MUSTEAT.refreshScores());
+    await page.evaluate(()=>MUSTEAT.sync());
     ok('game sync failure preserves the last loaded ledger and offers retry', await page.textContent('#ledger-sumAll')==='₵200' && await page.isVisible('#ledger-retry') && /showing last loaded data/.test(await page.textContent('#ledger-loadMessage')));
     await page.unroute('**/api?op=sync*');
     await page.click('#ledger-retry');await page.waitForFunction(()=>document.getElementById('ledger-retry').hidden);
-    ok('retry recovers through the game sync without changing identity', await page.evaluate(who=>MUSTEAT.state.id===who,id));
+    ok('retry reads public scores without changing identity', await page.evaluate(who=>MUSTEAT.state.id===who,id));
     await page.click('#highscoresView p [data-back-game]'); await page.waitForSelector('#gameView:not([hidden])');
     await page.waitForFunction(y=>Math.abs(scrollY-y)<2,before.scroll);
     ok('Back to game restores portfolio, scroll and focus', await page.isVisible('#tab-portfolio') && await page.evaluate(()=>document.activeElement.classList.contains('footer-scores')));

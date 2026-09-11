@@ -95,7 +95,7 @@ the code does today; if that gets slow, the two readers only need `ledger` for s
    `Sheet.sync` (or just `Sheet.remote` if Toqan is REST with a similar shape). Keep
    `Sheet.guarded`: any failure falls back to the local mock so the game never breaks in front of
    a colleague.
-3. Update `Sheet.readPublic(table)` in `index.html` for guest leaderboard reads, keeping errors visible.
+3. Update `Sheet.readPublic(table)` in `index.html` for independent leaderboard reads, keeping errors visible.
 4. Set `CONFIG.SHEET_API` in `index.html` to anything non-empty. It is only ever tested for truthiness
    and passed to your adapter, so a base URL, a database name or the string `toqan` all work.
 5. Run `cd test && node smoke.js` (local mock, one browser) and `node remote.js` (three separate
@@ -128,4 +128,4 @@ Whatever `toqan.collection(...)` really looks like, those three lines are the wh
 - The owner of a `players` row is the only client that writes its game columns. Do not add a
   server-side "fix-up" that rewrites totals; the ledger is self-reported by design and the joke
   depends on it.
-- The in-page leaderboard uses the game’s sync data; guest access reads `players` and `ledger` from the same adapter.
+- The in-page leaderboard reads `players` and `ledger` independently on entry and retry, and also receives game-sync updates. A stalled or failed game write must never block those reads.
