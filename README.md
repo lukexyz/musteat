@@ -44,7 +44,7 @@ Progress lives in `localStorage`, separately for each browser, website origin an
 | File | Job |
 | --- | --- |
 | [`index.html`](index.html) | The game: UI, economy, saves, animations and sheet adapter. No build step. |
-| [`ledger.html`](ledger.html) | Shared high scores, payments and who pays whom. |
+| [`index.html#highscores`](index.html#highscores) | In-game high scores, payments and who pays whom. `ledger.html` redirects old links here. |
 | [`backend/Code.gs`](backend/Code.gs) | Google Apps Script backend for the shared company sheet. |
 | [`NOTES.md`](NOTES.md) | Setup instructions and detailed development notes. |
 | [`PORTING.md`](PORTING.md) | Storage contract for moving to another backend. |
@@ -60,6 +60,7 @@ The sheet stores public player summaries, score snapshots, recruitment relations
 - Portfolio is a **free unlock at ₵20K lifetime earnings**. It records your empire, runners, franchises and owned technology.
 - Per-tech earnings record automatic income after deductions, including offline work. Historical earnings from before tracking began are kept in the lifetime total, never invented for individual technologies. Support equipment boosts producers rather than receiving duplicate earnings.
 - After 90 active seconds, plus ten taps or any technology purchase, a free Airlock Permit unlocks solo contracts. Every three completed contracts add 1% permanent income, capped at 20%.
+- High scores open inside the game at `#highscores`. Back to game restores your previous tab and scroll position; earnings and sync continue while you browse. Direct links work without registration.
 - High scores default to **same playtime**: compare recorded lifetime earnings at a chosen active minute. Offline income counts toward earnings; time spent away does not advance active minutes. Missing snapshots are never guessed. Lifetime rankings are also available.
 
 ### Run and check
@@ -72,7 +73,7 @@ npm ci
 node sheetmock.js
 ```
 
-Open `http://127.0.0.1:8787/index.html?game=new`. The mock serves both pages and handles player, event and payment records in memory.
+Open `http://127.0.0.1:8787/index.html?game=new`. The mock serves the game and handles player, event and payment records in memory.
 
 Run the browser checks from `test/`:
 

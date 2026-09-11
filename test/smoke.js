@@ -282,14 +282,14 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok('board keeps your own ranked row visible', /Ada/.test(await p1.textContent('#board tr.me')));
   const pl = await ctx.newPage();
   await pl.goto(url.replace('index.html', 'ledger.html'));
-  await pl.waitForFunction(() => /Ada/.test(document.getElementById('top').textContent));
-  ok('ledger page ranks Ada as top earner from runners', /1[\s\S]*Ada/.test(await pl.textContent('#top')));
-  ok('ledger page lists Sam and Kim as contributors', /Sam/.test(await pl.textContent('#payers')) && /Kim/.test(await pl.textContent('#payers')));
-  ok('ledger page shows who pays whom', /Ada[\s\S]*Sam[\s\S]*L1/.test(await pl.textContent('#pairs')));
+  await pl.waitForFunction(() => /Ada/.test(document.getElementById('ledger-top').textContent));
+  ok('ledger page ranks Ada as top earner from runners', /1[\s\S]*Ada/.test(await pl.textContent('#ledger-top')));
+  ok('ledger page lists Sam and Kim as contributors', /Sam/.test(await pl.textContent('#ledger-payers')) && /Kim/.test(await pl.textContent('#ledger-payers')));
+  ok('ledger page shows who pays whom', /Ada[\s\S]*Sam[\s\S]*L1/.test(await pl.textContent('#ledger-pairs')));
   await pl.click('[data-order="pace"]');
-  await pl.waitForFunction(() => /At minute 30/.test(document.getElementById('scores').textContent));
-  ok('ledger page ranks by matching playtime', /At minute 30/.test(await pl.textContent('#scores')) && (await pl.getAttribute('[data-order="pace"]', 'class')) === 'on');
-  ok('ledger page has recent entries and no overflow', (await pl.$$('#recent tr')).length >= 2 && await pl.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
+  await pl.waitForFunction(() => /At minute 30/.test(document.getElementById('ledger-scores').textContent));
+  ok('ledger page ranks by matching playtime', /At minute 30/.test(await pl.textContent('#ledger-scores')) && (await pl.getAttribute('[data-order="pace"]', 'class')) === 'on');
+  ok('ledger page has recent entries and no overflow', (await pl.$$('#ledger-recent tr')).length >= 2 && await pl.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
   await pl.close();
 
   console.log('feed is safe against a hostile row in the shared table');

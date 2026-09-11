@@ -58,10 +58,10 @@ start(0, async ({ srv, db, url }) => {
   console.log('the ledger page on laptop B reads the shared tables');
   const L = await B.context().newPage();
   await L.goto(url + 'ledger.html?order=total');
-  await L.waitForFunction(() => /Ada/.test(document.getElementById('scores').textContent), null, { timeout: 8000 });
-  ok('scores show Ada and Bob', /Ada/.test(await L.textContent('#scores')) && /Bob/.test(await L.textContent('#scores')));
-  ok('top earner from runners is Ada', /Ada/.test(await L.textContent('#top')), await L.textContent('#top'));
-  ok('latest transactions list Bob paying Ada', /Bob[\s\S]*Ada/.test(await L.textContent('#recent')), await L.textContent('#recent'));
+  await L.waitForFunction(() => /Ada/.test(document.getElementById('ledger-scores').textContent), null, { timeout: 8000 });
+  ok('scores show Ada and Bob', /Ada/.test(await L.textContent('#ledger-scores')) && /Bob/.test(await L.textContent('#ledger-scores')));
+  ok('top earner from runners is Ada', /Ada/.test(await L.textContent('#ledger-top')), await L.textContent('#ledger-top'));
+  ok('latest transactions list Bob paying Ada', /Bob[\s\S]*Ada/.test(await L.textContent('#ledger-recent')), await L.textContent('#ledger-recent'));
 
   console.log('franchise claim from laptop C merges onto Ada\'s row');
   await A.evaluate(() => { window.MUSTEAT.state.total = 1e9; window.MUSTEAT.state.gear = { trainers: 12 }; });

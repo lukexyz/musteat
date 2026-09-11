@@ -30,11 +30,12 @@ start(0,async({srv,url})=>{
   await game.click('[data-act="saveInfo"]');
   ok('save panel exposes a stable bookmark for this instance',new URL(await game.locator('#modalBox a').getAttribute('href'),url).searchParams.get('slot')===slot);
   await game.locator('#modalBox #ok').click();
-  const ledger=await Promise.all([context.waitForEvent('page'),game.locator('footer a[href^="ledger.html"]').click()]).then(r=>r[0]);await ledger.waitForLoadState();
-  ok('footer high scores preserve the instance',new URL(ledger.url()).searchParams.get('slot')===slot);
-  ok('both leaderboard return links preserve the instance',(await ledger.locator('a[href^="index.html"]').evaluateAll(els=>els.map(e=>new URL(e.href).searchParams.get('slot')))).every(s=>s===slot));
-  await ledger.locator('.home-link').click();await ledger.waitForFunction(()=>MUSTEAT.state.id);
-  ok('leaderboard logo returns to the same citizen',await ledger.evaluate(id=>MUSTEAT.state.id===id,citizen));await ledger.close();
+  await game.locator('.footer-scores').click();
+  await game.waitForSelector('#highscoresView:not([hidden])');
+  ok('footer high scores preserve the instance in the same document',new URL(game.url()).searchParams.get('slot')===slot&&game.url().endsWith('#highscores')&&context.pages().length===2);
+  ok('both leaderboard return links stay in the game',await game.locator('#highscoresView [data-back-game]').count()===3);
+  await game.locator('#highscoresView .home-link').click();await game.waitForSelector('#gameView:not([hidden])');
+  ok('leaderboard logo returns to the same citizen',await game.evaluate(id=>MUSTEAT.state.id===id,citizen));
   const another=await context.newPage();await another.goto(url+'index.html?game=new&dev&ref=FRIEND&v=Guest#entry');await another.waitForSelector('#intro:not([hidden])');
   ok('another fresh-start click gets another distinct instance',new URL(another.url()).searchParams.get('slot')!==slot);
   ok('fresh starts preserve referral and intro parameters',await another.evaluate(()=>MUSTEAT.state.ref==='FRIEND'&&new URLSearchParams(location.search).get('v')==='Guest'&&location.hash==='#entry'));await another.close();

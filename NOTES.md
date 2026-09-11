@@ -122,7 +122,7 @@ on the client from the full `players` table, so the backend stores rows and noth
 | kind | `cut` or `royalty` |
 | amount | credits credited in this sync |
 
-`ledger.html` reads the three tables and shows top earners from runners, biggest contributors, who pays whom, high scores and the most recent entries. It refreshes itself. In local mode it reads the same browser sheet; with a backend it reads the same endpoints as the game. The leaderboard in the game shows a "From runners" column from the same table.
+`index.html#highscores` shows high scores, top earners from runners, biggest contributors, who pays whom and the most recent transactions. It shares the game’s sync data. `ledger.html` only redirects old links, preserving their query parameters.
 
 ### Wire the Google Sheet (the GitHub Pages version)
 
@@ -133,7 +133,7 @@ Google Sheet into the shared backend:
    `backend/Code.gs` and save.
 2. Deploy > New deployment > type Web app. Execute as: Me. Who has access: Anyone. Deploy, authorise
    it once, copy the URL ending in `/exec`.
-3. Paste that URL into `CONFIG.SHEET_API` in `index.html` and `ledger.html`. Commit, push, done.
+3. Paste that URL into `CONFIG.SHEET_API` in `index.html`. Commit, push, done.
    The tabs `players`, `events` and `ledger` appear in the sheet on the first sync, with headers.
 
 Every browser that opens the page now shares one company. Invite links stop carrying a dev slot.
@@ -216,4 +216,6 @@ A one-second white rabbit transmission opens the five-second splash and the recr
 
 Opening a shop now costs ₵25K, with no recruitment requirement. The purchase explains the Shop Owner ×1.1 income rank, removal of the recruiter deduction, and any remaining gang tax or franchise royalty. The saved purchase is followed by a brief shutter rise and illuminated shop-name sign: “YOUR NAME ON THE DOOR. YOUR PROBLEM NOW.” Back to work is immediately usable; reduced motion shows the open storefront and text without animation. Existing shops remain owned.
 
-The standalone high-scores page loads player scores independently of ledger transactions. Initial panels show loading states and unknown totals rather than blank panels and false zeroes. Requests have a 12-second deadline and validate table responses; failed refreshes retain previously loaded data with a visible warning and retry button. Ranking and minute controls use the loaded player data immediately without another network request. `node test/ledger.js` covers delayed tables, HTTP errors, invalid responses, timeouts, retry, preserved data, empty states and mobile layout.
+The high-score view lives inside `index.html`, with hash routing, a 30-minute default, bookmarkable filters and Back to game restoring the previous tab, focus and scroll. Gameplay and saving continue while it is open. Registered citizens reuse the game’s sync; visitors read players and ledger independently through `Sheet.readPublic`, without registration or company writes. Those public reads validate responses and have a 12-second deadline. Failed refreshes retain previously loaded data and offer a retry. Ranking controls use cached data immediately. `node test/scores-navigation.js` covers routing, redirects, instance identity, continuing earnings and mobile layout. `node test/ledger.js` covers delayed tables, HTTP errors, invalid responses, timeouts, retry, preserved data, empty states and mobile layout.
+
+The top-right header pill counts down from 30 minutes using saved active playtime (`played`), matching the leaderboard comparison clock. Its red hover glow is decorative until zero, when it becomes a red Leaderboards button with the same circled-star glyph opening the in-page 30-minute ranking. Existing players beyond 30 minutes see the button immediately; gameplay continues. The pill keeps a fixed width through the switch and occupies its own header grid column, above the news ticker.

@@ -14,7 +14,7 @@ runs in the browser from the full `players` table.
 | --- | --- | --- | --- |
 | `players` | one per citizen, keyed by `id` | the citizen's own client (upsert), plus one franchise-claim upsert by the colleague who takes an offer | everyone, in full, every sync |
 | `events` | append-only company feed | whoever did the thing | everyone, newest 12 shown |
-| `ledger` | append-only, one row per credited cut or royalty | the client that received the credit | everyone; `ledger.html` and the "From runners" column |
+| `ledger` | append-only, one row per credited cut or royalty | the client that received the credit | everyone; `index.html#highscores` and the "From runners" column |
 
 Column meanings are in `NOTES.md` under "The sheet". The columns that matter for a port:
 
@@ -35,8 +35,9 @@ append(table, row)   -> Promise<row>          insert; id is client-generated and
 ```
 
 That is the entire logical surface. `index.html` has them on the `Sheet` object under
-`// ---------------- Sheet adapter ----------------`, and `ledger.html` has a two-line `read`.
-Both pages carry a `CONFIG.SHEET_API` string: empty means the localStorage mock, anything else
+`// ---------------- Sheet adapter ----------------`. `Sheet.readPublic` provides strict, read-only
+access for high-score visitors without a registered citizen. `index.html` carries the only
+`CONFIG.SHEET_API` string: empty means the localStorage mock, anything else
 means the adapter talks to that URL.
 
 ### The wire format the client speaks today
@@ -94,8 +95,8 @@ the code does today; if that gets slow, the two readers only need `ledger` for s
    `Sheet.sync` (or just `Sheet.remote` if Toqan is REST with a similar shape). Keep
    `Sheet.guarded`: any failure falls back to the local mock so the game never breaks in front of
    a colleague.
-3. In `ledger.html`, replace `read(table)`.
-4. Set `CONFIG.SHEET_API` on both pages to anything non-empty. It is only ever tested for truthiness
+3. Update `Sheet.readPublic(table)` in `index.html` for guest leaderboard reads, keeping errors visible.
+4. Set `CONFIG.SHEET_API` in `index.html` to anything non-empty. It is only ever tested for truthiness
    and passed to your adapter, so a base URL, a database name or the string `toqan` all work.
 5. Run `cd test && node smoke.js` (local mock, one browser) and `node remote.js` (three separate
    browser contexts sharing one company through `sheetmock.js`). Then open two real browsers
@@ -127,4 +128,4 @@ Whatever `toqan.collection(...)` really looks like, those three lines are the wh
 - The owner of a `players` row is the only client that writes its game columns. Do not add a
   server-side "fix-up" that rewrites totals; the ledger is self-reported by design and the joke
   depends on it.
-- `ledger.html` reads the same three tables as the game. It has no other data source.
+- The in-page leaderboard uses the game’s sync data; guest access reads `players` and `ledger` from the same adapter. `ledger.html` is only a redirect.

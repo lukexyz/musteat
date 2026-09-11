@@ -159,25 +159,25 @@ start(0, async ({ srv, db, url }) => {
     check('same-minute ranking uses historical scores and shared tie ranks', ranked[1].startsWith('1Minute Runner') && ranked[2].startsWith('1Tied Runner') && ranked[3].startsWith('3Older Runner') && !ranked.join('').includes('Legacy Runner'));
     const ledger = await context.newPage();
     await ledger.goto(url + 'ledger.html?minute=9');
-    await ledger.waitForFunction(() => /Older Runner/.test(document.getElementById('scores').textContent));
-    ranked = await ledger.locator('#scores tr').allTextContents();
-    check('standalone leaderboard matches the game across the shared backend', ranked[1].startsWith('1Minute Runner') && ranked[2].startsWith('1Tied Runner') && ranked[3].startsWith('3Older Runner'));
-    await ledger.fill('#scoreMinute', '10'); await ledger.locator('#scoreMinute').press('Tab');
-    await ledger.waitForFunction(() => /At minute 10/.test(document.getElementById('scores').textContent));
-    check('selecting another minute changes the leader', (await ledger.locator('#scores tr').nth(1).textContent()).startsWith('1Older Runner'));
-    await ledger.fill('#scoreMinute', '0'); await ledger.locator('#scoreMinute').press('Tab');
-    check('invalid minute input restores the last valid comparison', await ledger.inputValue('#scoreMinute') === '10');
+    await ledger.waitForFunction(() => /Older Runner/.test(document.getElementById('ledger-scores').textContent));
+    ranked = await ledger.locator('#ledger-scores tr').allTextContents();
+    check('full leaderboard matches the game across the shared backend', ranked[1].startsWith('1Minute Runner') && ranked[2].startsWith('1Tied Runner') && ranked[3].startsWith('3Older Runner'));
+    await ledger.fill('#ledger-scoreMinute', '10'); await ledger.locator('#ledger-scoreMinute').press('Tab');
+    await ledger.waitForFunction(() => /At minute 10/.test(document.getElementById('ledger-scores').textContent));
+    check('selecting another minute changes the leader', (await ledger.locator('#ledger-scores tr').nth(1).textContent()).startsWith('1Older Runner'));
+    await ledger.fill('#ledger-scoreMinute', '0'); await ledger.locator('#ledger-scoreMinute').press('Tab');
+    check('invalid minute input restores the last valid comparison', await ledger.inputValue('#ledger-scoreMinute') === '10');
     await ledger.click('[data-order="total"]');
-    await ledger.waitForFunction(() => /Legacy Runner/.test(document.getElementById('scores').textContent));
-    check('lifetime ranking includes players without minute history', (await ledger.locator('#scores tr').nth(1).textContent()).startsWith('1Legacy Runner'));
+    await ledger.waitForFunction(() => /Legacy Runner/.test(document.getElementById('ledger-scores').textContent));
+    check('lifetime ranking includes players without minute history', (await ledger.locator('#ledger-scores tr').nth(1).textContent()).startsWith('1Legacy Runner'));
     await ledger.close();
     // A low-placed player remains visible on both pages rather than being sliced away.
     for (let i = 0; i < 35; i++) db.players.push({ id: 'ahead' + i, name: 'Ahead ' + i, total: 10000, played: 800, pace0: '{"9":1000}' });
     await page.evaluate(() => MUSTEAT.sync());
     check('your row survives outside the top 15', /36/.test(await page.textContent('#board tr.me')) && /Minute Runner/.test(await page.textContent('#board tr.me')));
     const full = await context.newPage(); await full.goto(url + 'ledger.html?minute=9');
-    await full.waitForSelector('#scores tr.me');
-    check('your row survives outside the top 30', /36/.test(await full.textContent('#scores tr.me')));
+    await full.waitForSelector('#ledger-scores tr.me');
+    check('your row survives outside the top 30', /36/.test(await full.textContent('#ledger-scores tr.me')));
     await full.close();
 
     console.log('first crate and visual checks');
