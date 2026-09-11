@@ -1,4 +1,4 @@
-// News reward: affordability, persistence, reveal and interruption. Local backend only.
+// News reward: earnings threshold, free claim, persistence, reveal and interruption. Local backend only.
 const { chromium } = require('playwright');
 const { start } = require('./sheetmock');
 const assert = require('node:assert/strict');
@@ -12,25 +12,26 @@ start(0, async ({srv, url}) => {
     await page.goto(url + 'index.html?dev'); await page.click('#intro');
     await page.fill('#nm', 'Signal Thief'); await page.click('#go');
     await page.waitForFunction(() => MUSTEAT.state.id);
-    const setup = cash => page.evaluate(cash => {
-      const s = MUSTEAT.state; s.cash = cash; s.nextEvent = Date.now() + 1e9; s.crateAt = Date.now() + 1e9;
+    const setup = (cash, total = 10000) => page.evaluate(({cash, total}) => {
+      const s = MUSTEAT.state; s.cash = cash; s.total = total; s.nextEvent = Date.now() + 1e9; s.crateAt = Date.now() + 1e9;
       s.told = {gang:Date.now(),rec:Date.now()}; MUSTEAT.render();
-    }, cash);
-    await setup(49);
+    }, {cash, total});
+    await setup(9999, 9999);
     ok('new player starts with the original grey ticker', await page.locator('.news-default-head').isVisible() && await page.locator('#newsCard').getAttribute('role') === 'button' && await page.locator('#federationNews').evaluate(e => getComputedStyle(e).color === 'rgb(199, 210, 212)'));
     const originalHeadline=await page.locator('#federationNews').getAttribute('data-headline');
     await page.locator('#newsCard').click();
     ok('default ticker can advance before buying the reward', await page.locator('#federationNews').getAttribute('data-headline') !== originalHeadline);
-    ok('reward is named and priced at 50 credits', await page.locator('[data-upg="propaganda"]').innerText() === '₵50' && /Decrypt federation propaganda/.test(await page.locator('[data-upg="propaganda"]').locator('..').innerText()));
-    ok('purchase is disabled below 50 credits', await page.locator('[data-upg="propaganda"]').isDisabled());
+    ok('reward is unavailable below 10K lifetime earnings', await page.locator('[data-upg="propaganda"]').count() === 0);
+    ok('locked reward explains its earnings requirement', /Decrypt federation propaganda at ₵10K lifetime earnings/.test(await page.locator('#upgrades').innerText()));
     await page.evaluate(() => MUSTEAT.buyUpgrade('propaganda'));
-    ok('purchase logic rejects insufficient funds', await page.evaluate(() => MUSTEAT.state.cash === 49 && !MUSTEAT.state.upg.propaganda));
-    await setup(50);
+    ok('claim logic rejects earnings below the threshold', await page.evaluate(() => MUSTEAT.state.cash === 9999 && !MUSTEAT.state.upg.propaganda));
+    await setup(0, 10000);
+    ok('reward is free and claimable at exactly 10K even after spending the cash', await page.locator('[data-upg="propaganda"]').innerText() === 'Attempt hack' && await page.locator('[data-upg="propaganda"]').isEnabled());
     await page.emulateMedia({reducedMotion:'no-preference'});
     await page.click('[data-upg="propaganda"]');
-    ok('buying spends exactly 50 credits and saves immediately', await page.evaluate(() => MUSTEAT.state.cash === 0 && MUSTEAT.state.upg.propaganda && JSON.parse(localStorage.musteat_save).upg.propaganda));
+    ok('claiming costs nothing and saves immediately', await page.evaluate(() => MUSTEAT.state.cash === 0 && MUSTEAT.state.upg.propaganda && JSON.parse(localStorage.musteat_save).upg.propaganda));
     await page.waitForSelector('.news-decryption');
-    ok('purchase reveals decryption within the compact CRT', (await page.locator('#newsCard').boundingBox()).width < 200 && await page.locator('#newsCard').getAttribute('aria-expanded') === null && await page.locator('.news-default-head').isHidden());
+    ok('claim reveals decryption within the compact CRT', (await page.locator('#newsCard').boundingBox()).width < 200 && await page.locator('#newsCard').getAttribute('aria-expanded') === null && await page.locator('.news-default-head').isHidden());
     await page.waitForFunction(() => document.querySelector('.news-decrypt-status')?.textContent.includes('BREAKING CIPHER'));
     ok('cipher animates before revealing the message', /[01#$%<>/{}\[\]]/.test(await page.locator('.news-cipher').innerText()));
     await page.waitForFunction(() => document.querySelector('.news-decrypt-status')?.textContent.includes('ACCESS GRANTED'));

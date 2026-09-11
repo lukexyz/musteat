@@ -17,6 +17,9 @@ start(0,async({srv,url})=>{
   const instance=game.url(),slot=new URL(instance).searchParams.get('slot');
   ok('clicking Play allocates an instance and consumes game=new',/^game-[a-f0-9]{32}$/.test(slot)&&!new URL(instance).searchParams.has('game'));
   ok('new instance has zero progress and starts with the intro',await game.evaluate(()=>!MUSTEAT.state.id&&!MUSTEAT.state.name&&MUSTEAT.state.cash===0&&MUSTEAT.state.total===0));
+  await game.waitForTimeout(5500);
+  ok('first-visit intro waits for a click past the former timeout',await game.locator('#intro').isVisible()&&await game.locator('#modal').isHidden());
+  ok('reduced-motion intro text remains readable',await game.locator('#intro .lines p').evaluateAll(lines=>lines.every(p=>getComputedStyle(p).opacity==='1')));
   await game.reload();await game.waitForSelector('#intro:not([hidden])');
   ok('refresh before registration keeps the allocated instance',game.url()===instance);
   await game.click('#intro');ok('intro leads to fresh alias registration',await game.locator('#nm').inputValue()==='');await game.fill('#nm','New Citizen');await game.click('#go');await game.waitForFunction(()=>MUSTEAT.state.id);

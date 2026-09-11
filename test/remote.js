@@ -35,7 +35,7 @@ start(0, async ({ srv, db, url }) => {
   console.log('Bob joins from laptop B through the link');
   const B = await (await ctxOf()).newPage();
   await B.goto(game + '&ref=' + code); await skip(B);
-  ok('intro names Ada and applies the referral without a code field', /recruited by[\s\S]*Ada/.test(await B.textContent('#modalBox')) && !(await B.$('#refIn')) && await B.evaluate(() => MUSTEAT.state.ref) === code, await B.textContent('#modalBox'));
+  ok('compact registration applies the referral without a code field', /Citizen Registration[\s\S]*The Ministry finds you suspicious\./.test(await B.textContent('#modalBox')) && !(await B.$('#refIn')) && await B.evaluate(() => MUSTEAT.state.ref) === code, await B.textContent('#modalBox'));
   await B.fill('#nm', 'Bob'); await B.click('#go');
   await B.waitForFunction(() => window.MUSTEAT.state.id); await reveal(B);
   await B.waitForFunction(() => /running for[\s\S]*Ada/.test(document.getElementById('recruiter').textContent), null, { timeout: 8000 }).catch(() => {});
@@ -69,7 +69,7 @@ start(0, async ({ srv, db, url }) => {
   ok('offer on the backend row', !!db.players.find(p => p.name === 'Ada').offer, JSON.stringify(db.players.find(p => p.name === 'Ada')));
   const C = await (await ctxOf()).newPage();
   await C.goto(game + '&fr=' + code); await skip(C);
-  ok('Kim sees the handover offer', /Ada[\s\S]*handing you[\s\S]*Bunker Bao №2/.test(await C.textContent('#modalBox')), await C.textContent('#modalBox'));
+  ok('Kim can accept the handover from compact registration', /Citizen Registration/.test(await C.textContent('#modalBox')) && await C.locator('#go').textContent() === 'TAKE THE BUSINESS', await C.textContent('#modalBox'));
   await C.fill('#nm', 'Kim'); await C.click('#go');
   await C.waitForFunction(() => window.MUSTEAT.state.id); await reveal(C);
   await C.waitForFunction(() => /franchise of[\s\S]*Ada/.test(document.getElementById('recruiter').textContent), null, { timeout: 8000 }).catch(() => {});

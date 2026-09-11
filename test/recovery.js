@@ -32,10 +32,12 @@ start(0, async ({ srv, db, url }) => {
     await A.click('[data-act="ration"]');
     await A.click('[data-act="replayIntro"]');
     ok('intro keeps six lines, now set in 2099', await A.locator('#intro .lines p').count() === 6 && /2099/.test(await A.textContent('#intro')) && !/3019/.test(await A.textContent('#intro')) && /ACCESS DENIED/.test(await A.textContent('#intro')));
-    await A.waitForSelector('#intro', { state: 'hidden', timeout: 6500 });
-    ok('replayed intro ends after five seconds without registering again', await A.evaluate(() => MUSTEAT.state.id) === aid && !await A.isVisible('#modal'));
+    await A.waitForTimeout(5500);
+    ok('replayed intro stays open until the player continues', await A.isVisible('#intro') && await A.locator('#introContinue').textContent() === 'Click to continue');
+    await A.keyboard.press('Enter');
+    ok('keyboard continues without registering again', !await A.isVisible('#intro') && await A.evaluate(() => MUSTEAT.state.id) === aid && !await A.isVisible('#modal'));
     await A.click('[data-act="replayIntro"]'); await A.click('#intro');
-    ok('replayed intro is still skippable', !await A.isVisible('#intro') && !await A.isVisible('#modal'));
+    ok('clicking anywhere also continues the replayed intro', !await A.isVisible('#intro') && !await A.isVisible('#modal'));
     await A.click('[data-act="saveInfo"]');
     ok('save panel identifies the loaded citizen', (await A.textContent('#modalBox')).includes(aid) && /Luke/.test(await A.textContent('#modalBox')));
     await A.click('#ok');

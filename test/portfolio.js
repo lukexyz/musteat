@@ -3,7 +3,7 @@ const { chromium } = require('playwright');
 const { start } = require('./sheetmock');
 const assert = require('node:assert/strict');
 
-start(0, async ({ srv, url }) => {
+start(0, async ({ srv, db, url }) => {
   let browser, checks = 0;
   const ok = (name, value) => { assert.ok(value, name); checks++; console.log('  ok   ' + name); };
   try {
@@ -42,10 +42,9 @@ start(0, async ({ srv, url }) => {
     ok('scene uses most copies rather than highest tier', /Hoverbike×16/.test(await page.locator('#operation .scene-name').innerText()));
     ok('scene dots match count', await page.locator('#operation .tech-dots i').count() === 16);
     ok('machinery follows the operation at the bottom of Portfolio', await page.locator('#pfTech').evaluate(e => e.closest('section') === document.querySelector('#tab-portfolio').lastElementChild && e.closest('section').previousElementSibling.contains(document.getElementById('operation'))));
-    await page.evaluate(() => {
-      MUSTEAT.state.down.list = Array.from({length:4}, (_, i) => ({id:'runner'+i,code:'RUN'+i,name:'Runner '+i,level:1,total:1000,rank:0,lastSeen:Date.now()}));
-      MUSTEAT.render();
-    });
+    const runnerRef = await page.evaluate(() => MUSTEAT.state.code);
+    db.players.push(...Array.from({length:4}, (_, i) => ({id:'runner'+i,code:'RUN'+i,ref:runnerRef,name:'Runner '+i,total:1000,rank:0,lastSeen:Date.now()})));
+    await page.evaluate(async () => { await MUSTEAT.sync(); MUSTEAT.render(); });
     for (const width of [1000,390]) {
       await page.setViewportSize({width,height:650});
       await page.emulateMedia({reducedMotion:width === 1000 ? 'no-preference' : 'reduce'});
@@ -54,7 +53,8 @@ start(0, async ({ srv, url }) => {
       ok('View empire scrolls to the breakdown at '+width+'px', await page.locator('#pfEmpire .pyr').isVisible() && await page.locator('#tabPfB').evaluate(e => e.getBoundingClientRect().bottom < 0));
       ok('View empire focuses its destination at '+width+'px', await page.locator('#pfEmpire').evaluate(e => e === document.activeElement));
     }
-    await page.evaluate(() => { MUSTEAT.state.down.list = []; MUSTEAT.render(); });
+    db.players = db.players.filter(p => !/^runner[0-3]$/.test(p.id));
+    await page.evaluate(async () => { await MUSTEAT.sync(); MUSTEAT.render(); });
     ok('solo players retain the Recruit action', await page.locator('#empireLive [data-act="share"]').innerText() === 'Recruit');
     ok('unlock survives recovery encoding', await page.evaluate(async () => (await MUSTEAT.decodeRecovery(await MUSTEAT.encodeRecovery(MUSTEAT.state))).portfolioUnlocked));
     await page.evaluate(() => MUSTEAT.save()); await page.reload();

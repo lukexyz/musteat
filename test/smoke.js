@@ -27,7 +27,7 @@ function serve() {
   });
 }
 
-// A fresh player lands on the splash. Tap it rather than wait five seconds, then wait for registration.
+// A fresh player lands on the splash. Tap to continue, then wait for registration.
 const skip = async page => { await page.waitForSelector('#intro:not([hidden])', { timeout: 5000 }); await page.click('#intro'); await page.waitForSelector('#modal:not([hidden])'); };
 async function register(page, name, dept) {
   if (await page.$('#intro:not([hidden])')) await skip(page);
@@ -58,7 +58,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   const p1 = await ctx.newPage();
   await p1.addInitScript(PATCH_INIT);
   await p1.goto(url + '?dev');
-  ok('noir splash first: 2099, everyone must eat, tap to skip', await p1.isVisible('#intro') && /2099/.test(await p1.textContent('#intro')) && /EVERYONE MUST EAT/.test(await p1.textContent('#intro')) && !(await p1.isVisible('#modal')));
+  ok('noir splash first: 2099, eating to survive, tap to skip', await p1.isVisible('#intro') && /2099/.test(await p1.textContent('#intro')) && /Eating is the only way to survive\./.test(await p1.textContent('#intro')) && !(await p1.isVisible('#modal')));
   await skip(p1);
   ok('intro modal shown after the splash', await p1.isVisible('#modal') && !(await p1.isVisible('#intro')));
   ok('body not scrollable horizontally', await p1.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));

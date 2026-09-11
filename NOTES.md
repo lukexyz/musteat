@@ -14,8 +14,8 @@ backend). `index.html` is the current one.
 ## First visit
 
 With no save in the browser the page opens on a splash: six lines of dystopian terminal fiction (2099, a city locked by a Ministry update,
-frozen accounts, subscribed hunger, and a leaked courier login) that fade in one at a time. It moves on to registration
-by itself after five seconds, or on a tap. `CONFIG.INTRO_S` sets the wait. Returning players never see it.
+frozen accounts, subscribed hunger, and sneaking out to survive) that fade in one at a time. It waits for a click or tap anywhere,
+or activation of the "Click to continue" button, before showing registration. Returning players only see it when they replay it.
 
 ## Run it
 
@@ -169,7 +169,7 @@ for moving to another database.
 - Sell to the Ministry is the solo fallback: half the stamps, no royalty, and only enabled when it would raise income by at least a quarter.
 - A franchisee posts to the feed each time the franchise passes ₵100K, ₵1M, ₵10M and so on, naming who gets the 25%.
 - What a franchisor keeps earning: 25% of the franchisee's lifetime total (which includes the franchisee's own runner cuts), plus the normal 5% and 2.5% from anyone the franchisee recruits (levels 2 and 3). Runners never transfer: they belong to a code, not a shop. A Ministry sale pays stamps only.
-- Two folder tabs, OPERATIONS and PORTFOLIO. The Portfolio tab opens with your empire: headcount by level, credits earned by other people's work, the share of your income that is someone else's, and the pyramid itself (you on top, one row per level, idle runners faded, franchisees gold).
+- Two folder tabs, OPERATIONS and PORTFOLIO, with centered labels. Operations has a green hatch and a quick glyph rotation on click. The Portfolio tab opens with a compact money trail even with no recruits: up to three real upline records with commission rates including building/franchise bonuses. Your lifetime earnings stay visible. Name cards reveal only lifetime earnings and recorded lifetime tax in place, with red for outgoing payments and green for incoming payments. Opening Portfolio preloads the citizen/payment cache and refreshes shared data; hovering never fetches. Sector 7 and the hypothetical "Find a recruit" card open the four-message share modal. The hypothetical card does not create a runner or change commission rules. A small eye pyramid sits above the chain, and the income bar retains the three deduction labels. Shops keep their ancestry and usernames with dashed dependency ties; referral commissions continue. Franchisees stay gold. Motion effects honour reduced motion. Your empire follows with headcount by level, income from other people's work, and the downline pyramid.
 - The Portfolio tab then lists your runners' businesses: each downline member with their shop, level, lifetime earnings and rate, and your cut from them, all time and per second.
 - The Portfolio tab is also the trophy cabinet: every franchise with the gear and buildings it had, income at handover, live total earned, revenue per minute (from the last few syncs), royalty owed to you, and whether the franchisee is still open. Under the businesses is the Runners shelf: one card per downline member, in order of what has been taken from them, with their shop or "runs for you", direct or via whom, when they first appeared under you, taken all time (from your ledger, exact), taking now (rate over the last syncs), your rate and idle status. People as trophies.
 - Runners pay 10% to their shop owner until they open a shop (₵5,000).
