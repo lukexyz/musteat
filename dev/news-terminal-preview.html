@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MUSTEAT — News terminal studies</title>
+<style>
+:root{color-scheme:dark;--ink:#d9e2df;--muted:#73817c;--rule:#25302b;--scale:1}
+*{box-sizing:border-box}
+body{margin:0;background:#080b0a;color:var(--ink);font:13px/1.5 ui-monospace,Consolas,"Courier New",monospace}
+main{max-width:1120px;margin:auto;padding:38px 32px 48px}
+button{font:inherit;cursor:pointer;color:#b9c6bf;background:#101612;border:1px solid #354239;padding:8px 12px;border-radius:2px}
+button:hover{color:white;border-color:#9aafa0}button:focus-visible{outline:2px solid #c0f8cc;outline-offset:4px}
+button[aria-pressed="true"]{color:#caffd4;border-color:#86b893;background:#19281e}
+.masthead{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--rule);padding-bottom:16px;font-size:10px;letter-spacing:2px;color:#a9b9ad}
+.masthead span:last-child{color:#62756a;letter-spacing:1px}
+.intro{display:flex;align-items:end;justify-content:space-between;gap:24px;margin:30px 0 24px}
+h1{font-size:clamp(24px,4vw,38px);font-weight:500;letter-spacing:-1.5px;line-height:1.1;margin:0 0 12px;color:#e4eee7}
+.intro p{color:var(--muted);max-width:580px;margin:0;font-size:12px}.edition{font-size:10px;color:#849a8b;white-space:nowrap}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;padding-bottom:25px}.toolbar button{font-size:11px}.toolbar .size{margin-left:auto}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.study{--accent:#a4d3b0;min-width:0;border:1px solid #28332d;background:#0b100d;transition:border-color .2s}
+.study.chosen{border-color:var(--accent)}
+.study-head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #1d2921}
+.number{color:var(--accent);font-size:13px}.study h2{font-size:11px;letter-spacing:1.8px;font-weight:500;margin:0;color:#d4ded6}.kind{margin-left:auto;font-size:8px;letter-spacing:1px;color:#738479}
+.bay{height:260px;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at center,#17241a50,transparent 70%);position:relative}
+.bay::before,.bay::after{position:absolute;color:#354439;font-size:10px}.bay::before{content:'+';left:12px;top:9px}.bay::after{content:'+';right:12px;bottom:9px}
+.screen-space{width:calc(336px * var(--scale));height:calc(190px * var(--scale));flex-shrink:0}
+.screen{position:relative;width:336px;height:190px;transform:scale(var(--scale));transform-origin:top left;overflow:hidden;font-family:"Courier New",monospace;background:#000}
+.study-foot{border-top:1px solid #1d2921;padding:15px 20px;display:flex;align-items:center;gap:18px}.study-foot p{font-size:11px;line-height:1.6;color:#85978b;margin:0;flex:1}.pick{font-size:10px;white-space:nowrap;padding:7px 10px}
+.headline{position:relative;margin:0;font-size:18px;line-height:1.4;font-weight:400;overflow-wrap:break-word;letter-spacing:0}
+.cursor{display:inline-block;width:.65em;height:1em;margin-left:3px;vertical-align:-.13em;background:#fff;box-shadow:0 0 5px #ffffff70;animation:cursor 1.1s steps(1,end) infinite}
+.strip{display:flex;align-items:center;justify-content:space-between;font-size:9px;letter-spacing:1.1px;line-height:1.3}.pip{display:inline-block;width:4px;height:4px;margin-right:6px;background:currentColor;box-shadow:0 0 6px currentColor}
+.scanlines{position:absolute;inset:0;z-index:4;pointer-events:none;background:repeating-linear-gradient(0deg,#0004 0 1px,transparent 1px 3px)}
+.phosphor{padding:9px;background:#151a16;border:1px solid #414d40;border-radius:10px;box-shadow:inset 0 1px #73816c44,inset 0 -4px 8px #000}
+.glass{position:relative;height:100%;padding:14px 16px 12px;overflow:hidden;border:1px solid #2b452b;border-radius:18px / 10px;background:radial-gradient(ellipse at 45% 40%,#0c2612,#010702 85%);box-shadow:inset 0 0 18px 7px #000;color:#8af0a0;text-shadow:0 0 4px #77ff9b66,0 0 11px #3cff6540}
+.glass::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(120deg,#ffffff06,transparent 34%);box-shadow:inset 0 0 25px #0008}
+.phosphor .strip{padding-bottom:10px;border-bottom:1px solid #335d354a;color:#6cbb79;font-size:8px}.phosphor .headline{margin-top:10px;font-size:20px;line-height:1.35}
+.phosphor .bottom{position:absolute;bottom:11px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:end;font-size:7px;color:#3f8c4d;letter-spacing:1px}
+.wave{width:54px;height:14px;overflow:visible}.wave path{fill:none;stroke:#5cc77c;stroke-width:1;stroke-dasharray:80;animation:wave 5s linear infinite}
+.sweep{position:absolute;left:0;right:0;top:-15%;height:24px;background:linear-gradient(transparent,#9cffaa07,transparent);pointer-events:none;animation:roll 9s linear infinite}
+.amber{background:#100b03;border:1px solid #7f5a24;padding:0 15px;color:#edb767;box-shadow:inset 0 0 32px #000}
+.amber::before{content:'';position:absolute;inset:5px;border:1px solid #93641e25;pointer-events:none}
+.amber .strip{height:33px;border-bottom:1px solid #9c6e2e66;color:#b38d55;font-size:8px;letter-spacing:1.5px}.wire-label{color:#100b03;background:#e5ac57;padding:2px 4px;font-weight:bold}
+.wire-old{margin-top:9px;font-size:8px;color:#73512d;white-space:nowrap;overflow:hidden;letter-spacing:.8px}
+.wire-message{display:flex;gap:10px;margin-top:9px}.gutter{font-size:8px;line-height:24px;color:#73512d;border-right:1px solid #97612244;padding-right:8px}.amber .headline{font-size:20px;line-height:1.38;text-shadow:0 0 7px #ffab2330}
+.amber .cursor{background:#ffcb7c;box-shadow:0 0 7px #ffbd4c80}
+.wire-footer{position:absolute;left:15px;right:15px;bottom:10px;display:flex;justify-content:space-between;border-top:1px dashed #755020;padding-top:7px;font-size:8px;letter-spacing:1px;color:#a47e43}
+.wire-feed{display:flex;gap:3px;align-items:center}.wire-feed i{width:3px;height:6px;background:#d7a257;animation:feed 1.8s steps(2,end) infinite;animation-delay:calc(var(--i) * -.19s)}
+.intercept{border:1px solid #326477;background:#030b10;clip-path:polygon(0 0,calc(100% - 15px) 0,100% 15px,100% 100%,15px 100%,0 calc(100% - 15px));color:#c1e7f2;padding:12px 14px}
+.intercept::before{content:'';position:absolute;inset:0;background:linear-gradient(#7cc9e905 1px,transparent 1px),linear-gradient(90deg,#7cc9e905 1px,transparent 1px);background-size:12px 12px;pointer-events:none}
+.intercept .strip{color:#78bace;font-size:8px;border-bottom:1px solid #326477;padding-bottom:9px;position:relative}.intercept .strip b{color:#d5f7ff;font-size:9px;font-weight:400}
+.intercept-body{display:flex;gap:13px;margin-top:14px}.telemetry{flex:0 0 32px;border-right:1px solid #32647766;color:#326779;font-size:7px;line-height:1.8;overflow:hidden;position:relative}.telemetry span{display:block;animation:telemetry 12s steps(1,end) infinite}.intercept .headline{font-size:20px;line-height:1.37;text-shadow:0 0 8px #74d8ff30}
+.intercept .bottom{position:absolute;bottom:12px;left:14px;right:14px;display:flex;align-items:center;gap:10px;font-size:7px;letter-spacing:1px;color:#6ca1b2}.meter{display:flex;gap:3px}.meter i{width:3px;height:8px;background:#659aaf}.meter i:nth-child(n+6){background:#233b45}.checksum{margin-left:auto;color:#46758a}
+.intercept .reticle{position:absolute;width:13px;height:13px;right:7px;bottom:5px;border-bottom:1px solid #8de5ff;border-right:1px solid #8de5ff}
+.pirate{padding:0 13px;border:1px solid #4a4c49;color:#e2e6df;background:#060706;box-shadow:inset 0 0 24px #000}
+.pirate .station{height:37px;margin:0 -13px;padding:7px 13px;background:#dce2d8;color:#10140f;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
+.station b{font-size:15px;letter-spacing:-.8px;line-height:1}.station small{font-size:7px;line-height:1.2;text-align:right;letter-spacing:.7px}.station::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 2px,#0001 2px 3px);pointer-events:none}
+.pirate .strip{font-size:7px;margin-top:10px;letter-spacing:1.2px;color:#7e887c}.pirate .strip span:last-child{color:#e77570}.pirate .headline{margin-top:9px;font-size:20px;line-height:1.38;animation:desync 13s steps(1,end) infinite}
+.pirate-footer{position:absolute;left:13px;right:13px;bottom:10px;border-top:1px solid #474f44;padding-top:7px;font-size:7px;letter-spacing:.7px;color:#af7a72;display:flex;justify-content:space-between;align-items:center}.barcode{width:32px;height:8px;background:repeating-linear-gradient(90deg,#a1aa98 0 1px,transparent 1px 3px,#a1aa98 3px 5px,transparent 5px 8px)}
+.tracking{position:absolute;left:0;right:0;height:3px;top:65%;opacity:0;background:#e4f5e24d;box-shadow:0 3px #000;animation:tracking 13s steps(1,end) infinite;pointer-events:none}
+.footer{display:flex;justify-content:space-between;gap:20px;margin-top:26px;border-top:1px solid var(--rule);padding-top:17px;color:#6e8274;font-size:10px}.footer output{color:#b8d4bf}.native{--scale:.5}
+@keyframes cursor{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes roll{to{transform:translateY(240px)}}
+@keyframes wave{to{stroke-dashoffset:-160}}
+@keyframes feed{0%,100%{opacity:.25}50%{opacity:1}}
+@keyframes telemetry{0%,100%{opacity:.6}35%{opacity:1}36%{opacity:.3}38%{opacity:.8}}
+@keyframes desync{0%,95%,97%,100%{transform:none;text-shadow:none}95.5%{transform:translateX(1px);text-shadow:-2px 0 #c66f6f,2px 0 #70a18d}96%{transform:translateX(-1px);text-shadow:1px 0 #c66f6f}}
+@keyframes tracking{0%,94%,97%,100%{opacity:0}95%{opacity:.6;top:64%}96%{opacity:.25;top:32%}}
+.still *,.still *::before,.still *::after{animation-play-state:paused!important}.still .cursor{opacity:1!important}
+@media(max-width:840px){main{padding:24px 18px}.grid{grid-template-columns:1fr}.intro{align-items:start}.edition{display:none}.bay{height:250px}.toolbar .size{margin-left:0}}
+@media(max-width:390px){main{padding:20px 10px}.screen-space{--scale:.85}.native .screen-space{--scale:.5}.study-head,.study-foot{padding-left:12px;padding-right:12px}.kind{font-size:7px}.footer{flex-direction:column;gap:8px}.masthead{font-size:8px;letter-spacing:1px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <div class="masthead"><span>MUSTEAT / SIGNAL LAB</span><span>OFFLINE STUDIES · 2099</span></div>
+  <div class="intro"><div><h1>News from the machine.</h1><p>Four screens from the same surveillance desk. Same headline, different hardware.</p></div><span class="edition">SELECT A FREQUENCY ↓</span></div>
+  <div class="toolbar" aria-label="Preview controls">
+    <button id="replay">Replay transmission ↻</button>
+    <button id="next">Next headline →</button>
+    <button id="motion" aria-pressed="false">Pause motion</button>
+    <button id="size" class="size" aria-pressed="false">Show at game size</button>
+  </div>
+  <div class="grid">
+    <article class="study" data-name="Phosphor" style="--accent:#89d49d">
+      <div class="study-head"><span class="number">01</span><h2>PHOSPHOR</h2><span class="kind">SALVAGED CRT</span></div>
+      <div class="bay"><div class="screen-space"><div class="screen phosphor">
+        <div class="glass"><div class="strip"><span>FEDERATION / NEWS</span><span><i class="pip"></i>LIVE</span></div>
+          <p class="headline"><span class="copy"></span><span class="cursor" aria-hidden="true"></span></p>
+          <div class="bottom"><span>RX 09.17 / SIGNAL CLEAN</span><svg class="wave" viewBox="0 0 54 14" aria-hidden="true"><path d="M0 8h9l3-3 3 6 4-10 4 12 3-5h9l2-3 2 5 3-2h12"/></svg></div>
+          <div class="sweep"></div><div class="scanlines"></div>
+        </div>
+      </div></div></div>
+      <div class="study-foot"><p>Curved glass, soft green phosphor, a slow scan. The monitor nobody turns off.</p><button class="pick" aria-pressed="false">Choose 01</button></div>
+    </article>
+    <article class="study" data-name="Dead Wire" style="--accent:#dfb675">
+      <div class="study-head"><span class="number">02</span><h2>DEAD WIRE</h2><span class="kind">AGENCY TELETYPE</span></div>
+      <div class="bay"><div class="screen-space"><div class="screen amber">
+        <div class="strip"><span class="wire-label">FNN</span><span>FEDERATION NEWSWIRE</span><span>017</span></div>
+        <div class="wire-old">23:59:08 &gt; PREVIOUS BULLETIN ARCHIVED_</div>
+        <div class="wire-message"><div class="gutter" aria-hidden="true">01<br>02<br>03</div><p class="headline"><span class="copy"></span><span class="cursor" aria-hidden="true"></span></p></div>
+        <div class="wire-footer"><span>END OF DISPATCH / 0041</span><span class="wire-feed" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i></span></div>
+        <div class="scanlines"></div>
+      </div></div></div>
+      <div class="study-foot"><p>Amber wire copy, numbered lines, a restless feed. Bureaucracy after midnight.</p><button class="pick" aria-pressed="false">Choose 02</button></div>
+    </article>
+    <article class="study" data-name="Wiretap" style="--accent:#8cc6dc">
+      <div class="study-head"><span class="number">03</span><h2>WIRETAP</h2><span class="kind">PASSIVE INTERCEPT</span></div>
+      <div class="bay"><div class="screen-space"><div class="screen intercept">
+        <div class="strip"><b>⌖ INTERCEPT / FNN</b><span>DECRYPTED</span></div>
+        <div class="intercept-body"><div class="telemetry" aria-hidden="true"><span>0F<br>A7<br>01<br>9C<br>FF</span></div><p class="headline"><span class="copy"></span><span class="cursor" aria-hidden="true"></span></p></div>
+        <div class="bottom"><div class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span>LOCK 98.4%</span><span class="checksum">CRC // 7F2A</span></div>
+        <span class="reticle" aria-hidden="true"></span><div class="scanlines"></div>
+      </div></div></div>
+      <div class="study-foot"><p>Cold telemetry, clipped edges, stolen packets. You weren’t meant to receive this.</p><button class="pick" aria-pressed="false">Choose 03</button></div>
+    </article>
+    <article class="study" data-name="Pirate Channel" style="--accent:#d7c3b6">
+      <div class="study-head"><span class="number">04</span><h2>PIRATE CHANNEL</h2><span class="kind">HIJACKED BROADCAST</span></div>
+      <div class="bay"><div class="screen-space"><div class="screen pirate">
+        <div class="station"><b>FEDERATION_</b><small>PUBLIC INFORMATION<br>NETWORK / CH.04</small></div>
+        <div class="strip"><span>OFFICIAL BULLETIN</span><span><i class="pip"></i>FEED OVERRIDDEN</span></div>
+        <p class="headline"><span class="copy"></span><span class="cursor" aria-hidden="true"></span></p>
+        <div class="pirate-footer"><span>YOUR COMPLIANCE IS APPRECIATED.</span><span class="barcode" aria-hidden="true"></span></div>
+        <div class="tracking"></div><div class="scanlines"></div>
+      </div></div></div>
+      <div class="study-foot"><p>Official branding. Unofficial signal. White phosphor with a little tracking damage.</p><button class="pick" aria-pressed="false">Choose 04</button></div>
+    </article>
+  </div>
+  <div class="footer"><span id="scaleNote">Enlarged 2× for comparison · each design fits the same card.</span><output id="choice" aria-live="polite">No frequency selected.</output></div>
+</main>
+<script>
+const headlines = [
+  'New patch removes free will. Most users unaffected.',
+  'Oxygen trial ends tonight. Please exhale responsibly.',
+  'Simulation denies lag. Citizens told to blink faster.',
+  'Public park replaced by a picture of a public park.'
+];
+const copies = [...document.querySelectorAll('.copy')];
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+let current = 0, timer = 0, paused = reducedMotion.matches;
+function print(text) { copies.forEach(copy => { copy.textContent = text; }); }
+function transmit() {
+  clearTimeout(timer);
+  const text = headlines[current];
+  if (paused || reducedMotion.matches) { print(text); return; }
+  print('');
+  let i = 0;
+  const type = () => { print(text.slice(0, ++i)); if (i < text.length) timer = setTimeout(type, 32 + (i * 13 % 28)); };
+  timer = setTimeout(type, 1100);
+}
+function syncMotion() {
+  document.body.classList.toggle('still', paused);
+  document.getElementById('motion').setAttribute('aria-pressed', String(paused));
+  document.getElementById('motion').textContent = paused ? 'Resume motion' : 'Pause motion';
+  if (paused) { clearTimeout(timer); print(headlines[current]); }
+}
+document.getElementById('replay').onclick = transmit;
+document.getElementById('next').onclick = () => { current = (current + 1) % headlines.length; transmit(); };
+document.getElementById('motion').onclick = () => { paused = !paused; syncMotion(); };
+document.getElementById('size').onclick = event => {
+  const native = document.body.classList.toggle('native');
+  event.currentTarget.setAttribute('aria-pressed', String(native));
+  event.currentTarget.textContent = native ? 'Enlarge for comparison' : 'Show at game size';
+  document.getElementById('scaleNote').textContent = native ? 'Game-size preview · 168 × 95 px at the desktop layout.' : 'Enlarged 2× for comparison · each design fits the same card.';
+};
+document.querySelectorAll('.pick').forEach((button, i) => {
+  button.onclick = () => {
+    document.querySelectorAll('.study').forEach((study, j) => {
+      study.classList.toggle('chosen', i === j);
+      study.querySelector('.pick').setAttribute('aria-pressed', String(i === j));
+      study.querySelector('.pick').textContent = i === j ? 'Selected ✓' : 'Choose 0' + (j + 1);
+    });
+    document.getElementById('choice').textContent = 'Selected: 0' + (i + 1) + ' / ' + button.closest('.study').dataset.name;
+  };
+});
+reducedMotion.addEventListener('change', () => { paused = reducedMotion.matches; syncMotion(); });
+print(headlines[current]); syncMotion();
+</script>
+</body>
+</html>

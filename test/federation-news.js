@@ -8,7 +8,7 @@ start(0,async({srv,url})=>{let browser,checks=0;const ok=(name,value)=>{assert.o
  page.on('pageerror',e=>errors.push(e.message));
  await page.addInitScript(()=>{window.newsTime=Date.now();Date.now=()=>window.newsTime});
  await page.goto(url+'index.html?dev');await page.click('#intro');await page.fill('#nm','Bottom Rung');await page.click('#go');await page.waitForFunction(()=>MUSTEAT.state.id);
- await page.evaluate(()=>{const s=MUSTEAT.state;s.ref='BOSS';s.shop=null;s.nextEvent=Date.now()+1e9;s.crateAt=Date.now()+1e9;s.told={gang:Date.now(),rec:Date.now()};MUSTEAT.render()});
+ await page.evaluate(()=>{const s=MUSTEAT.state;s.ref='BOSS';s.shop=null;s.upg.propaganda=true;s.nextEvent=Date.now()+1e9;s.crateAt=Date.now()+1e9;s.told={gang:Date.now(),rec:Date.now()};MUSTEAT.render()});
  ok('exactly 50 distinct short headlines',headlines.length===50&&new Set(headlines.map(h=>h[0])).size===50&&headlines.every(h=>h[0].replaceAll('|','').length<=60));
  const seen=new Set();
  await page.emulateMedia({reducedMotion:'no-preference'});
@@ -16,10 +16,10 @@ start(0,async({srv,url})=>{let browser,checks=0;const ok=(name,value)=>{assert.o
  // Empty the initial pre-registration bag, then sample a complete eligible cycle.
  for(let i=0;i<100;i++){await advance();seen.add(+await page.locator('#federationNews').getAttribute('data-headline'))}
  ok('all 50 can appear for a solo runner paying both taxes',seen.size===50);
- for(const width of [1000,521,360]){
+ for(const width of [1000,521,360,320]){
   await page.setViewportSize({width,height:900});
   let fits=true;
-  for(const [text] of headlines){fits&&=await page.locator('#federationNews').evaluate((e,text)=>{e.textContent=text.replace(/\.$/,'')+'_';const r=e.getBoundingClientRect(),card=e.closest('.stat').getBoundingClientRect();return e.scrollWidth<=e.clientWidth&&r.bottom<=card.bottom&&document.documentElement.scrollWidth<=innerWidth},text)}
+  for(const [text] of headlines){fits&&=await page.locator('#federationNews').evaluate((e,text)=>{e.textContent=text+'█';const r=e.getBoundingClientRect(),card=e.closest('.stat').getBoundingClientRect(),slot=e.closest('.news-slot').getBoundingClientRect();return e.scrollWidth<=e.clientWidth&&r.bottom<=card.bottom&&card.bottom<=slot.bottom+1&&document.documentElement.scrollWidth<=innerWidth},text)}
   ok('every headline fits without scrolling or clipping at '+width+'px',fits);
  }
  await advance();const index=await page.locator('#federationNews').getAttribute('data-headline');
@@ -35,12 +35,25 @@ start(0,async({srv,url})=>{let browser,checks=0;const ok=(name,value)=>{assert.o
    requestAnimationFrame(watch);
  });
  ok('headline advances at forty-five seconds',await page.locator('#federationNews').getAttribute('data-headline')!==index);
- ok('scrolling label runs at the slower forty-five-second pace',await page.locator('.news-track').evaluate(e=>getComputedStyle(e).animationDuration==='45s'));
+ ok('CRT has a steady station label and slow scan',await page.locator('.news-head').innerText()==='FEDERATION / NEWS\nLIVE'&&await page.locator('.news-sweep').evaluate(e=>getComputedStyle(e).animationDuration==='9s'));
  await page.waitForFunction(()=>!document.querySelector('.news-caret'));
  ok('rabbit flashes twice before the headline speed-types',await page.evaluate(()=>newsMotion.flashes===2&&newsMotion.beforeTyping&&newsMotion.typed));
- ok('finished headline replaces the full stop with an underscore and clears the boot animation',await page.locator('.news-caret,.news-rabbit,.news-char').count()===0&&await page.locator('#federationNews').innerText()===headlines[+await page.locator('#federationNews').getAttribute('data-headline')][0].replace(/\.$/,'')+'_');
- ok('no player controls or purple emphasis remain in the card',await page.locator('#newsCard button,#federationNews b').count()===0&&await page.locator('#federationNews').evaluate(e=>e.children.length===1&&getComputedStyle(e).color==='rgb(199, 210, 212)'));
- ok('underscore is white with a gentle blink and small bloom',await page.locator('.news-end-caret').evaluate(e=>{const s=getComputedStyle(e);return s.color==='rgb(255, 255, 255)'&&s.animationDuration==='2.8s'&&s.textShadow!=='none'&&e.getAttribute('aria-hidden')==='true'}));
+ ok('finished headline retains its full stop and clears the boot animation',await page.locator('.news-caret,.news-rabbit,.news-char').count()===0&&await page.locator('#federationNews').innerText()===headlines[+await page.locator('#federationNews').getAttribute('data-headline')][0]);
+ ok('headline uses green phosphor with no nested controls',await page.locator('#newsCard button,#federationNews b').count()===0&&await page.locator('#federationNews').evaluate(e=>e.children.length===1&&getComputedStyle(e).color==='rgb(138, 240, 160)'));
+ ok('block cursor is white with a gentle blink and small bloom',await page.locator('.news-end-caret').evaluate(e=>{const s=getComputedStyle(e);return s.backgroundColor==='rgb(255, 255, 255)'&&s.animationDuration==='1.1s'&&s.boxShadow!=='none'&&e.getAttribute('aria-hidden')==='true'}));
+ await page.setViewportSize({width:1000,height:900});
+ const compactBefore=await page.locator('#newsCard').boundingBox();
+ const headlineIndex=()=>page.locator('#federationNews').getAttribute('data-headline');
+ let previous=await headlineIndex();
+ for(const action of ['click','click','Enter','Space']){
+  if(action==='click')await page.locator('#newsCard').click();else{await page.locator('#newsCard').focus();await page.keyboard.press(action)}
+  const next=await headlineIndex();ok(action+' advances to a different headline',next!==previous);previous=next;
+ }
+ ok('clicks and keyboard input never enlarge the terminal',JSON.stringify(await page.locator('#newsCard').boundingBox())===JSON.stringify(compactBefore)&&await page.locator('#newsCard').getAttribute('aria-expanded')===null);
+ ok('terminal exposes a next-headline button to keyboards',await page.locator('#newsCard').getAttribute('role')==='button'&&await page.locator('#newsCard').getAttribute('tabindex')==='0');
+ await page.waitForFunction(()=>!document.querySelector('.news-caret'));
+ ok('CRT glass reaches every edge without an outer bezel',await page.locator('#newsCard').evaluate(e=>{const outer=e.getBoundingClientRect(),glass=e.querySelector('.news-glass').getBoundingClientRect(),style=getComputedStyle(e);return style.padding==='0px'&&style.borderWidth==='0px'&&['top','right','bottom','left'].every(edge=>Math.abs(outer[edge]-glass[edge])<1)}));
+ await page.locator('#newsCard').screenshot({path:'/private/tmp/musteat-news-edge-to-edge.png'});
  const beforeStateChange=await page.locator('#federationNews').getAttribute('data-headline');
  await page.evaluate(()=>{const s=MUSTEAT.state;s.shop={name:'No Longer Yours',at:Date.now()};s.down.list=[{id:'r1',name:'Accomplice',level:1,total:0}];MUSTEAT.render()});
  ok('changing player state does not refresh the card early',await page.locator('#federationNews').getAttribute('data-headline')===beforeStateChange);
@@ -48,8 +61,10 @@ start(0,async({srv,url})=>{let browser,checks=0;const ok=(name,value)=>{assert.o
  ok('tax and bottom-rung jokes stop when no longer applicable',generalOnly);
  await page.emulateMedia({reducedMotion:'reduce'});
  const still=await page.locator('#federationNews').getAttribute('data-headline');await advance();
- ok('reduced motion stops both the headline and scrolling label',await page.locator('#federationNews').getAttribute('data-headline')===still&&await page.locator('.news-track').evaluate(e=>getComputedStyle(e).animationName==='none'));
- ok('reduced motion keeps the underscore static',await page.locator('.news-end-caret').evaluate(e=>getComputedStyle(e).animationName==='none'));
+ ok('reduced motion stops both the headline and CRT scan',await page.locator('#federationNews').getAttribute('data-headline')===still&&await page.locator('.news-sweep').evaluate(e=>getComputedStyle(e).animationName==='none'));
+ ok('reduced motion keeps the block cursor static',await page.locator('.news-end-caret').evaluate(e=>getComputedStyle(e).animationName==='none'));
+ const beforeManual=await headlineIndex();await page.locator('#newsCard').click();
+ ok('manual advance also works with reduced motion',await headlineIndex()!==beforeManual&&await page.locator('.news-caret').count()===0);
  await page.locator('#federationNews').evaluate(e=>{e.firstChild.textContent='Social ladder inspection: you are the floor'});
  await page.locator('.stats').screenshot({path:'.logs/federation-news-mobile.png'});
  await page.setViewportSize({width:1000,height:900});await page.locator('.stats').screenshot({path:'.logs/federation-news-desktop.png'});

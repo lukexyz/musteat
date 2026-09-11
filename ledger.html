@@ -76,7 +76,7 @@ footer{margin-top:24px;font-size:12px;color:var(--dim);border-top:1px solid var(
     <div class="stat"><div class="k">Citizens paying up</div><div class="v" id="nPayers">—</div></div>
   </section>
   <h2>High scores</h2>
-  <div class="score-controls" id="order"><button data-order="pace" class="on">Same playtime</button><button data-order="total">Lifetime</button><label id="minuteLabel">At minute <input id="scoreMinute" type="number" min="1" step="1" value="1" aria-label="Compare scores at active minute"></label><button id="myMinute">My minute</button></div>
+  <div class="score-controls" id="order"><button data-order="pace" class="on">Same playtime</button><button data-order="total">Lifetime</button><label id="minuteLabel">At minute <input id="scoreMinute" type="number" min="1" step="1" value="30" aria-label="Compare scores at active minute"></label><button id="myMinute">My minute</button></div>
   <div class="card" id="scores" aria-busy="true"><div class="empty">Loading high scores…</div><div class="score-skeleton" aria-hidden="true"><i></i><i></i><i></i></div></div>
   <h2>Latest 10 transactions</h2>
   <div class="card" id="recent"><div class="empty">Loading transactions…</div></div>
@@ -114,7 +114,7 @@ let order = qs.get('order') === 'total' ? 'total' : 'pace';
 let minute = Number(qs.get('minute'));
 function mySave() { try { return JSON.parse(localStorage.getItem('musteat_save' + (qs.get('slot') ? '_' + qs.get('slot') : ''))) || {}; } catch (e) { return {}; } }
 function myMinute() { const s = mySave(); return Object.keys(s.pace || {}).map(Number).sort((a, b) => b - a)[0] || Math.max(1, Math.floor((s.played || 0) / 60)); }
-if (!Number.isSafeInteger(minute) || minute < 1) minute = myMinute();
+if (!Number.isSafeInteger(minute) || minute < 1) minute = 30;
 $('order').addEventListener('click', e => { const b = e.target.closest('[data-order]'); if (!b) return; order = b.dataset.order; render(); });
 $('scoreMinute').addEventListener('change', e => { const n = Number(e.target.value); if (Number.isSafeInteger(n) && n > 0) minute = n; e.target.value = minute; render(); });
 $('myMinute').addEventListener('click', () => { minute = myMinute(); render(); });

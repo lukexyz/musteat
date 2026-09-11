@@ -32,9 +32,11 @@ h1 .logo{display:block;height:.72em;width:auto;mix-blend-mode:screen;margin:.24e
 .tag{color:var(--dim);font-size:12px}
 #lockdownDay{white-space:nowrap;font-variant-numeric:tabular-nums}
 .survival-line{white-space:nowrap}
-.survival-cursor{display:inline-block;width:.55em;height:.9em;margin:0 .15em 0 .12em;vertical-align:-.12em;pointer-events:none;opacity:1;background:repeating-linear-gradient(0deg,#fff 0 2px,#ffffffcc 2px 3px);border-radius:35% 18% 30% 16%;transform:skewX(-7deg);box-shadow:0 0 2px #ffffff80,0 0 5px #ffffff40,0 0 9px #ffffff18;filter:blur(.2px);animation:survival-cursor-blink 2.8s ease-in-out infinite}
-@keyframes survival-cursor-blink{0%,40%,100%{opacity:1}52%,88%{opacity:0}}
-@media(prefers-reduced-motion:reduce){.survival-cursor{animation:none;opacity:.55}}
+.survival-rabbit{display:inline-block;width:1.25em;height:1.2em;margin:0 .2em 0 .8em;vertical-align:-.2em;pointer-events:none;color:#fff;animation:survival-rabbit-signal 53s steps(1,end) infinite}
+.survival-rabbit svg{display:block;width:100%;height:100%;opacity:.45;transform-origin:50% 85%;animation:survival-rabbit-breathe 7s ease-in-out infinite}
+@keyframes survival-rabbit-breathe{0%,100%{opacity:.35;transform:scale(.94,.96)}50%{opacity:.62;transform:scale(1.03,1.05)}}
+@keyframes survival-rabbit-signal{0%,1.1%,12%,12.9%,14%,43%,43.9%,62%,63%,88%,89.2%{opacity:1}0.7%,1.6%,12.4%,13.4%,22%,43.4%,44.3%,62.5%,73%,88.5%,89.7%,100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.survival-rabbit{animation:none;opacity:1}.survival-rabbit svg{animation:none;opacity:.45}}
 .lockdown-digit{display:inline-block;position:relative;vertical-align:bottom;overflow:hidden;width:1ch;height:1.45em}
 .lockdown-digit>span{display:block}
 .lockdown-digit.tick>span{animation:lockdown-in .7s cubic-bezier(.2,.7,.2,1) both}
@@ -44,14 +46,39 @@ h1 .logo{display:block;height:.72em;width:auto;mix-blend-mode:screen;margin:.24e
 @media(prefers-reduced-motion:reduce){.lockdown-digit.tick::before{display:none}}
 .rankbox{align-self:flex-start;text-align:left;font-size:12px;color:var(--dim)}
 .rankbox b{display:block;font-size:14px;color:var(--gold)}
-.stat.news-card{min-width:0;background:var(--panel)}
-.news-head{display:flex;align-items:flex-start}.news-head .k{font-size:8px;letter-spacing:.4px;line-height:1.35;color:var(--dim)}
-.news-label{flex:1;min-width:0;overflow:hidden;white-space:nowrap;border:1px solid var(--line);padding:2px 0}.news-track{display:flex;width:max-content;animation:federation-marquee 45s linear infinite}.news-track>span{flex-shrink:0;padding:0 24px 0 6px}
-@keyframes federation-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.federation-news{position:relative;font-size:11px;line-height:1.4;margin-top:6px;min-height:4.2em;color:#c7d2d4;overflow-wrap:break-word}
+.news-slot{position:relative;min-width:0;min-height:116px}
+.stat.news-card{position:relative;width:100%;height:100%;min-height:110px;padding:0;min-width:0;text-align:left;font-family:"Courier New",monospace;background:#010702;border:0;border-radius:6px;box-shadow:none;color:#8af0a0;overflow:hidden}
+.news-card:focus{outline:none}
+.news-card[role="button"]{cursor:pointer}.news-card:focus-visible{outline:1px solid #8af0a0;outline-offset:2px}
+.news-glass{position:relative;display:flex;flex-direction:column;height:100%;min-height:110px;padding:7px 8px 6px;overflow:hidden;border:0;border-radius:inherit;background:radial-gradient(ellipse at 45% 40%,#0c2612,#010702 85%);box-shadow:inset 0 0 18px 7px #000;text-shadow:0 0 4px #77ff9b66,0 0 11px #3cff6540}
+.news-glass::before{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(0deg,#0004 0 1px,transparent 1px 3px);border-radius:inherit}
+.news-glass::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(120deg,#ffffff06,transparent 34%);box-shadow:inset 0 0 25px #0008}
+.news-head{display:flex;align-items:center;justify-content:space-between;gap:5px;padding-bottom:5px;border-bottom:1px solid #335d354a;color:#6cbb79;font-size:5px;letter-spacing:.45px;white-space:nowrap}
+.news-live::before{content:'';display:inline-block;width:3px;height:3px;margin-right:3px;background:currentColor;box-shadow:0 0 6px currentColor}
+.federation-news{display:block;position:relative;font-size:10.5px;line-height:1.35;margin-top:5px;color:#8af0a0;overflow-wrap:break-word}
+.news-bottom{display:flex;align-items:end;justify-content:space-between;gap:4px;margin-top:auto;padding-top:7px;color:#3f8c4d;font-size:4.5px;letter-spacing:.45px;white-space:nowrap}
+.news-wave{width:27px;height:7px;flex-shrink:0;overflow:visible}.news-wave path{fill:none;stroke:#5cc77c;stroke-width:1;stroke-dasharray:80;animation:news-wave 5s linear infinite}
+.news-sweep{position:absolute;left:0;right:0;top:-15%;height:24px;background:linear-gradient(transparent,#9cffaa07,transparent);pointer-events:none;animation:news-scan 9s linear infinite}
+@keyframes news-wave{to{stroke-dashoffset:-160}}@keyframes news-scan{to{transform:translateY(240px)}}
+@media(min-width:521px) and (max-width:650px){.news-slot{min-height:154px}}
 .news-char{opacity:0}.news-caret{position:absolute;width:6px;height:1em;background:#f5fff9;box-shadow:0 0 4px #e8fff75c;pointer-events:none}.news-rabbit{position:absolute;width:14px;height:14px;color:#f5fff9;filter:drop-shadow(0 0 2px #e8fff760);pointer-events:none;opacity:0}.news-rabbit svg{display:block;width:100%;height:100%}
-.news-end-caret{color:#fff;font-weight:900;-webkit-text-stroke:.6px #fff;text-shadow:0 0 2px #ffffffa0,0 0 5px #ffffff45;animation:news-underscore 2.8s step-end infinite}
+.news-end-caret{display:inline-block;width:.65em;height:1em;margin-left:3px;vertical-align:-.13em;background:#fff;box-shadow:0 0 5px #ffffff70;animation:news-underscore 1.1s step-end infinite}
 @keyframes news-underscore{0%,100%{opacity:1}55%{opacity:0}}
+.news-default-head{display:block;overflow:hidden;white-space:nowrap;border:1px solid var(--line);padding:2px 0;color:var(--dim);font-size:8px;letter-spacing:.4px;line-height:1.35;text-transform:uppercase}
+.news-track{display:flex;width:max-content;animation:federation-marquee 45s linear infinite}.news-track>span{flex-shrink:0;padding:0 24px 0 6px}
+@keyframes federation-marquee{to{transform:translateX(-50%)}}
+.news-decrypted .news-default-head{display:none}
+.news-slot:has(.news-card:not(.news-decrypted)){min-height:0}
+.stat.news-card:not(.news-decrypted){position:relative;inset:auto;height:100%;min-height:94px;padding:8px;background:var(--panel);border:1px solid var(--line);border-radius:0;box-shadow:none;color:var(--fg);opacity:1;cursor:pointer}
+.news-card:not(.news-decrypted) .news-glass{display:block;min-height:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none;text-shadow:none;overflow:visible}
+.news-card:not(.news-decrypted) .news-glass::before,.news-card:not(.news-decrypted) .news-glass::after,.news-card:not(.news-decrypted) .news-head,.news-card:not(.news-decrypted) .news-bottom,.news-card:not(.news-decrypted) .news-sweep{display:none}
+.news-card:not(.news-decrypted) .federation-news{font-size:11px;line-height:1.4;min-height:4.2em;margin-top:6px;color:#c7d2d4}
+.news-card:not(.news-decrypted) .news-end-caret{width:auto;height:auto;margin:0;vertical-align:baseline;background:none;box-shadow:none;color:#fff;font-weight:900;-webkit-text-stroke:.6px #fff;text-shadow:0 0 2px #ffffffa0,0 0 5px #ffffff45;animation-duration:2.8s}
+.news-decryption{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;gap:6px;padding:8px;border:0;border-radius:inherit;background:#000;color:#8af0a0;overflow:hidden;text-shadow:0 0 7px #77ff9b66;pointer-events:none}
+.news-decryption::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,#0005 0 1px,transparent 1px 3px);pointer-events:none}
+.news-decryption small{font-size:5.5px;letter-spacing:.4px;color:#659e73}.news-cipher{display:block;font-size:10px;line-height:1.5;overflow-wrap:anywhere;min-height:3em;letter-spacing:.5px}
+.news-decrypt-meter{display:block;height:3px;background:#13261a;margin-top:auto}.news-decrypt-meter i{display:block;width:0;height:100%;background:#b3ffc3;box-shadow:0 0 8px #8af0a0}
+.news-decrypt-status{font-size:5.5px;letter-spacing:.4px;color:#c1f3cd}
 .banner{margin:10px 0 0;padding:8px 10px;border:1px dashed var(--warn);color:#ffb3c0;font-size:13px}
 .banner.good{border-color:var(--acc);color:#bfffb0}
 #supply{display:flex;align-items:flex-start;gap:10px}#supply[hidden]{display:none}
@@ -222,11 +249,14 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .tabs button:hover:not(.on){color:var(--fg);border-color:#2c3c42}
 .tabs button.on{margin:0 0 -1px;padding-bottom:12px;color:var(--acc);background:var(--bg);border-color:var(--acc);border-bottom:1px solid var(--bg);text-shadow:0 0 8px rgba(57,255,20,.45)}
 .tabs button.on:hover{color:var(--acc)}
-.tabs button.pf-locked{color:#8e849f;border-color:#393142;background:repeating-linear-gradient(135deg,#b693e907 0 1px,transparent 1px 6px),#0b0e12}
-.tabs button.pf-ready{color:#e3caff;border-color:#ad79d5;animation:dossier-signal 3s ease-in-out infinite alternate}
+.tabs button.pf-tab,.tabs button.pf-tab:hover{color:#8e849f;border-color:#393142;background:repeating-linear-gradient(135deg,#b693e907 0 1px,transparent 1px 6px),#0b0e12}
+.tabs button.pf-tab.on{border-color:#8e849f;border-bottom-color:var(--bg);background:var(--bg);text-shadow:0 0 8px #b693e945}
+.tabs button.pf-ready,.tabs button.pf-ready:hover{color:#e3caff;border-color:#ad79d5;animation:dossier-signal 3s ease-in-out infinite alternate}
 #pfLock{display:inline-block;width:10px;height:9px;border:1px solid currentColor;border-radius:1px;position:relative;margin-right:8px;vertical-align:-1px}
 #pfLock::before{content:'';position:absolute;width:5px;height:5px;border:1px solid currentColor;border-bottom:0;border-radius:4px 4px 0 0;left:1px;top:-6px}
 #pfLock[hidden]{display:none}#pfN{font-size:9px;letter-spacing:.4px}
+#pfIcon{display:inline-block;width:16px;height:16px;margin-right:8px;vertical-align:-3px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+#pfIcon[hidden]{display:none}
 .pf-progress{display:inline-block;width:15px;height:15px;margin-left:5px;vertical-align:-3px;transform:rotate(-90deg);fill:none;stroke:#42364e;stroke-width:2}
 .pf-progress[hidden]{display:none}.pf-progress .fill{stroke:#b69acb;stroke-dasharray:var(--p,0) 100;transition:stroke-dasharray .6s linear}
 .pf-ready .pf-progress .fill{stroke:#ead6ff;filter:drop-shadow(0 0 2px #c69bf180)}
@@ -335,10 +365,10 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .target-cinema{position:relative;border-color:#75db99;box-shadow:inset 0 0 32px #39ff140c,0 0 24px #39ff1424}
 .target-char{opacity:0;filter:blur(3px);transition:opacity 100ms ease-out,filter 180ms ease-out,color 350ms ease-out;text-shadow:0 0 10px #70ff88;color:#baffcb}
 .target-char.shown{opacity:1;filter:blur(0);color:inherit;text-shadow:none}
-.gang-name{color:#ff8495;background:linear-gradient(110deg,#45121f,#210c12);border-bottom:1px solid #ad344c;border-radius:3px;padding:1px 4px;text-shadow:0 0 8px #ff315255;box-shadow:inset 0 0 10px #a0142520;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.gang-name{color:#ff8495;text-shadow:0 0 8px #ff315255}
 .gang-name .target-char{color:inherit;text-shadow:inherit}
-.gang-name.sinister{color:#ff7188;background:linear-gradient(110deg,#4b101e,#1c090f 80%);animation:gang-embers 5s ease-in-out infinite alternate}
-@keyframes gang-embers{from{text-shadow:0 0 3px #ff244530;box-shadow:inset 0 -2px 8px #a0142520}to{text-shadow:0 0 9px #ff244580,1px 0 1px #a50b2a;box-shadow:inset 0 -2px 12px #a0142545}}
+.gang-name.sinister{color:#ff7188;animation:gang-embers 5s ease-in-out infinite alternate}
+@keyframes gang-embers{from{text-shadow:0 0 3px #ff244530}to{text-shadow:0 0 9px #ff244580,1px 0 1px #a50b2a}}
 .target-caret{position:absolute;z-index:2;width:7px;background:#baffcb;box-shadow:0 0 8px #39ff14,0 0 22px #39ff1470;pointer-events:none}
 .box.terminal-letter{position:relative;background-color:#0d1714;background-image:repeating-linear-gradient(0deg,transparent 0 3px,#a7ffc806 3px 4px),radial-gradient(ellipse at 50% 0,#45b86710,transparent 75%);border-color:#71d18d;box-shadow:inset 0 0 35px #0005,0 0 35px #39ff1426}
 .shop-front{position:relative;overflow:hidden;min-height:230px;border:1px solid #655636;background:radial-gradient(ellipse at 50% 20%,#795c2026,transparent 70%),#070d0e;padding:24px 16px 0}
@@ -418,13 +448,12 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .contract-burst::after,.contract-burst .ripple-echo{content:'';position:absolute;left:22%;top:45%;width:110px;height:110px;border:1px solid #c5f8ffdd;border-radius:50%;background:radial-gradient(circle,transparent 58%,#4cc9f033 68%,transparent 72%);box-shadow:0 0 24px #4cc9f066,inset 0 0 18px #4cc9f044;animation:contract-ripple 1160ms cubic-bezier(.1,.55,.2,1) both}
 .contract-burst .ripple-echo{left:38%;top:55%;border-color:#89e7ffaa;background:none;animation-duration:1280ms;animation-delay:180ms}
 .contract-burst i{position:absolute;left:var(--x);top:var(--y);width:var(--size);height:2px;background:#c5f8ff;box-shadow:0 0 8px #4cc9f0,0 0 16px #4cc9f066;opacity:0;animation:contract-mote var(--life) var(--delay) ease-out both}
-.contract-burst.contract-transmission{padding:14px;border-color:#34483b;background:#020403;color:#b8cdbf;font-size:13px;line-height:1.5;animation:none}
-.contract-burst.contract-transmission::before{inset:0;background:repeating-linear-gradient(0deg,transparent 0 3px,#b9dfc407 3px 4px);transform:none;animation:none;pointer-events:none}
-.contract-burst.contract-transmission::after{display:none}
-.contract-transmission p{margin:0;overflow-wrap:anywhere}.contract-transmission p+p{margin-top:12px}
-.contract-transmission .transmission-greeting{color:#d6f2df;font-weight:bold}
-.contract-transmission .transmission-status{color:#7e9b88;font-size:.85em}
-.transmission-caret{display:inline-block;width:.5em;height:1em;margin-left:2px;vertical-align:-.13em;background:#effff4;box-shadow:0 0 4px #c6ffdc45}
+.dispatch-shell:has(>.contract-transmission)>#dispatch{visibility:hidden}
+.contract-burst.contract-transmission{padding:clamp(18px,3vw,30px);border:1px solid #26372b;border-radius:5px;background:#000;color:#8bea9c;font-family:"Courier New",monospace;font-size:clamp(15px,2vw,19px);line-height:1.7;letter-spacing:.035em;box-shadow:inset 0 0 0 3px #101411,inset 0 0 0 5px #050705;animation:none}
+.contract-burst.contract-transmission::before{inset:0;z-index:1;background:repeating-linear-gradient(0deg,#0004 0 1px,transparent 1px 3px);transform:none;animation:none;pointer-events:none}
+.contract-burst.contract-transmission::after{inset:0;z-index:2;width:auto;height:auto;border:0;border-radius:4px;background:radial-gradient(ellipse at center,transparent 40%,#0009 100%);box-shadow:inset 0 0 22px 8px #0009;animation:none;pointer-events:none}
+.contract-transmission p{margin:0;overflow-wrap:anywhere;white-space:pre-wrap;text-shadow:0 0 3px #8bea9c80,0 0 9px #8bea9c30}
+.transmission-caret{display:inline-block;width:.72em;height:1.08em;margin-left:3px;vertical-align:-.18em;background:#fff;box-shadow:0 0 3px #fff9,0 0 8px #ffffff50}
 @keyframes contract-sweep{0%{transform:translateX(-85%);opacity:0}15%{opacity:.9}100%{transform:translateX(85%);opacity:0}}
 @keyframes contract-ripple{0%{transform:translate(-50%,-50%) scale(.08);opacity:0}12%{opacity:.8}100%{transform:translate(-50%,-50%) scale(7);opacity:0}}
 @keyframes contract-afterglow{0%{border-color:#c5f8ffcc;box-shadow:0 0 32px #4cc9f066,inset 0 0 44px #4cc9f033}32%{border-color:#4cc9f088;box-shadow:0 0 20px #4cc9f033,inset 0 0 24px #4cc9f01a}100%{border-color:transparent;box-shadow:0 0 0 transparent,inset 0 0 0 transparent}}
@@ -438,7 +467,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 <body>
 <div class="wrap">
   <header>
-    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 2099. Lockdown day <span id="lockdownDay">342,483</span>. Going outside is illegal. <span class="survival-line">To survive.. you must eat<span class="survival-cursor" aria-hidden="true"></span></span></div></div>
+    <div><h1><img class="logo" src="media/must_eat_header_logo.png" alt="MUSTEAT"></h1><div class="tag">Year 2099. Lockdown day <span id="lockdownDay">342,483</span>. Going outside is illegal. <span class="survival-line">To survive.. you must eat<span class="survival-rabbit" aria-hidden="true"><svg id="survivalRabbit" viewBox="0 0 160 150" focusable="false"></svg></span></span></div></div>
     <div class="rankbox" id="rank"></div>
   </header>
   <div id="supply" class="banner good" hidden></div>
@@ -446,9 +475,9 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
     <div class="stat"><div class="k">Credits</div><div class="v" id="cash">0</div></div>
     <div class="stat"><div class="k">Per second</div><div class="v"><span id="ips">0</span><button id="cut" class="help" data-act="cutInfo" hidden></button></div></div>
     <div class="stat"><div class="k">Deliveries</div><div class="v" id="deliv">0</div></div>
-    <div class="stat news-card" id="newsCard"><div class="news-head"><div class="k news-label" title="News ticker from the Federation"><span class="news-track"><span>News ticker from the Federation</span><span aria-hidden="true">News ticker from the Federation</span></span></div></div><div id="federationNews" class="federation-news" aria-live="off"></div></div>
+    <div class="news-slot"><div class="stat news-card" id="newsCard" role="button" tabindex="0" aria-label="Next Federation news headline" aria-describedby="federationNews"><span class="news-glass"><span class="news-default-head"><span class="news-track"><span>News ticker from the Federation</span><span aria-hidden="true">News ticker from the Federation</span></span></span><span class="news-head"><span>FEDERATION / NEWS</span><span class="news-live">LIVE</span></span><span id="federationNews" class="federation-news" aria-live="off"></span><span class="news-bottom"><span>RX 09.17 / SIGNAL CLEAN</span><svg class="news-wave" viewBox="0 0 54 14" aria-hidden="true" focusable="false"><path d="M0 8h9l3-3 3 6 4-10 4 12 3-5h9l2-3 2 5 3-2h12"/></svg></span><span class="news-sweep" aria-hidden="true"></span></span></div></div>
   </section>
-  <nav class="tabs"><button id="tabRunB" class="on" data-tab="run">OPERATIONS</button><button id="tabPfB" data-tab="portfolio"><span id="pfLock" aria-hidden="true"></span>PORTFOLIO <span id="pfN"></span><svg id="pfProgress" class="pf-progress" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6"/><circle class="fill" cx="8" cy="8" r="6" pathLength="100"/></svg></button></nav>
+  <nav class="tabs"><button id="tabRunB" class="on" data-tab="run">OPERATIONS</button><button id="tabPfB" class="pf-tab" data-tab="portfolio"><span id="pfLock" aria-hidden="true"></span><svg id="pfIcon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" hidden><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12a20 20 0 0 0 18 0M12 12v4"/></svg>PORTFOLIO <span id="pfN"></span><svg id="pfProgress" class="pf-progress" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6"/><circle class="fill" cx="8" cy="8" r="6" pathLength="100"/></svg></button></nav>
   <div id="tab-run">
   <section class="run">
     <button id="run" class="big">RUN DELIVERY</button>
@@ -469,7 +498,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
   <section><h2>Commendations</h2><div id="ach" class="card"></div></section>
   <section><h2>The company</h2><div id="company" class="card"></div></section>
   <section><h2>Sectors by department</h2><div id="sectors" class="card"></div></section>
-  <section><h2>High scores</h2><div class="score-controls"><button data-score="pace" class="on">Same playtime</button><button data-score="total">Lifetime</button><label id="minuteLabel">At minute <input id="scoreMinute" type="number" min="1" step="1" value="1" aria-label="Compare scores at active minute"></label><button id="myMinute">My minute</button></div><div id="board" class="card"></div></section>
+  <section><h2>High scores</h2><div class="score-controls"><button data-score="pace" class="on">Same playtime</button><button data-score="total">Lifetime</button><label id="minuteLabel">At minute <input id="scoreMinute" type="number" min="1" step="1" value="30" aria-label="Compare scores at active minute"></label><button id="myMinute">My minute</button></div><div id="board" class="card"></div></section>
   <section><h2>Log</h2><div id="log" class="log"></div></section>
   </div>
   <div id="tab-portfolio" hidden>
@@ -632,13 +661,25 @@ const FEDERATION_NEWS = [
 ];
 let newsCurrent = -1, newsChangedAt = 0, newsBag = [];
 let cancelNewsTransmission = () => {};
+let cancelNewsDecryption = () => {};
+$('newsCard').addEventListener('click', () => {
+  cancelNewsDecryption();
+  renderFederationNews(calc(state), true);
+});
+$('newsCard').addEventListener('keydown', event => {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    if (!event.repeat) $('newsCard').click();
+  }
+});
 function typeFederationHeadline(output, text) {
   cancelNewsTransmission();
-  text = text.replace(/\.$/, '');
+  if (!state.upg.propaganda) text = text.replace(/\.$/, '');
   const showFinished = () => {
-    const underscore = document.createElement('span');
-    underscore.className = 'news-end-caret'; underscore.textContent = '_'; underscore.setAttribute('aria-hidden', 'true');
-    output.replaceChildren(document.createTextNode(text), underscore);
+    const cursor = document.createElement('span');
+    cursor.className = 'news-end-caret'; cursor.setAttribute('aria-hidden', 'true');
+    if (!state.upg.propaganda) cursor.textContent = '_';
+    output.replaceChildren(document.createTextNode(text), cursor);
   };
   showFinished();
   if (matchMedia('(prefers-reduced-motion: reduce)').matches || document.hidden) return;
@@ -666,7 +707,12 @@ function typeFederationHeadline(output, text) {
   };
   draw();
 }
-function renderFederationNews(c) {
+function renderFederationNews(c, advance = false) {
+  const card = $('newsCard'), decrypted = !!state.upg.propaganda;
+  const changed = card.classList.contains('news-decrypted') !== decrypted;
+  card.classList.toggle('news-decrypted', decrypted);
+  if (!decrypted) cancelNewsDecryption();
+  if (changed && newsCurrent >= 0) typeFederationHeadline($('federationNews'), FEDERATION_NEWS[newsCurrent][0]);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduced || document.hidden) cancelNewsTransmission();
   const eligible = FEDERATION_NEWS.map((entry, i) => i).filter(i => {
@@ -674,7 +720,7 @@ function renderFederationNews(c) {
     return !kind || (kind === 'recruiter' && c.tax > 0) || (kind === 'gang' && c.gang > 0) || (kind === 'solo' && !state.down.list.length && c.rank <= 1);
   });
   // State changes must not cut short the time allowed to read a headline.
-  if (newsCurrent >= 0 && (reduced || document.hidden || now() - newsChangedAt < 45000)) return;
+  if (!advance && newsCurrent >= 0 && (reduced || document.hidden || now() - newsChangedAt < 45000)) return;
   newsBag = newsBag.filter(i => eligible.includes(i) && i !== newsCurrent);
   if (!newsBag.length) {
     newsBag = eligible.filter(i => i !== newsCurrent);
@@ -683,6 +729,36 @@ function renderFederationNews(c) {
   newsCurrent = newsBag.pop(); newsChangedAt = now();
   const output = $('federationNews'); output.dataset.headline = newsCurrent;
   typeFederationHeadline(output, FEDERATION_NEWS[newsCurrent][0]);
+}
+function revealFederationNews() {
+  cancelNewsDecryption();
+  cancelNewsTransmission();
+  const card = $('newsCard'), reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  card.scrollIntoView({behavior:reduced.matches ? 'instant' : 'smooth', block:'center'});
+  card.focus({preventScroll:true});
+  if (reduced.matches) { toast('Propaganda decrypted. Same lies. Better reception.'); return; }
+  const layer = document.createElement('span'); layer.className = 'news-decryption'; layer.setAttribute('aria-hidden', 'true');
+  layer.innerHTML = '<small>DECRYPT FEDERATION PROPAGANDA</small><span class="news-cipher"></span><span class="news-decrypt-meter"><i></i></span><span class="news-decrypt-status">INTERCEPTING SIGNAL_</span>';
+  card.appendChild(layer);
+  const output = layer.querySelector('.news-cipher'), meter = layer.querySelector('i'), status = layer.querySelector('.news-decrypt-status');
+  const message = 'THE LIES LOOK BETTER IN GREEN.', alphabet = '01#$%<>/{}[]';
+  const requested = performance.now(); let started = null, previousTop = null, settled = 0, frame = 0;
+  const finish = () => { cancelAnimationFrame(frame); layer.remove(); cancelNewsDecryption = () => {}; };
+  cancelNewsDecryption = finish;
+  const draw = () => {
+    if (!layer.isConnected || document.hidden || reduced.matches || !state.upg.propaganda) return finish();
+    const time = performance.now(), top = card.getBoundingClientRect().top;
+    settled = previousTop != null && Math.abs(top - previousTop) < .5 ? settled + 1 : 0; previousTop = top;
+    if (started == null && (settled >= 3 || time - requested > 2000)) started = time;
+    const elapsed = started == null ? 0 : time - started;
+    if (elapsed >= 4200) return finish();
+    const progress = clamp((elapsed - 700) / 2400, 0, 1), unlocked = Math.floor(progress * message.length), tick = Math.floor(elapsed / 85);
+    output.textContent = elapsed < 700 ? (Math.floor(elapsed / 200) % 2 ? '' : '█') : [...message].map((char, i) => char === ' ' || i < unlocked ? char : alphabet[(tick * 7 + i * 3) % alphabet.length]).join('');
+    meter.style.width = Math.floor(progress * 100) + '%';
+    status.textContent = progress >= 1 ? 'SIGNAL DECRYPTED / ACCESS GRANTED' : elapsed < 700 ? 'INTERCEPTING SIGNAL_' : 'BREAKING CIPHER / ' + Math.floor(progress * 100) + '%';
+    frame = requestAnimationFrame(draw);
+  };
+  draw();
 }
 
 function fmt(n) {
@@ -783,6 +859,7 @@ const UPG_NAMES = {
   portal: ['Portal Etiquette', 'Two-Way Portal', 'Portal Into the Ministry Canteen', 'Portal the Whole City'],
 };
 const UPGRADES = [];
+UPGRADES.push({ id: 'propaganda', name: 'Decrypt federation propaganda', cost: 50, desc: 'Unlock a phosphor news terminal. Same lies. Better reception.', unlock: () => true });
 GEAR.filter(g => g.dps).forEach(g => [1, 5, 25, 50].forEach((at, i) => UPGRADES.push({
   id: g.id + at, gear: g.id, name: UPG_NAMES[g.id][i], desc: g.name + ' output ×2.', cost: Math.floor(g.cost * [10, 100, 5000, 100000][i]),
   unlock: s => (s.gear[g.id] || 0) >= at, hint: at + ' ' + g.name,
@@ -1446,12 +1523,10 @@ function revealRecruiter(c) {
 }
 function revealGang(c) {
   const paid = Math.floor(state.total / c.keep * c.gang);
-  modal(`<h3>A knock on the airlock</h3>
-    <p>Three knocks. A pause. Three more. A voice through the seal: "<b class="gang-name sinister">Sector 7 Provisional Gang.</b> We have been protecting you." You did not ask.</p>
-    <p>Protection costs <b>${Math.round(CONFIG.GANG_TAX * 100)}%</b> of everything you make, and it has since your first delivery: <b>₵${fmt(paid)}</b> so far. Nobody protects you from them.</p>
-    <p>Recruit one runner with your invite link and they go and protect your runner instead. That is how protection works.</p>
+  modal(`<h3>Nice airlock.</h3>
+    <p><b class="gang-name sinister">Sector 7</b> takes <b>${Math.round(CONFIG.GANG_TAX * 100)}%</b> to keep it attached. Recruit a runner and they’ll admire theirs instead.</p>
     <button id="ok" class="big2">UNDERSTOOD</button>
-    <p class="muted"><a href="#" data-act="share">Copy your invite</a> and find someone to point them at.</p>`);
+    <p class="muted"><a href="#" data-act="share">Copy your invite</a></p>`);
   $('ok').onclick = closeModal;
   log('<b>A knock on the airlock.</b> The Sector 7 Provisional Gang. ' + Math.round(CONFIG.GANG_TAX * 100) + '% of everything, since day one. ₵' + fmt(paid) + ' so far.');
 }
@@ -2009,7 +2084,8 @@ function buyUpgrade(id) {
   if (!u || state.upg[u.id] || !u.unlock(state) || state.cash < u.cost) return;
   state.cash -= u.cost; state.upg[u.id] = true;
   log('Bought <b>' + u.name + '</b>. ' + u.desc);
-  if (u.id === 'ledger') revealLedger(); else render();
+  if (u.id === 'propaganda') { save(); render(); revealFederationNews(); }
+  else if (u.id === 'ledger') revealLedger(); else render();
 }
 // Contracts have no deadline and need no recruits. Accepting fixes the quota and reward;
 // deliveries from taps, tech and offline work all count. Every three jobs adds 1%, capped at 20%.
@@ -2051,39 +2127,33 @@ function nextGoal(c) {
   return up ? { upgrade: up.id, cost: up.cost, title: up.name } : contractsUnlocked() ? { contract: true, title: 'Keep the airlocks fed' } : { gear: 'trainers', title: 'More feet on the street' };
 }
 let contractFocusFrame = 0, contractFocusTimer = 0, contractTerminalFrame = 0;
-function typeContractTransmission(layer, copy) {
-  const messages = ['knock knock ' + (state.name || 'citizen'), ...copy];
-  const lines = messages.map((text, i) => {
-    const line = document.createElement('p');
-    line.className = i === 0 ? 'transmission-greeting' : i === 1 ? 'transmission-body' : 'transmission-status';
-    const output = document.createElement('span'); output.textContent = text;
-    line.appendChild(output); layer.appendChild(line);
-    return {line, output, text};
-  });
-  // Measure the complete copy before typing so long aliases still fit on phones.
-  if (layer.scrollHeight > layer.clientHeight) layer.style.fontSize = Math.max(10, 13 * (layer.clientHeight - 28) / (layer.scrollHeight - 28)) + 'px';
-  lines.forEach(({output}) => { output.textContent = ''; });
+function typeContractTransmission(layer) {
+  const alias = state.name || 'citizen';
+  const messages = ['Wake up, ' + alias + '...', 'Someone behind an airlock needs feeding.', 'Knock, knock, ' + alias + '.'];
+  const line = document.createElement('p'); line.className = 'transmission-greeting';
+  const output = document.createElement('span'); line.appendChild(output); layer.appendChild(line);
   const caret = document.createElement('span'); caret.className = 'transmission-caret';
-  lines[0].line.appendChild(caret);
-  const started = performance.now(), boot = 840;
+  line.appendChild(caret);
+  const started = performance.now(), boot = 2200;
   let time = boot;
-  lines.forEach((entry, i) => { entry.start = time; entry.duration = entry.text.length * (i === 0 ? 26 : i === 1 ? 6 : 3); time += entry.duration + (i === 0 ? 250 : 100); });
-  const fadeAt = time + 850, endAt = fadeAt + 400;
+  const frames = messages.map(text => {
+    // Uneven keystrokes and a pause at punctuation make this feel like an incoming message.
+    let duration = 0;
+    const strokes = Array.from(text, (char, i) => { duration += 65 + (i * 17 % 55) + (/[,.]/.test(char) ? 160 : 0); return {char, at:duration}; });
+    const entry = {start:time, clearAt:time + duration + 1900, strokes};
+    time = entry.clearAt + 1300;
+    return entry;
+  });
+  const endAt = time;
   const draw = () => {
     const elapsed = performance.now() - started;
     if (!layer.isConnected || state.tab !== 'run' || document.hidden || elapsed >= endAt || matchMedia('(prefers-reduced-motion: reduce)').matches) {
       layer.remove(); contractTerminalFrame = 0; return;
     }
-    let current = lines[0], typing = false;
-    for (const entry of lines) {
-      const progress = clamp((elapsed - entry.start) / Math.max(1, entry.duration), 0, 1);
-      const text = entry.text.slice(0, Math.floor(progress * entry.text.length));
-      if (entry.output.textContent !== text) entry.output.textContent = text;
-      if (elapsed >= entry.start) { current = entry; typing = progress < 1; }
-    }
-    if (caret.parentElement !== current.line) current.line.appendChild(caret);
-    caret.style.opacity = elapsed < boot ? Math.floor(elapsed / 140) % 2 ? '0' : '1' : typing ? '1' : Math.floor(elapsed / 450) % 2 ? '0' : '1';
-    layer.style.opacity = elapsed > fadeAt ? 1 - (elapsed - fadeAt) / 400 : 1;
+    const current = frames.find(entry => elapsed >= entry.start && elapsed < entry.clearAt);
+    const text = current ? current.strokes.filter(stroke => stroke.at <= elapsed - current.start).map(stroke => stroke.char).join('') : '';
+    if (output.textContent !== text) output.textContent = text;
+    caret.style.opacity = Math.floor(elapsed / 530) % 2 ? '0' : '1';
     contractTerminalFrame = requestAnimationFrame(draw);
   };
   draw();
@@ -2093,7 +2163,6 @@ function viewContract(unlocking = false) {
   state.tab = 'run'; render();
   cancelAnimationFrame(contractFocusFrame); cancelAnimationFrame(contractTerminalFrame); clearTimeout(contractFocusTimer);
   const shell = $('dispatchShell'); shell.querySelector('.contract-burst')?.remove();
-  const terminalCopy = unlocking ? [...$('dispatch').querySelectorAll('p')].map(p => p.textContent) : [];
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   $('dispatchSection').scrollIntoView({ behavior: reduced ? 'instant' : 'smooth', block: 'center' });
   const started = performance.now(); let previousTop = null, stillFrames = 0;
@@ -2117,7 +2186,7 @@ function viewContract(unlocking = false) {
         burst.appendChild(mote);
       }
       shell.appendChild(burst);
-      if (unlocking && !reduced) typeContractTransmission(burst, terminalCopy);
+      if (unlocking && !reduced) typeContractTransmission(burst);
       else contractFocusTimer = setTimeout(() => burst.remove(), reduced ? 350 : 3000);
       contractFocusFrame = 0;
       return;
@@ -2646,7 +2715,7 @@ function closeProtection() {
   drawerInert.forEach(el => { el.inert = false; }); drawerInert = [];
   if (drawerReturnFocus && drawerReturnFocus.isConnected && !drawerReturnFocus.hidden) drawerReturnFocus.focus();
 }
-let scoreMode = 'pace', scoreMinute = null;
+let scoreMode = 'pace', scoreMinute = 30;
 function renderScores() {
   const mine = Object.keys(state.pace).map(Number).sort((a, b) => b - a)[0] || Math.max(1, Math.floor(state.played / 60));
   const minute = scoreMinute || mine;
@@ -2888,8 +2957,9 @@ function render() {
   $('tab-run').hidden = tab !== 'run'; $('tab-portfolio').hidden = tab !== 'portfolio';
   const dossierReady = portfolioReady();
   $('tabRunB').className = tab === 'run' ? 'on' : '';
-  $('tabPfB').className = state.portfolioUnlocked ? tab === 'portfolio' ? 'on' : '' : dossierReady ? 'pf-locked pf-ready' : 'pf-locked';
+  $('tabPfB').className = 'pf-tab' + (state.portfolioUnlocked ? tab === 'portfolio' ? ' on' : '' : dossierReady ? ' pf-locked pf-ready' : ' pf-locked');
   $('pfLock').hidden = state.portfolioUnlocked;
+  $('pfIcon').toggleAttribute('hidden', !state.portfolioUnlocked);
   $('tabPfB').setAttribute('aria-label', state.portfolioUnlocked ? 'Portfolio' : dossierReady ? 'Portfolio reward ready. Open your dossier.' : 'Portfolio locked. Earn 20,000 lifetime credits to unlock.');
   $('pfN').textContent = state.portfolioUnlocked && pf.length ? '(' + pf.length + ')' : '';
   $('pfProgress').toggleAttribute('hidden', state.portfolioUnlocked);
@@ -3069,6 +3139,7 @@ function showOffline(o) {
 function whiteRabbitShape() {
   return `<path fill="currentColor" d="M43 105C29 107 25 96 31 90C35 86 40 89 44 93C42 78 47 67 61 61C72 56 85 59 91 67L97 55C89 45 77 22 82 16C89 11 105 34 109 47C105 30 105 8 112 8C121 8 122 34 118 48C131 49 138 58 136 69L147 75L137 82L120 85L111 102L121 119L138 123C143 125 141 131 135 132L112 132L99 115L88 126L65 133L37 133C33 129 38 125 46 123L63 119C49 117 45 112 43 105Z"/><path d="M70 87C86 84 94 105 78 115" fill="none" stroke="#15372d" stroke-width="2.5" stroke-linecap="round"/><circle cx="125" cy="64" r="2.4" fill="#07130f"/>`;
 }
+$('survivalRabbit').innerHTML = whiteRabbitShape();
 function showWhiteRabbit(host) {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return () => {};
   host.querySelectorAll('.white-rabbit').forEach(el => el.remove());
@@ -3092,17 +3163,12 @@ function showSplash() {
   });
 }
 async function showIntro() {
-  const ref = state.ref, v = qs.get('v');
-  let fr = null, recName = null;
-  const rows = (qs.get('fr') || ref) ? await Sheet.read('players') : [];
+  const v = qs.get('v');
+  let fr = null;
+  const rows = qs.get('fr') ? await Sheet.read('players') : [];
   if (qs.get('fr')) { const owner = rows.find(r => r.code === qs.get('fr')); const o = parseOffer(owner); if (owner) fr = { owner, offer: o, open: !!o && owner.claimedOffer !== o.id }; }
-  if (ref) { const r = rows.find(x => x.code === ref); recName = r ? r.name : null; }
-  modal(`<h3>MUSTEAT — Citizen registration</h3>
-    <p class="muted">Year 2099. The Ministry owns the doors, the cameras and your credit score. Going outside is illegal, unless you are carrying food. Your courier login just cleared. Try not to get revoked.</p>
-    ${v ? '<p><b>' + esc(v) + '</b>, someone bought you a ration voucher worth <b>₵' + CONFIG.VOUCHER_BONUS + '</b>. They want something. They want you to run.</p>' : ''}
-    ${fr && fr.open ? '<p>🏆 <b>' + esc(fr.owner.name) + '</b> is handing you <b>' + esc(fr.offer.shopName) + '</b>: ' + esc(gearSummary(fr.offer.gear)) + ', ₵' + fmt(fr.offer.income) + '/s, ready to run. They keep 25% of everything you make. Sign here before someone else does.</p>'
-      : fr ? '<p><b>' + esc(fr.owner.name) + '</b> offered their business, but ' + (fr.owner.claimedName ? '<b>' + esc(fr.owner.claimedName) + '</b> got there first' : 'the offer is gone') + '. You can still run for them.</p>'
-      : ref ? '<p>You were recruited' + (recName ? ' by <b>' + esc(recName) + '</b>' : '') + '. Your shop owner takes 10% of what you earn. You will resent this. Good.</p>' : '<p>Nobody recruited you. You found this yourself. The Ministry finds that suspicious.</p>'}
+  modal(`<h3>Citizen Registration</h3>
+    <p>The Ministry finds you suspicious.</p>
     <input id="nm" placeholder="Your alias" aria-label="Your alias" maxlength="40" value="${esc(v || '')}" autofocus>
     <select id="dept">${DEPTS.map(d => '<option>' + d + '</option>').join('')}</select>
     <button id="go" class="big2">${fr && fr.open ? 'TAKE THE BUSINESS' : 'START RUNNING'}</button>
