@@ -14,7 +14,8 @@ function start(port, cb) {
   const redirects = {}; let rid = 0;
   const clean = row => { const o = {}; Object.keys(row).forEach(k => { if (row[k] !== null && row[k] !== undefined && row[k] !== '') o[k] = row[k]; }); return o; };
   const upsert = (table, row) => { const t = db[table]; const i = t.findIndex(r => r.id === row.id); if (i >= 0) Object.assign(t[i], clean(row)); else t.push(clean(row)); return row; };
-  const append = (table, row) => { db[table].push(clean(row)); return row; };
+  // Like the sheet backend: a row whose id is already present is not appended twice.
+  const append = (table, row) => { const id = row && row.id; if (id === undefined || id === null || id === '' || !db[table].some(r => r.id === id)) db[table].push(clean(row)); return row; };
   const appendAll = map => { if (map) TABLES.forEach(t => (map[t] || []).forEach(r => append(t, r))); };
   const srv = http.createServer((req, rsp) => {
     const u = new URL(req.url, 'http://x');

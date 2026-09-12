@@ -111,7 +111,11 @@ on the client from the full `players` table, so the backend stores rows and noth
 | text | plain-text rendering for other readers of the sheet. The feed renders from kind and arg, never from text as HTML |
 | effect | decrees only: `feast` or `audit` |
 
-**ledger** — the audit trail. One row per credited cut or royalty, written by the player who received it
+**ledger** — the audit trail. One row per credited cut or royalty, written by the player who received it.
+A row id is derived from payer, payee and the cumulative amount owed after the credit, not from the session
+that wrote it, so two open tabs or devices crediting the same increment produce the same row. The sheet
+drops appends whose id is already present, and every reader keeps the first copy of an id, which also covers
+rows resent after a timed-out sync.
 
 | column | meaning |
 | --- | --- |
@@ -143,7 +147,9 @@ Redeploy the web app (Deploy > Manage deployments > edit > new version) after ch
 the URL stays the same.
 
 The client makes one POST per sync (every 15 seconds per open tab) that upserts the player row,
-flushes queued feed and ledger rows, and returns all three tables, plus one GET per intro.
+flushes queued feed and ledger rows (ids already on the sheet are skipped), and returns all three tables,
+plus one GET per intro. A sync that fails keeps the last good company view: upline, runners, board and
+feed stay on screen until a later sync gets through.
 `CONFIG.SYNC_S` controls this interval. Apps Script execution limits and serialized sheet writes
 constrain capacity; measure request times and errors rather than assuming a player limit.
 The separate high-score page also refreshes every 15 seconds online. Initial score loading uses
@@ -216,7 +222,7 @@ A one-second white rabbit transmission opens the five-second splash and the recr
 
 Opening a shop now costs ₵25K, with no recruitment requirement. The purchase explains the Shop Owner ×1.1 income rank, removal of the recruiter deduction, and any remaining gang tax or franchise royalty. The saved purchase is followed by a brief shutter rise and illuminated shop-name sign: “YOUR NAME ON THE DOOR. YOUR PROBLEM NOW.” Back to work is immediately usable; reduced motion shows the open storefront and text without animation. Existing shops remain owned.
 
-The high-score view lives inside `index.html`, with hash routing, a 30-minute default, bookmarkable filters and Back to game restoring the previous tab, focus and scroll. Gameplay and saving continue while it is open. Every visitor reads players and ledger independently through `Sheet.readPublic` on entry and retry, without registration or company writes. Registered citizens also receive game-sync updates; public reads continue automatically if sync stalls or fails. Older reads cannot replace a newer sync result, and unknown data never reports “Up to date” or zero citizens. Those public reads validate responses and have a 12-second deadline. Failed refreshes retain previously loaded data and offer a retry. Ranking controls use cached data immediately. `node test/scores-navigation.js` covers routing, direct links, instance identity, continuing earnings and mobile layout. `node test/scores-sync-loading.js` covers stalled or invalid game sync, returning players and overlapping responses. `node test/ledger.js` covers delayed tables, HTTP errors, invalid responses, timeouts, retry, preserved data, empty states and mobile layout.
+The high-score view lives inside `index.html`, with hash routing, a 30-minute default, bookmarkable filters and Back to game restoring the previous tab, focus and scroll. Gameplay and saving continue while it is open. Every visitor reads players and ledger independently through `Sheet.readPublic` on entry and retry, without registration or company writes. Registered citizens also receive game-sync updates; public reads continue automatically if sync stalls or fails. Older reads cannot replace a newer sync result, and unknown data never reports “Up to date” or zero citizens. Those public reads validate responses and have a 12-second deadline. Failed refreshes retain previously loaded data and offer a retry. Ranking controls use cached data immediately. `node test/scores-navigation.js` covers routing, direct links, instance identity, continuing earnings and mobile layout. `node test/scores-sync-loading.js` covers stalled or invalid game sync, returning players and overlapping responses. `node test/ledger.js` covers delayed tables, HTTP errors, invalid responses, timeouts, retry, preserved data, empty states and mobile layout. Both leaderboards show Upline cut and Runner cut: commission at the recruiter’s current rate on the runner’s lifetime total, computed from the players table rather than summed from the ledger, so they need no ledger and cannot be inflated by duplicate rows. Nothing is deducted from the runner; the hover definitions say so.
 
 The top-right header pill counts down from 30 minutes using saved active playtime (`played`), matching the leaderboard comparison clock. Its red hover glow is decorative until zero, when it becomes a red Leaderboards button with the same circled-star glyph opening the in-page 30-minute ranking. Existing players beyond 30 minutes see the button immediately; gameplay continues. The pill fits its text with a 3px horizontal inset and a 22px height. Its reserved header grid column keeps it above the news ticker as the label changes.
 

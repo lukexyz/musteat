@@ -154,7 +154,7 @@ start(0, async ({ srv, db, url }) => {
     await page.evaluate(() => MUSTEAT.sync());
     check('history reaches backend as JSON column strings', db.players.find(p => p.id === ownId).pace0 === '{"9":100,"10":200}');
     await page.fill('#scoreMinute', '9'); await page.locator('#scoreMinute').press('Tab');
-    await page.waitForFunction(() => /Earned at minute 9/.test(document.getElementById('board').textContent));
+    await page.waitForFunction(() => /At 9 min/.test(document.getElementById('board').textContent));
     let ranked = await page.locator('#board tr').allTextContents();
     check('same-minute ranking uses historical scores and shared tie ranks', ranked[1].startsWith('1Minute Runner') && ranked[2].startsWith('1Tied Runner') && ranked[3].startsWith('3Older Runner') && !ranked.join('').includes('Legacy Runner'));
     const ledger = await context.newPage();
@@ -163,7 +163,7 @@ start(0, async ({ srv, db, url }) => {
     ranked = await ledger.locator('#ledger-scores tr').allTextContents();
     check('full leaderboard matches the game across the shared backend', ranked[1].startsWith('1Minute Runner') && ranked[2].startsWith('1Tied Runner') && ranked[3].startsWith('3Older Runner'));
     await ledger.fill('#ledger-scoreMinute', '10'); await ledger.locator('#ledger-scoreMinute').press('Tab');
-    await ledger.waitForFunction(() => /At minute 10/.test(document.getElementById('ledger-scores').textContent));
+    await ledger.waitForFunction(() => /At 10 min/.test(document.getElementById('ledger-scores').textContent));
     check('selecting another minute changes the leader', (await ledger.locator('#ledger-scores tr').nth(1).textContent()).startsWith('1Older Runner'));
     await ledger.fill('#ledger-scoreMinute', '0'); await ledger.locator('#ledger-scoreMinute').press('Tab');
     check('invalid minute input restores the last valid comparison', await ledger.inputValue('#ledger-scoreMinute') === '10');

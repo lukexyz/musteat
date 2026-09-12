@@ -66,7 +66,7 @@ start(0,async({srv,url})=>{let browser,checks=0;const ok=(name,value)=>{assert.o
  const beforeManual=await headlineIndex();await page.locator('#newsCard').click();
  ok('manual advance also works with reduced motion',await headlineIndex()!==beforeManual&&await page.locator('.news-caret').count()===0);
  await page.locator('#federationNews').evaluate(e=>{e.firstChild.textContent='Social ladder inspection: you are the floor'});
- await page.locator('.stats').screenshot({path:'.logs/federation-news-mobile.png'});
- await page.setViewportSize({width:1000,height:900});await page.locator('.stats').screenshot({path:'.logs/federation-news-desktop.png'});
+ await page.locator('.stats').first().screenshot({path:'.logs/federation-news-mobile.png'});
+ await page.setViewportSize({width:1000,height:900});await page.locator('.stats').first().screenshot({path:'.logs/federation-news-desktop.png'});
  ok('no browser errors',errors.length===0);console.log(`\n${checks} passed`);
 }catch(e){console.error(e);process.exitCode=1}finally{if(browser)await browser.close();srv.close()}});

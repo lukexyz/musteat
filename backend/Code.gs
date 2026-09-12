@@ -115,14 +115,35 @@ function upsertRow(name, row) {
   }
   return row;
 }
+// Every id already on the sheet, read once per batch. Clients resend rows after a timed-out sync, and two open
+// sessions can write the same credit, so a row whose id is already present is dropped rather than appended twice.
+function existingIds(sh, headers) {
+  const seen = {};
+  const col = headers.indexOf('id') + 1, last = sh.getLastRow();
+  if (col && last >= 2) sh.getRange(2, col, last - 1, 1).getValues().forEach(r => { const id = String(dec(r[0])); if (id !== '') seen[id] = true; });
+  return seen;
+}
+function appendRows(name, rows) {
+  const sh = sheetFor(name);
+  let headers = headersOf(sh);
+  const seen = existingIds(sh, headers);
+  let added = 0;
+  rows.forEach(row => {
+    if (!row || typeof row !== 'object') return;
+    const id = row.id === undefined || row.id === null ? '' : String(row.id);
+    if (id !== '') { if (seen[id]) return; seen[id] = true; }
+    headers = ensureColumns(sh, headers, row);
+    sh.appendRow(headers.map(h => enc(row[h])));
+    added++;
+  });
+  return added;
+}
 function appendRow(name, row) {
   if (!row) return { error: 'no row' };
-  const sh = sheetFor(name);
-  const headers = ensureColumns(sh, headersOf(sh), row);
-  sh.appendRow(headers.map(h => enc(row[h])));
+  appendRows(name, [row]);
   return row;
 }
 function appendAll(map) {
   if (!map) return;
-  TABLES.forEach(t => { (Array.isArray(map[t]) ? map[t] : []).forEach(r => appendRow(t, r)); });
+  TABLES.forEach(t => { if (Array.isArray(map[t]) && map[t].length) appendRows(t, map[t]); });
 }

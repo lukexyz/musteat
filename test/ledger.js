@@ -10,7 +10,7 @@ start(0, async ({ srv, url }) => {
     browser = await chromium.launch();
     const page = await browser.newPage();
     const errors = []; page.on('pageerror', error => errors.push(error.message));
-    const players = [{ id: 'a', name: 'Alice', total: 300, played: 600, pace0: '{"9":100}' }, { id: 'b', name: 'Bob', total: 900, played: 600, pace0: '{"9":80}' }];
+    const players = [{ id: 'a', code: 'ALICE', name: 'Alice', total: 300, played: 600, pace0: '{"9":100}' }, { id: 'b', code: 'BOB', name: 'Bob', ref: 'ALICE', total: 900, played: 600, pace0: '{"9":80}' }];
     const ledger = [{ id: 'l', from: 'b', to: 'a', amount: 40, kind: 'cut', level: 1, ts: Date.now() }];
     let mode = 'slow-start', reads = 0, held = [], heldPlayers = [];
     await page.route('**/api?**', async route => {
@@ -34,7 +34,8 @@ start(0, async ({ srv, url }) => {
     check('score reveal removes placeholders while the ledger keeps loading', await page.locator('.score-skeleton').count() === 0 && await page.locator('#ledger-scores').getAttribute('aria-busy') === 'false' && await page.locator('#ledger-loadStatus').evaluate(el => el.classList.contains('loading')));
     check('scores load without waiting for the ledger', /Alice/.test(await page.textContent('#ledger-scores')) && /Loading/.test(await page.textContent('#ledger-recent')));
     check('pending ledger totals are unknown, not zero', await page.textContent('#ledger-nRows') === '—');
-    check('tax columns stay unknown until the ledger arrives', (await page.locator('#ledger-scores .score-tax-out,#ledger-scores .score-tax-in').allTextContents()).every(value => value === '—'));
+    const alice = page.locator('#ledger-scores tr').filter({hasText:'Alice'}), bob = page.locator('#ledger-scores tr').filter({hasText:'Bob'});
+    check('cut columns come from the players table before the ledger arrives', await alice.locator('.score-tax-in').textContent() === '₵90' && await alice.locator('.score-tax-out').textContent() === '₵0' && await bob.locator('.score-tax-out').textContent() === '₵90' && await bob.locator('.score-tax-in').textContent() === '₵0');
     const before = reads;
     await page.click('[data-order="total"]');
     check('lifetime switch ranks cached players immediately', (await page.locator('#ledger-scores tr').nth(1).textContent()).includes('Bob'));
@@ -63,13 +64,14 @@ start(0, async ({ srv, url }) => {
     check('hung ledger request times out while scores remain usable', /Alice/.test(await page.textContent('#ledger-scores')) && /Transaction ledger refresh failed/.test(await page.textContent('#ledger-loadMessage')));
     for (const route of held.splice(0)) await route.abort().catch(() => {});
     mode = 'ok';
-    ledger.push({id:'royalty',from:'a',to:'b',amount:15,kind:'royalty',ts:Date.now()}, {id:'another-cut',from:'b',to:'a',amount:5,kind:'cut',level:1,ts:Date.now()});
+    ledger.push({id:'l',from:'b',to:'a',amount:40,kind:'cut',level:1,ts:Date.now()}, {id:'l',from:'b',to:'a',amount:40,kind:'cut',level:1,ts:Date.now()}, {id:'royalty',from:'a',to:'b',amount:15,kind:'royalty',ts:Date.now()});
+    players[0].buildings = 'depot,plant';
     await page.evaluate(() => MUSTEAT.refreshScores());
-    const alice = page.locator('#ledger-scores tr').filter({hasText:'Alice'}), bob = page.locator('#ledger-scores tr').filter({hasText:'Bob'});
-    check('tax out sums amounts sent and tax in sums amounts received', await alice.locator('.score-tax-out').textContent() === '₵15' && await alice.locator('.score-tax-in').textContent() === '₵45' && await bob.locator('.score-tax-out').textContent() === '₵45' && await bob.locator('.score-tax-in').textContent() === '₵15');
-    check('short tax headings explain recorded totals and missing gang tax', await page.getByRole('columnheader', {name:/^Tax out/}).getAttribute('title').then(text=>text.includes('Excludes unrecorded Sector 7 tax')) && await page.getByRole('columnheader', {name:/^Tax in/}).count() === 1);
+    check('cuts follow the recruiter’s current rate and buildings, not ledger rows', await alice.locator('.score-tax-in').textContent() === '₵168.8' && await bob.locator('.score-tax-out').textContent() === '₵168.8');
+    check('resent ledger rows with the same id count once', await page.textContent('#ledger-nRows') === '2' && /₵55/.test(await page.textContent('#ledger-sumAll')) && await page.locator('#ledger-recent tr').count() === 3);
+    check('cut headings say nothing is deducted and name the direction', await page.getByRole('columnheader', {name:/^Upline cut/}).getAttribute('title').then(text=>text.includes('Nothing is deducted')) && await page.getByRole('columnheader', {name:/^Runner cut/}).count() === 1);
     await page.click('[data-order="total"]');
-    check('tax totals stay current when the score comparison changes', await alice.locator('.score-tax-in').textContent() === '₵45');
+    check('cut totals stay current when the score comparison changes', await alice.locator('.score-tax-in').textContent() === '₵168.8');
     await page.setViewportSize({width:360,height:800});
     check('populated tax columns do not overflow the page on mobile', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     mode = 'empty'; await page.reload();

@@ -55,6 +55,21 @@ start(0, async ({ srv, db, url }) => {
   await A.click('[data-act="refresh"]'); await A.waitForTimeout(600); // the first sync queued the ledger row, the second sends it
   ok('cut from Bob to Ada is in the backend ledger', db.ledger.some(r => r.fromName === 'Bob' && r.toName === 'Ada' && r.kind === 'cut' && r.amount > 0), JSON.stringify(db.ledger));
 
+  console.log('Ada opens a second tab: the same credit is written to the ledger once');
+  const A2 = await A.context().newPage();
+  await A2.goto(game); await A2.waitForFunction(() => window.MUSTEAT && window.MUSTEAT.state.id);
+  for (let i = 0; i < 3; i++) { const m = await A2.waitForSelector('#modal:not([hidden])', { timeout: 1500 }).catch(() => null); if (!m) break; await A2.click('#modalBox #ok').catch(() => A2.keyboard.press('Escape')); }
+  const bobToAda = () => db.ledger.filter(r => r.fromName === 'Bob' && r.toName === 'Ada');
+  const rowsBefore = bobToAda().length;
+  for (let i = 0; i < 20; i++) await B.click('#run');
+  await B.evaluate(() => window.MUSTEAT.sync()); await B.waitForTimeout(600);
+  for (let round = 0; round < 2; round++) for (const tab of [A, A2]) { await tab.evaluate(() => window.MUSTEAT.sync()); await tab.waitForTimeout(600); }
+  const bobId = db.players.find(p => p.name === 'Bob').id;
+  const paidA = await A.evaluate(id => window.MUSTEAT.state.down.paid[id], bobId), paidA2 = await A2.evaluate(id => window.MUSTEAT.state.down.paid[id], bobId);
+  ok('both tabs credited the new cut from the same book', paidA > 0 && paidA === paidA2, JSON.stringify({ paidA, paidA2 }));
+  ok('two sessions crediting the same cut write one ledger row', bobToAda().length === rowsBefore + 1, JSON.stringify(bobToAda()));
+  await A2.close();
+
   console.log('the ledger page on laptop B reads the shared tables');
   const L = await B.context().newPage();
   await L.goto(url + 'index.html#highscores?order=total');

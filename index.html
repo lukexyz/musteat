@@ -323,7 +323,7 @@ footer{margin-top:24px;font-size:11px;color:var(--dim);text-align:center}
 .money-trail{border:1px solid #51445e;padding:10px 12px;margin-bottom:12px;background:repeating-linear-gradient(0deg,#b798db04 0 1px,transparent 1px 4px),#080d10}
 .money-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}.money-head h3{margin:0;font-size:13px;color:#dbc5e9}.money-signal{font-size:8px;color:#81d4c6;letter-spacing:1px}
 .money-map{display:flex;flex-direction:column;align-items:center}.money-node{display:flex;align-items:center;justify-content:space-between;gap:14px;width:min(100%,280px);padding:4px 9px;border:1px solid #51405f;border-radius:2px;background:#101019;color:#d5c5e2;text-align:left;line-height:1.4}.money-node strong{font-size:11px;overflow-wrap:anywhere}.money-node b{font-size:11px;font-weight:normal;white-space:nowrap}.money-node.self{border-color:#407c75;background:#0c1c1b;color:#a3e5d6}.money-node.gang{border-color:#71434c;background:#190e12;color:#f49aa9}.money-node.independent{border-style:dashed}.money-node:focus-visible,[data-person]:focus-visible{outline:2px solid #bda1d7;outline-offset:2px}
-.money-outcomes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:min(100%,392px)}.money-outcomes>div{display:flex;flex-direction:column;align-items:center;min-width:0}.money-outcomes .money-node{width:100%;height:100%}.money-map .money-node.recruit{color:#b0df9b;border-color:#527744;background:#0c180e}.money-link.recruit-link{border-color:#6a9854}.money-link.recruit-link::before{color:#a9d98d}.money-link{height:12px;border-left:1px solid #746084;position:relative}.money-link::before{content:'↑';position:absolute;left:-4px;top:-1px;color:#b99cd0;font-size:9px;line-height:12px;background:#0a0e12}.money-link.independent{border-left:1px dashed #64998b}.money-link.independent::before{content:'×';color:#9bd4c4}.money-link.gang-link::before{content:'↓';color:#e399a8}.money-empty{font-size:10px;color:var(--dim);padding:3px}.scheme-eye{display:block;width:28px;height:26px;flex-shrink:0;margin:1px auto 8px;color:#a98cb1;fill:none;stroke:currentColor;stroke-width:1.2;stroke-linejoin:round;filter:drop-shadow(0 0 4px #a77ac044)}.account-balance{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:6px 0 2px;padding-top:6px;border-top:1px solid #54877b40}.account-balance>span{font-size:8px;color:#92b8ac}.account-balance>b{font-size:12px;font-weight:normal;color:#c3eddb}
+.money-outcomes{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;width:min(100%,600px)}.money-outcomes>div{display:flex;flex-direction:column;align-items:center;flex:1 1 150px;max-width:190px;min-width:0}.money-map .money-node.runner{color:#a8e386;border-color:#3f6d3a;background:#0d1b10}.money-more{font-size:10px;color:var(--dim);margin:6px 0 0;text-align:center}.money-outcomes .money-node{width:100%;height:100%}.money-map .money-node.recruit{color:#b0df9b;border-color:#527744;background:#0c180e}.money-link.recruit-link{border-color:#6a9854}.money-link.recruit-link::before{color:#a9d98d}.money-link{height:12px;border-left:1px solid #746084;position:relative}.money-link::before{content:'↑';position:absolute;left:-4px;top:-1px;color:#b99cd0;font-size:9px;line-height:12px;background:#0a0e12}.money-link.independent{border-left:1px dashed #64998b}.money-link.independent::before{content:'×';color:#9bd4c4}.money-link.gang-link::before{content:'↓';color:#e399a8}.money-empty{font-size:10px;color:var(--dim);padding:3px}.scheme-eye{display:block;width:28px;height:26px;flex-shrink:0;margin:1px auto 8px;color:#a98cb1;fill:none;stroke:currentColor;stroke-width:1.2;stroke-linejoin:round;filter:drop-shadow(0 0 4px #a77ac044)}.account-balance{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:6px 0 2px;padding-top:6px;border-top:1px solid #54877b40}.account-balance>span{font-size:8px;color:#92b8ac}.account-balance>b{font-size:12px;font-weight:normal;color:#c3eddb}
 .money-split{border-top:1px solid #322b3b;margin-top:8px;padding-top:7px}.money-bar{display:flex;height:4px;margin:0 0 5px}.money-bar i{background:#79cdbc}.money-bar i:nth-child(2){background:#be99df}.money-bar i:nth-child(3){background:#df879b}.money-amounts{display:flex;gap:10px;flex-wrap:wrap;font-size:9px;color:#a6bdba}.money-amounts span:nth-child(2){color:#c6aedc}.money-amounts span:nth-child(3){color:#e399a8}
 /* Stats unfold inside the account; no floating layer obscures the map. */
 .money-map .money-node{display:block;width:min(100%,190px);min-height:48px;padding:8px 10px;position:relative;overflow:hidden;transition:border-color .2s,box-shadow .2s,background .2s}
@@ -1270,6 +1270,20 @@ function log(text) {
 // players: id, code, name, ref, dept, total, meals, rank, shopName, buildings, stamps, played, paceVersion, pace0..N, lastSeen (+ claimed* written by a claimer)
 // events:  id, ts, pid, who, kind, arg, text, effect, amount, of
 // ledger:  id, ts, from, fromName, to, toName, level, kind, amount   (one row per credited cut or royalty)
+// A credit's id is derived from who paid whom and the cumulative amount owed after it, not from the session that
+// wrote it. Two open tabs or devices crediting the same increment produce the same row, which the sheet and every
+// reader then count once.
+function ledgerRowId(to, from, owed) {
+  const s = to + '|' + from + '|' + Math.round(owed * 100);
+  let a = 0x811c9dc5, b = 0x01000193 ^ 0x9747b28c;
+  for (let i = 0; i < s.length; i++) { const ch = s.charCodeAt(i); a = Math.imul(a ^ ch, 0x01000193) >>> 0; b = Math.imul(b ^ ch, 0x5bd1e995) >>> 0; }
+  return 'l' + a.toString(36) + b.toString(36);
+}
+// Resent or concurrently written rows share an id; keep the first copy.
+function dedupeById(rows) {
+  const seen = new Set();
+  return (rows || []).filter(r => { const id = r && r.id; if (id == null || id === '') return !!r; if (seen.has(id)) return false; seen.add(id); return true; });
+}
 const Sheet = {
   pending: { events: [], ledger: [] }, // appends waiting for the next sync when there is a backend
   local() { try { return Object.assign({ players: [], events: [], ledger: [] }, JSON.parse(localStorage.getItem(CONFIG.SHEET_KEY)) || {}); } catch (e) { return { players: [], events: [], ledger: [] }; } },
@@ -1364,6 +1378,7 @@ function buildWorld(rows) {
   const w = emptyWorld(); w.rows = rows;
   rows.forEach(r => { w.byId[r.id] = r; w.dl[r.id] = downlineOf(rows, r); });
   w.citizens = rows.length;
+  w.taxTotals = scoreTaxTotals(rows);
   w.meals = rows.reduce((a, r) => a + (Number(r.meals) || 0), 0);
   w.board = rows.map(p => Object.assign({}, p, { total: Number(p.total) || 0, played: Number(p.played) || 0, runners: rows.filter(q => q.ref === p.code).length }))
     .sort((a, b) => b.total - a.total);
@@ -1867,8 +1882,8 @@ function revealPortfolioCard(target) {
 function renderMoneyTrail(s, c) {
   const up = (s.up || []).filter(u => u.id !== s.id).slice(0, 3);
   const nodes = up.map((u, i) => {
-    const level = i + 1, buildings = Object.fromEntries(['depot','plant','factory','ministry'].map(b => [b,hasB(u,b)]));
-    const rate = commissionRate({level,franchiseOf:s.franchiseOf},u.id,buildings), child = i ? up[i-1] : s;
+    const level = i + 1;
+    const rate = commissionRate({level,franchiseOf:s.franchiseOf},u.id,buildingsOfRow(u)), child = i ? up[i-1] : s;
     return {key:'up'+level,id:u.id,name:u.name || 'Unknown citizen',cls:'dread',independent:independentShop(u),linkIndependent:independentShop(child),badge:flowPct(rate),
       html:portfolioPersonDetails(u.id,u)};
   });
@@ -1877,8 +1892,15 @@ function renderMoneyTrail(s, c) {
   const self = {key:'you',id:s.id,name:s.name || 'You',cls:'self',independent:independentShop(s),badge:flowPct(c.keep),html:accountLine('Lifetime tax','₵' + fmt(s.down.credited || 0),'tax-gain')};
   const gang = {key:'gang',name:'Sector 7 gang',cls:'gang '+(c.gang ? 'dread' : 'lucrative'),badge:flowPct(c.gang),html:''};
   const recruit = {key:'recruit',name:'Find a recruit',cls:'lucrative recruit',badge:'15%',html:''};
-  const button = n => `<button type="button" aria-expanded="false" class="money-node account-card ${n.cls || ''}${n.independent ? ' independent' : ''}" data-flow="${n.key}"${n.id ? ' data-person="' + esc(n.id) + '"' : ''}${['gang','recruit'].includes(n.key) ? ' aria-haspopup="dialog"' : ''}${n.key === 'recruit' ? ' aria-label="Find a recruit. Hypothetical runner. You take 15%. Open share messages."' : ''}><span class="account-head"><strong>${esc(n.name)}</strong><b><span class="rate-label">${n.key === 'you' ? 'You earn' : n.key === 'recruit' ? 'You take' : 'They take'}</span><span class="rate-value">${n.badge}</span></b></span>${n.key === 'you' ? '<span class="account-balance"><span>Lifetime earnings</span><b id="flowLifetime"></b></span>' : ''}${accountReveal(n.html)}</button>`;
-  const html = `<div class="money-trail"><div class="money-head"><h3>It’s a career triangle.</h3><span class="money-signal">MONEY TRAIL</span></div><div class="money-map"><svg class="scheme-eye" viewBox="0 0 40 36" aria-hidden="true" focusable="false"><path d="M20 2 38 33H2Z M8 27h24 M15 11h10"/><path d="M10 20q10-12 20 0-10 12-20 0Z"/><circle cx="20" cy="20" r="3" fill="currentColor"/></svg>${nodes.length ? nodes.slice().reverse().map(n => button(n) + '<div class="money-link' + (n.linkIndependent ? ' independent' : '') + '" aria-hidden="true"></div>').join('') : '<span class="money-empty">No recruiter above you.</span><div class="money-link" aria-hidden="true"></div>'}${button(self)}<div class="money-outcomes"><div><div class="money-link gang-link" aria-hidden="true"></div>${button(gang)}</div><div><div class="money-link recruit-link" aria-hidden="true"></div>${button(recruit)}</div></div></div><div class="money-split"><div class="money-bar" aria-hidden="true"><i style="width:${c.keep*100}%"></i><i style="width:${c.tax*100}%"></i><i style="width:${c.gang*100}%"></i></div><div class="money-amounts"><span>You keep ${flowPct(c.keep)}</span><span>Runner tax ${flowPct(c.tax)}</span><span>Gang ${flowPct(c.gang)}</span></div></div></div>`;
+  // The people who actually pay you: direct runners and franchisees, most lucrative first. The rest are in Your empire.
+  const MAX_RUNNERS = 3, paid = s.down.paid || {};
+  const runners = (s.down.list || []).filter(m => m.level === 1 || m.franchiseOf === s.id)
+    .map(m => ({m, rate:cutRate(m), cut:paid[m.id] || 0})).sort((a, b) => b.cut - a.cut || (Number(b.m.total) || 0) - (Number(a.m.total) || 0));
+  const runnerNodes = runners.slice(0, MAX_RUNNERS).map(({m, rate}, i) => ({key:'runner' + (i + 1),id:m.id,name:m.name || 'Unknown citizen',cls:'lucrative runner',independent:independentShop(m),badge:flowPct(rate),html:portfolioPersonDetails(m.id,m,true)}));
+  // The hiring call stays at the bottom whether or not anyone has answered it yet.
+  const outcome = (n, link) => '<div><div class="money-link ' + link + '" aria-hidden="true"></div>' + button(n) + '</div>';
+  const button = n => `<button type="button" aria-expanded="false" class="money-node account-card ${n.cls || ''}${n.independent ? ' independent' : ''}" data-flow="${n.key}"${n.id ? ' data-person="' + esc(n.id) + '"' : ''}${['gang','recruit'].includes(n.key) ? ' aria-haspopup="dialog"' : ''}${n.key === 'recruit' ? ' aria-label="Find a recruit. Hypothetical runner. You take 15%. Open share messages."' : ''}><span class="account-head"><strong>${esc(n.name)}</strong><b><span class="rate-label">${n.key === 'you' ? 'You earn' : n.key === 'recruit' || n.key.startsWith('runner') ? 'You take' : 'They take'}</span><span class="rate-value">${n.badge}</span></b></span>${n.key === 'you' ? '<span class="account-balance"><span>Lifetime earnings</span><b id="flowLifetime"></b></span>' : ''}${accountReveal(n.html)}</button>`;
+  const html = `<div class="money-trail"><div class="money-head"><h3>It’s a career triangle.</h3><span class="money-signal">MONEY TRAIL</span></div><div class="money-map"><svg class="scheme-eye" viewBox="0 0 40 36" aria-hidden="true" focusable="false"><path d="M20 2 38 33H2Z M8 27h24 M15 11h10"/><path d="M10 20q10-12 20 0-10 12-20 0Z"/><circle cx="20" cy="20" r="3" fill="currentColor"/></svg>${nodes.length ? nodes.slice().reverse().map(n => button(n) + '<div class="money-link' + (n.linkIndependent ? ' independent' : '') + '" aria-hidden="true"></div>').join('') : '<span class="money-empty">No recruiter above you.</span><div class="money-link" aria-hidden="true"></div>'}${button(self)}<div class="money-outcomes">${outcome(gang, 'gang-link')}${runnerNodes.map(n => outcome(n, 'recruit-link' + (n.independent ? ' independent' : ''))).join('')}${runnerNodes.length ? '' : outcome(recruit, 'recruit-link')}</div>${runners.length > MAX_RUNNERS ? '<p class="money-more">' + (runners.length - MAX_RUNNERS) + ' more of your runners are listed under Your empire.</p>' : ''}${runnerNodes.length ? '<div class="money-outcomes money-hire">' + outcome(recruit, 'recruit-link') + '</div>' : ''}</div><div class="money-split"><div class="money-bar" aria-hidden="true"><i style="width:${c.keep*100}%"></i><i style="width:${c.tax*100}%"></i><i style="width:${c.gang*100}%"></i></div><div class="money-amounts"><span>You keep ${flowPct(c.keep)}</span><span>Runner tax ${flowPct(c.tax)}</span><span>Gang ${flowPct(c.gang)}</span></div></div></div>`;
   const focused = document.activeElement?.closest('#pfFlow [data-flow]')?.dataset.flow;
   setHTML('pfFlow',html);
   const lifetime = '₵' + fmt(s.total);
@@ -1930,7 +1952,7 @@ function applyDownline(list) {
     const d = owed - before;
     if (d > 0.5) {
       delta += d;
-      rows.push({ id: uid('l'), ts: now(), from: m.id, fromName: m.name, to: state.id, toName: state.name, level: m.franchiseOf === state.id ? 'F' : m.level, kind: m.franchiseOf === state.id ? 'royalty' : 'cut', amount: Math.round(d * 100) / 100 });
+      rows.push({ id: ledgerRowId(state.id, m.id, owed), ts: now(), from: m.id, fromName: m.name, to: state.id, toName: state.name, level: m.franchiseOf === state.id ? 'F' : m.level, kind: m.franchiseOf === state.id ? 'royalty' : 'cut', amount: Math.round(d * 100) / 100 });
     }
     state.down.paid[m.id] = Math.max(before, owed);
   });
@@ -1965,22 +1987,25 @@ async function sync() {
   try {
     if (state.offer) { const c = calc(state); Object.assign(state.offer, { gear: Object.assign({}, state.gear), upg: Object.assign({}, state.upg), income: c.income }); }
     const db = await Sheet.sync(rowOf(state));
-    const rows = db.players || [], events = db.events || [], ledger = db.ledger || [];
     ledgerView.receive(db, Sheet.lastSyncFailed);
-    world = buildWorld(rows);
-    world.ledger = ledger; world.ledgerLoaded = true;
-    world.taxTotals = Sheet.lastSyncFailed ? null : scoreTaxTotals(ledger);
-    (ledger || []).forEach(r => { world.fromRunners[r.to] = (world.fromRunners[r.to] || 0) + (Number(r.amount) || 0); });
-    feed = events.slice().sort((a, b) => b.ts - a.ts).slice(0, 12);
-    const me = world.byId[state.id] || rowOf(state);
-    state.up = uplineOf(rows, me);
-    if (state.up[0]) state.recruiter = state.up[0].name;
-    if (state.franchiseOf && world.byId[state.franchiseOf]) state.franchiseName = world.byId[state.franchiseOf].name;
-    (state.portfolio || []).forEach(e => { const r = e.toId && world.byId[e.toId]; if (r && r.name) e.to = r.name; });
-    applyDownline(world.dl[state.id] || downlineOf(rows, me));
-    applyDecrees(events);
-    if (state.offer && me.claimedOffer === state.offer.id) handover(me);
-    (state.portfolio || []).forEach(e => { const r = world.byId[e.toId]; if (!r) return; const t = Number(r.total) || 0; const last = e.samples[e.samples.length - 1]; if (!last || last.total !== t) e.samples = e.samples.concat({ t: now(), total: t }).slice(-6); });
+    // A failed round trip answers with the near-empty local fallback. Keep the last good company view instead of
+    // wiping the upline, the runners and the board until the next sync that gets through.
+    if (!Sheet.lastSyncFailed || !world.rows.length) {
+      const rows = db.players || [], events = db.events || [], ledger = dedupeById(db.ledger || []);
+      world = buildWorld(rows);
+      world.ledger = ledger; world.ledgerLoaded = true;
+      ledger.forEach(r => { world.fromRunners[r.to] = (world.fromRunners[r.to] || 0) + (Number(r.amount) || 0); });
+      feed = events.slice().sort((a, b) => b.ts - a.ts).slice(0, 12);
+      const me = world.byId[state.id] || rowOf(state);
+      state.up = uplineOf(rows, me);
+      if (state.up[0]) state.recruiter = state.up[0].name;
+      if (state.franchiseOf && world.byId[state.franchiseOf]) state.franchiseName = world.byId[state.franchiseOf].name;
+      (state.portfolio || []).forEach(e => { const r = e.toId && world.byId[e.toId]; if (r && r.name) e.to = r.name; });
+      applyDownline(world.dl[state.id] || downlineOf(rows, me));
+      applyDecrees(events);
+      if (state.offer && me.claimedOffer === state.offer.id) handover(me);
+      (state.portfolio || []).forEach(e => { const r = world.byId[e.toId]; if (!r) return; const t = Number(r.total) || 0; const last = e.samples[e.samples.length - 1]; if (!last || last.total !== t) e.samples = e.samples.concat({ t: now(), total: t }).slice(-6); });
+    }
   } finally { syncing = false; }
   preloadPortfolioPeople();
   render(); save();
@@ -3000,18 +3025,25 @@ function closeProtection() {
 function scoreHeading(label, definition, cls = '') {
   return `<th scope="col" class="score-column-help ${cls}" title="${esc(definition)}" aria-label="${esc(label + '. ' + definition)}">${esc(label)}</th>`;
 }
-function scoreTaxTotals(rows) {
+// Commission is owed at the recruiter's current rate on the runner's lifetime total, which is exactly what the game
+// credits, so the columns come straight from the players table: no ledger, no duplicates, no waiting.
+function buildingsOfRow(row) { return Object.fromEntries(['depot', 'plant', 'factory', 'ministry'].map(b => [b, hasB(row, b)])); }
+function scoreTaxTotals(players) {
   const incoming = new Map(), outgoing = new Map();
-  for (const row of rows) {
-    const amount = Number(row.amount) || 0;
-    incoming.set(row.to, (incoming.get(row.to) || 0) + amount);
-    outgoing.set(row.from, (outgoing.get(row.from) || 0) + amount);
+  const add = (map, id, amount) => map.set(id, (map.get(id) || 0) + amount);
+  for (const p of players) {
+    const total = Number(p.total) || 0;
+    if (!(total > 0)) continue;
+    uplineOf(players, p).forEach(u => {
+      const amount = commissionRate({ level: u.level, franchiseOf: p.franchiseOf }, u.id, buildingsOfRow(u)) * total;
+      if (amount > 0) { add(incoming, u.id, amount); add(outgoing, p.id, amount); }
+    });
   }
-  return {incoming, outgoing};
+  return { incoming, outgoing };
 }
 function scoreTaxHeadings() {
-  return scoreHeading('Tax out', 'Recorded commissions and royalties credited to other players from this citizen’s earnings, to date. Excludes unrecorded Sector 7 tax. Not limited to the selected playtime.', 'r') +
-    scoreHeading('Tax in', 'Recorded commissions and royalties received from other players, to date. Not limited to the selected playtime.', 'r');
+  return scoreHeading('Upline cut', 'Commission the citizen’s recruiters and franchisor earn on this citizen’s lifetime earnings, at their current rates. Nothing is deducted from the citizen. Excludes Sector 7 tax. Not limited to the selected playtime.', 'r') +
+    scoreHeading('Runner cut', 'Commission this citizen earns on their runners’ and franchisees’ lifetime earnings, at current rates. Not limited to the selected playtime.', 'r');
 }
 function scoreTaxCells(id, totals) {
   return `<td class="r score-tax-out">${totals ? '₵' + fmt(totals.outgoing.get(id) || 0) : '—'}</td><td class="r score-tax-in">${totals ? '₵' + fmt(totals.incoming.get(id) || 0) : '—'}</td>`;
@@ -3052,7 +3084,7 @@ const ledgerView = (() => {
   function receive(db, failed) {
     for (const table of ['players', 'ledger']) {
       loadErrors[table] = !!failed;
-      if (!failed) { loaded[table] = db[table] || []; revisions[table]++; }
+      if (!failed) { loaded[table] = table === 'ledger' ? dedupeById(db[table]) : db[table] || []; revisions[table]++; }
     }
     if (scoresVisible) render();
   }
@@ -3065,7 +3097,7 @@ const ledgerView = (() => {
         try {
           const rows = await Sheet.readPublic(table);
           // A newer game sync wins over a read that started before it.
-          if (revisions[table] === revision) { loaded[table] = rows; loadErrors[table] = false; revisions[table]++; }
+          if (revisions[table] === revision) { loaded[table] = table === 'ledger' ? dedupeById(rows) : rows; loadErrors[table] = false; revisions[table]++; }
         } catch (error) { if (revisions[table] === revision) loadErrors[table] = true; }
         render();
       }));
@@ -3118,7 +3150,7 @@ const ledgerView = (() => {
       return `<div style="margin-bottom:8px"><b>${esc(nameOf(players, e.id, e.rows[0].toName))}</b> <span class="muted">₵${fmt(e.total)}</span><div class="pair">${from.map(f => `<span class="${f.rows[0].kind === 'royalty' ? 'f' : ''}">${esc(nameOf(players, f.id, f.rows[0].fromName))} ${f.rows[0].kind === 'royalty' ? 'F' : 'L' + esc(f.rows[0].level)} ₵${fmt(f.total)}</span>`).join('')}</div></div>`;
     }).join('') : '<div class="empty">Nothing to show.</div>';
 
-    const taxes = loaded.ledger === null ? null : scoreTaxTotals(rows);
+    const taxes = scoreTaxTotals(players);
     const scores = rankedScores(players, order, minute);
     const shown = scores.slice(0, 30), ownId = state.id;
     const me = scores.find(r => r.p.id === ownId);

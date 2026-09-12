@@ -265,7 +265,7 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   await p1.click('[data-act="refresh"]');
   await p1.click('[data-score="pace"]');
   await p1.click('#myMinute');
-  ok('board compares recorded earnings at the selected minute', /Earned at minute 30/.test(await p1.textContent('#board')) && /Ada/.test(await p1.textContent('#board')));
+  ok('board compares recorded earnings at the selected minute', /At 30 min/.test(await p1.textContent('#board')) && /Ada/.test(await p1.textContent('#board')));
 
   console.log('ledger: who paid whom');
   const led = await p1.evaluate(() => JSON.parse(localStorage.musteat_sheet).ledger || []);
@@ -287,8 +287,8 @@ const PATCH_INIT = () => { try { const p = JSON.parse(localStorage.getItem('__pa
   ok('ledger page lists Sam and Kim as contributors', /Sam/.test(await pl.textContent('#ledger-payers')) && /Kim/.test(await pl.textContent('#ledger-payers')));
   ok('ledger page shows who pays whom', /Ada[\s\S]*Sam[\s\S]*L1/.test(await pl.textContent('#ledger-pairs')));
   await pl.click('[data-order="pace"]');
-  await pl.waitForFunction(() => /At minute 30/.test(document.getElementById('ledger-scores').textContent));
-  ok('ledger page ranks by matching playtime', /At minute 30/.test(await pl.textContent('#ledger-scores')) && (await pl.getAttribute('[data-order="pace"]', 'class')) === 'on');
+  await pl.waitForFunction(() => /At 30 min/.test(document.getElementById('ledger-scores').textContent));
+  ok('ledger page ranks by matching playtime', /At 30 min/.test(await pl.textContent('#ledger-scores')) && (await pl.getAttribute('[data-order="pace"]', 'class')) === 'on');
   ok('ledger page has recent entries and no overflow', (await pl.$$('#ledger-recent tr')).length >= 2 && await pl.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
   await pl.close();
 

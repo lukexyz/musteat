@@ -78,6 +78,17 @@ start(0,async({srv,db,url})=>{
   ok('downline hover keeps payment direction clear',/Lifetime tax\s*₵222/.test(await page.locator('.account-card.revealed .account-reveal').innerText()));
   ok('incoming payments use the celebratory treatment',await runner.evaluate(e=>e.classList.contains('lucrative')&&getComputedStyle(e).backgroundColor==='rgb(13, 27, 16)'));
   ok('independent runner stays visible with dashed tie',await runner.evaluate(e=>e.classList.contains('independent')));
+  const trailRunner=page.locator('#pfFlow [data-flow="runner1"]');
+  ok('money trail shows the real runner under you with your cut',await trailRunner.count()===1&&await trailRunner.locator('.account-head strong').innerText()==='Independent Accomplice'&&await trailRunner.locator('.rate-label').innerText()==='You take'&&await trailRunner.locator('.rate-value').innerText()==='10%'&&await trailRunner.evaluate(e=>e.classList.contains('independent')));
+  ok('real runners sit between the gang and the recruit call',(await page.locator('.money-map [data-flow]').evaluateAll(es=>es.map(e=>e.dataset.flow))).join(',')==='up3,up2,up1,you,gang,runner1,recruit');
+  await trailRunner.hover();
+  ok('trail runner reveals incoming earnings and tax',/Lifetime earnings\s*₵42K[\s\S]*Lifetime tax\s*₵222/.test(await page.locator('#pfFlow .account-card.revealed .account-reveal').innerText()));
+  await page.keyboard.press('Escape');
+  await page.route('**/api?**',route=>route.abort());
+  await page.evaluate(async()=>{await MUSTEAT.sync();MUSTEAT.render()});
+  ok('a failed sync keeps the upline and runners on screen',await page.locator('#pfFlow [data-flow="up1"]').count()===1&&await page.locator('#pfFlow [data-flow="runner1"]').count()===1&&await page.locator('#pfEmpire [data-person="runner"]').count()===1&&await page.evaluate(()=>MUSTEAT.state.down.list.length)===1);
+  await page.unroute('**/api?**');
+  await runner.scrollIntoViewIfNeeded();await runner.focus();
   await page.locator('#pfEmpire').screenshot({path:'/private/tmp/musteat-inline-income.png'});
   await page.evaluate(()=>{MUSTEAT.state.down.paid.runner+=1;MUSTEAT.render()});
   ok('live rendering does not strand the hover card',await page.locator('.account-card.revealed .account-reveal').isVisible());
