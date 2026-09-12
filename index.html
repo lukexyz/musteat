@@ -190,6 +190,8 @@ th,td{text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
 th{color:var(--dim);font-weight:normal;font-size:11px;text-transform:uppercase;letter-spacing:1px}
 td.r,th.r{text-align:right}
 th.score-column-help{cursor:help}
+.score-tax-out{color:#e58b9d}.score-tax-in{color:#a4d98d}
+td.score-tax-out,td.score-tax-in{white-space:nowrap}
 .me{color:var(--acc)}
 .log div,.feed div{font-size:12px;color:var(--dim);padding:2px 0;border-bottom:1px dotted #182022}
 .log div b,.feed div b{color:var(--fg);font-weight:normal}
@@ -1336,7 +1338,7 @@ const Sheet = {
 };
 
 // ---------------- World (all computed client-side from the players table) ----------------
-function emptyWorld() { return { rows: [], byId: {}, dl: {}, citizens: 0, meals: 0, board: [], sectors: [], fromRunners: {}, ledger: [], ledgerLoaded: false }; }
+function emptyWorld() { return { rows: [], byId: {}, dl: {}, citizens: 0, meals: 0, board: [], sectors: [], fromRunners: {}, ledger: [], ledgerLoaded: false, taxTotals: null }; }
 const hasB = (row, b) => String((row && row.buildings) || '').split(',').includes(b);
 const bstr = s => Object.keys(s.buildings || {}).filter(k => s.buildings[k]).join(',');
 const bnames = str => String(str || '').split(',').map(x => (BUILDINGS.find(b => b.id === x) || {}).name).filter(Boolean).join(', ');
@@ -1967,6 +1969,7 @@ async function sync() {
     ledgerView.receive(db, Sheet.lastSyncFailed);
     world = buildWorld(rows);
     world.ledger = ledger; world.ledgerLoaded = true;
+    world.taxTotals = Sheet.lastSyncFailed ? null : scoreTaxTotals(ledger);
     (ledger || []).forEach(r => { world.fromRunners[r.to] = (world.fromRunners[r.to] || 0) + (Number(r.amount) || 0); });
     feed = events.slice().sort((a, b) => b.ts - a.ts).slice(0, 12);
     const me = world.byId[state.id] || rowOf(state);
@@ -2997,6 +3000,22 @@ function closeProtection() {
 function scoreHeading(label, definition, cls = '') {
   return `<th scope="col" class="score-column-help ${cls}" title="${esc(definition)}" aria-label="${esc(label + '. ' + definition)}">${esc(label)}</th>`;
 }
+function scoreTaxTotals(rows) {
+  const incoming = new Map(), outgoing = new Map();
+  for (const row of rows) {
+    const amount = Number(row.amount) || 0;
+    incoming.set(row.to, (incoming.get(row.to) || 0) + amount);
+    outgoing.set(row.from, (outgoing.get(row.from) || 0) + amount);
+  }
+  return {incoming, outgoing};
+}
+function scoreTaxHeadings() {
+  return scoreHeading('Tax out', 'Recorded commissions and royalties credited to other players from this citizen’s earnings, to date. Excludes unrecorded Sector 7 tax. Not limited to the selected playtime.', 'r') +
+    scoreHeading('Tax in', 'Recorded commissions and royalties received from other players, to date. Not limited to the selected playtime.', 'r');
+}
+function scoreTaxCells(id, totals) {
+  return `<td class="r score-tax-out">${totals ? '₵' + fmt(totals.outgoing.get(id) || 0) : '—'}</td><td class="r score-tax-in">${totals ? '₵' + fmt(totals.incoming.get(id) || 0) : '—'}</td>`;
+}
 const playtimeDefinition = 'Active runtime';
 const scoreDefinition = (mode, minute) => mode === 'pace'
   ? 'Lifetime earnings recorded at ' + minute + ' minutes of visible-tab playtime, including income earned while away. Players may have had different amounts of offline earning time.'
@@ -3015,7 +3034,7 @@ function renderScores() {
   if (me && !shown.includes(me)) shown.push(me);
   const label = scoreMode === 'pace' ? 'At ' + minute + ' min' : 'Earned';
   const note = scoreMode === 'pace' ? `Total earnings at exactly ${minute} active minute${minute === 1 ? '' : 's'}, including income earned while away. Active playtime counts only time with the game tab visible. Players further ahead compete using their saved score at this minute. ${players.length - ranked.length} citizen(s) have no recorded score here yet. Existing saves start at their next full minute.` : 'Earnings include offline income. Active playtime is total time with the game tab visible.';
-  setHTML('board', (ranked.length ? `<table><tr>${scoreHeading('#', 'Rank for the selected comparison. Equal scores share a rank.')}${scoreHeading('Citizen', 'Player alias, with their current shop or rank underneath.')}${scoreHeading(label, scoreDefinition(scoreMode, minute), 'r')}${scoreHeading('Runtime', playtimeDefinition, 'r')}</tr>` + shown.map(({ p, score, place }) => `<tr class="${p.id === state.id ? 'me' : ''}"><td>${place}</td><td>${esc(p.name)}<div class="muted">${esc(p.shopName || (RANKS[Number(p.rank) || 0] || RANKS[0]).name)}</div></td><td class="r">₵${fmt(score)}</td><td class="r">${Math.floor(p.played / 60)} min</td></tr>`).join('') + '</table>' : '<p>No recorded scores at this minute yet. Your first comparison appears after a full active minute.</p>') + '<p class="score-note">' + note + '</p>' + (scoreMode === 'pace' && state.id && !me ? '<p class="muted">You have no saved score at minute ' + minute + ' yet. Try My minute or keep running.</p>' : '') + `<a class="muted" href="#highscores?minute=${minute}&order=${scoreMode}">Full high scores and the ledger →</a>`);
+  setHTML('board', (ranked.length ? `<table><tr>${scoreHeading('#', 'Rank for the selected comparison. Equal scores share a rank.')}${scoreHeading('Citizen', 'Player alias, with their current shop or rank underneath.')}${scoreHeading(label, scoreDefinition(scoreMode, minute), 'r')}${scoreHeading('Runtime', playtimeDefinition, 'r')}${scoreTaxHeadings()}</tr>` + shown.map(({ p, score, place }) => `<tr class="${p.id === state.id ? 'me' : ''}"><td>${place}</td><td>${esc(p.name)}<div class="muted">${esc(p.shopName || (RANKS[Number(p.rank) || 0] || RANKS[0]).name)}</div></td><td class="r">₵${fmt(score)}</td><td class="r">${Math.floor(p.played / 60)} min</td>${scoreTaxCells(p.id, world.taxTotals)}</tr>`).join('') + '</table>' : '<p>No recorded scores at this minute yet. Your first comparison appears after a full active minute.</p>') + '<p class="score-note">' + note + '</p>' + (scoreMode === 'pace' && state.id && !me ? '<p class="muted">You have no saved score at minute ' + minute + ' yet. Try My minute or keep running.</p>' : '') + `<a class="muted" href="#highscores?minute=${minute}&order=${scoreMode}">Full high scores and the ledger →</a>`);
 }
 
 // Game sync supplies live updates; opening scores also reads independently of game writes.
@@ -3099,15 +3118,15 @@ const ledgerView = (() => {
       return `<div style="margin-bottom:8px"><b>${esc(nameOf(players, e.id, e.rows[0].toName))}</b> <span class="muted">₵${fmt(e.total)}</span><div class="pair">${from.map(f => `<span class="${f.rows[0].kind === 'royalty' ? 'f' : ''}">${esc(nameOf(players, f.id, f.rows[0].fromName))} ${f.rows[0].kind === 'royalty' ? 'F' : 'L' + esc(f.rows[0].level)} ₵${fmt(f.total)}</span>`).join('')}</div></div>`;
     }).join('') : '<div class="empty">Nothing to show.</div>';
 
-    const fromRunners = Object.create(null); earners.forEach(e => { fromRunners[e.id] = e.total; });
+    const taxes = loaded.ledger === null ? null : scoreTaxTotals(rows);
     const scores = rankedScores(players, order, minute);
     const shown = scores.slice(0, 30), ownId = state.id;
     const me = scores.find(r => r.p.id === ownId);
     if (me && !shown.includes(me)) shown.push(me);
     const label = order === 'pace' ? 'At ' + minute + ' min' : 'Earned';
     const note = order === 'pace' ? 'Total earnings at exactly ' + minute + ' active minute(s), including income earned while away. Active playtime counts only time with the game tab visible. Players further ahead use their saved score at this minute. ' + (players.length - scores.length) + ' citizen(s) have no recorded score here yet. Existing saves begin at their next full minute; earlier scores are not reconstructed.' : 'Earnings include offline income. Active playtime is total time with the game tab visible.';
-    l$('scores').innerHTML = (scores.length ? `<table><tr>${scoreHeading('#', 'Rank for the selected comparison. Equal scores share a rank.')}${scoreHeading('Citizen', 'Player alias, current rank and department. Stars show Ration Stamps.')}${scoreHeading('Shop', 'The player’s current shop name, if they have one.')}${scoreHeading(label, scoreDefinition(order, minute), 'r gold')}${scoreHeading('Runtime', playtimeDefinition, 'r')}${scoreHeading('Cuts', 'Total recorded commissions and franchise royalties received from other players to date, not just at the selected playtime.', 'r')}${scoreHeading('Runners', 'Current number of direct recruits, including those who have opened their own shops. This is not an online count or a count at the selected playtime.', 'r')}</tr>` +
-      shown.map(({ p, score, place }) => `<tr class="${p.id === ownId ? 'me' : ''}"><td>${place}</td><td>${esc(p.name)}${p.stamps ? ' <span class="gold">★' + esc(p.stamps) + '</span>' : ''}<div class="muted">${esc((RANKS[Number(p.rank) || 0] || RANKS[0]).name)}${p.dept ? ' · ' + esc(p.dept) : ''}</div></td><td>${esc(p.shopName || '—')}</td><td class="r">₵${fmt(score)}</td><td class="r">${Math.floor((Number(p.played) || 0) / 60)} min</td><td class="r gold">${fromRunners[p.id] ? '₵' + fmt(fromRunners[p.id]) : '—'}</td><td class="r">${players.filter(q => q.ref === p.code).length}</td></tr>`).join('') + '</table>' : '<div class="empty">No recorded scores at this minute yet. Choose another minute, or keep running. Lifetime scores are available above.</div>') + '<p class="muted">' + note + '</p>' + (order === 'pace' && ownId && !me ? '<p class="muted">You have no saved score at this minute yet.</p>' : '');
+    l$('scores').innerHTML = (scores.length ? `<table><tr>${scoreHeading('#', 'Rank for the selected comparison. Equal scores share a rank.')}${scoreHeading('Citizen', 'Player alias, current rank and department. Stars show Ration Stamps.')}${scoreHeading('Shop', 'The player’s current shop name, if they have one.')}${scoreHeading(label, scoreDefinition(order, minute), 'r gold')}${scoreHeading('Runtime', playtimeDefinition, 'r')}${scoreTaxHeadings()}${scoreHeading('Runners', 'Current number of direct recruits, including those who have opened their own shops. This is not an online count or a count at the selected playtime.', 'r')}</tr>` +
+      shown.map(({ p, score, place }) => `<tr class="${p.id === ownId ? 'me' : ''}"><td>${place}</td><td>${esc(p.name)}${p.stamps ? ' <span class="gold">★' + esc(p.stamps) + '</span>' : ''}<div class="muted">${esc((RANKS[Number(p.rank) || 0] || RANKS[0]).name)}${p.dept ? ' · ' + esc(p.dept) : ''}</div></td><td>${esc(p.shopName || '—')}</td><td class="r">₵${fmt(score)}</td><td class="r">${Math.floor((Number(p.played) || 0) / 60)} min</td>${scoreTaxCells(p.id, taxes)}<td class="r">${players.filter(q => q.ref === p.code).length}</td></tr>`).join('') + '</table>' : '<div class="empty">No recorded scores at this minute yet. Choose another minute, or keep running. Lifetime scores are available above.</div>') + '<p class="muted">' + note + '</p>' + (order === 'pace' && ownId && !me ? '<p class="muted">You have no saved score at this minute yet.</p>' : '');
 
     const recent = rows.slice().sort((a, b) => b.ts - a.ts).slice(0, 10);
     l$('recent').innerHTML = recent.length ? `<table><tr><th>When</th><th>From</th><th></th><th>To</th><th class="r">Level</th><th class="r">Amount</th></tr>` +

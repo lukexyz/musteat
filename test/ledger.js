@@ -34,6 +34,7 @@ start(0, async ({ srv, url }) => {
     check('score reveal removes placeholders while the ledger keeps loading', await page.locator('.score-skeleton').count() === 0 && await page.locator('#ledger-scores').getAttribute('aria-busy') === 'false' && await page.locator('#ledger-loadStatus').evaluate(el => el.classList.contains('loading')));
     check('scores load without waiting for the ledger', /Alice/.test(await page.textContent('#ledger-scores')) && /Loading/.test(await page.textContent('#ledger-recent')));
     check('pending ledger totals are unknown, not zero', await page.textContent('#ledger-nRows') === '—');
+    check('tax columns stay unknown until the ledger arrives', (await page.locator('#ledger-scores .score-tax-out,#ledger-scores .score-tax-in').allTextContents()).every(value => value === '—'));
     const before = reads;
     await page.click('[data-order="total"]');
     check('lifetime switch ranks cached players immediately', (await page.locator('#ledger-scores tr').nth(1).textContent()).includes('Bob'));
@@ -61,6 +62,16 @@ start(0, async ({ srv, url }) => {
     await page.evaluate(() => MUSTEAT.refreshScores());
     check('hung ledger request times out while scores remain usable', /Alice/.test(await page.textContent('#ledger-scores')) && /Transaction ledger refresh failed/.test(await page.textContent('#ledger-loadMessage')));
     for (const route of held.splice(0)) await route.abort().catch(() => {});
+    mode = 'ok';
+    ledger.push({id:'royalty',from:'a',to:'b',amount:15,kind:'royalty',ts:Date.now()}, {id:'another-cut',from:'b',to:'a',amount:5,kind:'cut',level:1,ts:Date.now()});
+    await page.evaluate(() => MUSTEAT.refreshScores());
+    const alice = page.locator('#ledger-scores tr').filter({hasText:'Alice'}), bob = page.locator('#ledger-scores tr').filter({hasText:'Bob'});
+    check('tax out sums amounts sent and tax in sums amounts received', await alice.locator('.score-tax-out').textContent() === '₵15' && await alice.locator('.score-tax-in').textContent() === '₵45' && await bob.locator('.score-tax-out').textContent() === '₵45' && await bob.locator('.score-tax-in').textContent() === '₵15');
+    check('short tax headings explain recorded totals and missing gang tax', await page.getByRole('columnheader', {name:/^Tax out/}).getAttribute('title').then(text=>text.includes('Excludes unrecorded Sector 7 tax')) && await page.getByRole('columnheader', {name:/^Tax in/}).count() === 1);
+    await page.click('[data-order="total"]');
+    check('tax totals stay current when the score comparison changes', await alice.locator('.score-tax-in').textContent() === '₵45');
+    await page.setViewportSize({width:360,height:800});
+    check('populated tax columns do not overflow the page on mobile', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     mode = 'empty'; await page.reload();
     await page.waitForFunction(() => document.getElementById('ledger-loadMessage').textContent.startsWith('Up to date'));
     check('genuinely empty tables show empty states and zero totals', /No recorded scores/.test(await page.textContent('#ledger-scores')) && await page.textContent('#ledger-nRows') === '0');
